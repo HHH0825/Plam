@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-21",
+  "runtimeFilesModified": false,
+  "fixtureOnly": true,
+  "realAccountData": false,
+  "sources": [
+    {
+      "file": "hero.svg",
+      "art": "../../miniprogram/pages/login/assets/hero.png",
+      "logo": "../../../static/images/palm-logo.svg",
+      "note": "Existing project assets; PALM vector paths included in editable SVG."
+    },
+    {
+      "file": "wechat-search-white.png",
+      "package": "微信搜一搜物料设计指引_20211125_karinhu.zip",
+      "member": "微信搜一搜物料设计指引_20211125_karinhu/03物料可编辑文件/动态落版合集/素材/logo/微信搜一搜logo_反白.png",
+      "sha256": "30fe3752650b66c5a57354962c891c0072d7391fe634ebf2d1242eeedf39426f",
+      "note": "Original white WeChat Search logo, unmodified; scaled proportionally in SVG."
+    },
+    {
+      "files": [
+        "items.png",
+        "ledger.png",
+        "statistics.png"
+      ],
+      "renderer": "render.cjs",
+      "source": "Current miniprogram WXML/WXSS",
+      "data": "Explicit fictional examples and tests/fixtures/cash-redesign.cjs",
+      "deviceCapture": false
+    }
+  ],
+  "references": [
+    "https://github.com/usememos/memos",
+    "https://github.com/localsend/localsend",
+    "https://github.com/immich-app/immich"
+  ]
+}
