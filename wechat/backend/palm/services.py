@@ -1,14 +1,14 @@
+from .validation import natural_today
 from datetime import date
 from flask import g
 from .repository import item_summary, usage_rows, maintenance_rows, event_boundary, disposal_by_item
 from .validation import InputError, date_value, value, cents_value, money, daily_cost
-from .journey import item_journey
 from .photo import photo_version
 
-def item_costs(purchase_cents, maintenance_cents, proceeds_cents, purchased, end):
+def item_costs(purchase_cents, maintenance_cents, proceeds_cents, purchased, end, fixed_cents=0):
     """Calculate a snapshot from plain values so the rules can be tested without a DB."""
     holding_days = (end - purchased).days
-    net_cents = purchase_cents + maintenance_cents - proceeds_cents
+    net_cents = purchase_cents + maintenance_cents + fixed_cents - proceeds_cents
     return holding_days, net_cents, daily_cost(purchase_cents, holding_days), daily_cost(net_cents, holding_days)
 
 
@@ -25,16 +25,18 @@ def disposal_payload(record):
 
 
 def item_payload(row, details=False, today=None):
-    today = today or date.today()
+    today = today or natural_today()
     item_id = row["id"]
     if "maintenance_cents" not in row.keys():
         row = item_summary(item_id, g.user_id, today.isoformat())
     maintenance_cents = row["maintenance_cents"]
+    from .purchases import item_totals
+    fixed_cents = item_totals(g.user_id).get(item_id, 0)
     disposed = row["disposal_id"] is not None
     end = date.fromisoformat(row["disposed_on"]) if disposed else today
     holding_days, net_cents, purchase_daily, net_daily = item_costs(
         row["purchase_cents"], maintenance_cents, row["proceeds_cents"] or 0,
-        date.fromisoformat(row["purchase_date"]), end,
+        date.fromisoformat(row["purchase_date"]), end, fixed_cents,
     )
     result = {
         "id": item_id, "name": row["name"], "category": row["category"], "icon_type": row["icon_type"],
@@ -45,6 +47,7 @@ def item_payload(row, details=False, today=None):
         "is_pinned": bool(row["is_pinned"]), "used_today": bool(row["used_today"]),
         "notes": row["notes"], "status": row["status"],
         "maintenance_total": money(maintenance_cents), "usage_count": row["usage_count"],
+        "fixed_expense_total": money(fixed_cents),
         "last_recorded_use": row["last_used_on"],
         "disposal_proceeds": money(row["proceeds_cents"] or 0),
         "net_cost": money(net_cents),
@@ -52,15 +55,23 @@ def item_payload(row, details=False, today=None):
         "daily_purchase_cost": purchase_daily,
         "daily_net_cost": net_daily,
     }
-    result.update(item_journey(date.fromisoformat(row["purchase_date"]), end,
-                               row["purchase_cents"], row["daily_target_cents"],
-                               today, disposed=disposed))
+    from .locations import resolve_location
+    from .covers import cover_payload
+    result.update(cover_payload(row))
+    result.update(resolve_location(dict(row).get('storage_location_id')))
+    result['revision'] = dict(row).get('revision', 0)
+    from .ledger import payment_info
+    result['payment_info'] = payment_info(dict(row))
+    result.update(milestones={"earned": [], "next": None}, daily_target=None)
     if details:
         result["usage_records"] = [dict(r) for r in usage_rows(item_id)]
         result["maintenance_records"] = [maintenance_payload(r) for r in maintenance_rows(item_id)]
         result["disposal"] = ({"id": row["disposal_id"], "item_id": item_id,
             "disposed_on": row["disposed_on"], "method": row["disposal_method"],
             "proceeds": money(row["proceeds_cents"]), "notes": row["disposal_notes"]} if disposed else None)
+    from .cloud_runtime import enabled
+    if enabled():
+        result['revision'] = row.get('revision', 0)
     return result
 
 def ensure_event_date(item, event_date):

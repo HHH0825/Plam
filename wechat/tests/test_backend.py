@@ -22,6 +22,28 @@ from dev import create_dev_app
 
 
 class MiniApiTest(unittest.TestCase):
+    def test_me_overview_excludes_disposed_trash_and_other_accounts(self):
+        token = self.token('overview')
+        headers = self.headers(token)
+        ids = [self.create_item(token, name) for name in ('active', 'idle', 'disposed', 'trash')]
+        self.create_item(self.token('other'), 'Other account')
+        with self.app.app_context():
+            db = get_db()
+            db.execute("UPDATE items SET status='idle', purchase_cents=0 WHERE id=?", (ids[1],))
+            db.execute("UPDATE items SET status='disposed' WHERE id=?", (ids[2],))
+            db.execute("UPDATE items SET deleted_at=CURRENT_TIMESTAMP WHERE id=?", (ids[3],))
+            db.execute("UPDATE users SET created_at='2026-10-10 16:00:00' WHERE id=(SELECT user_id FROM items WHERE id=?)", (ids[0],))
+            db.commit()
+        stats = self.client.get('/api/mp/stats', headers=headers).json
+        self.assertEqual((stats['held_items'], stats['held_purchase_total']), (2, '1200.00'))
+        self.assertEqual(stats['purchase_total'], '2400.00')
+        with patch('palm.routes_auth.natural_today', return_value=__import__('datetime').date(2026, 10, 11)):
+            me = self.client.get('/api/mp/auth/me', headers=headers).json
+        self.assertEqual(me['account_age_days'], 1)
+        self.assertEqual(set(me['user']), {'id', 'username', 'avatar_key'})
+        empty = self.client.get('/api/mp/stats', headers=self.headers(self.token('empty'))).json
+        self.assertEqual((empty['held_items'], empty['held_purchase_total']), (0, '0.00'))
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="palm-wechat-test-")
         self.addCleanup(self.temp.cleanup)
@@ -200,7 +222,7 @@ class MiniApiTest(unittest.TestCase):
             self.assertEqual(process.returncode, 0, process.stderr)
             self.assertTrue((target / "instance" / "palm.sqlite3").exists())
             with closing(sqlite3.connect(target / "instance" / "palm.sqlite3")) as db:
-                self.assertEqual(db.execute("PRAGMA user_version").fetchone()[0], 9)
+                self.assertEqual(db.execute("PRAGMA user_version").fetchone()[0], 15)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,12 @@
+// Editable originals and transparent runtime PNGs; no external artwork.
+const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
+const output=path.resolve(__dirname,'../miniprogram/assets/purchase-entry')
+const icons={
+  storage:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g stroke="#45413F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12V5l7 5h6l7-5v7" fill="#FFF4C6"/><path d="M5 12h22v13q0 3-3 3H8q-3 0-3-3Z" fill="#FFFDF4"/><path d="M4 12h24v5H4Z" fill="#FFE36C"/><path d="M11 21h10v5H11Z" fill="#F7BACA"/><path d="M14 23.5h4" fill="none"/><path d="M11 8.5h1m8 0h1"/></g></svg>`,
+  filter:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="#686460" stroke-width="1.7" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2" fill="#FFFDF4"/><circle cx="16" cy="12" r="2" fill="#FFFDF4"/><circle cx="10" cy="18" r="2" fill="#FFFDF4"/></g></svg>`,
+  sort:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="#686460" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19V5M3.5 8.5 7 5l3.5 3.5M17 5v14m-3.5-3.5L17 19l3.5-3.5"/></g></svg>`,
+  wishlist:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g stroke="#45413F" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11V4l7 4h6l7-4v20q0 4-4 4H10q-4 0-4-4Z" fill="#FFFDF4"/><path d="M10 16h6m-6 5h4" fill="none"/><path d="M21 16c-4-5-8 1 0 6 8-5 4-11 0-6Z" fill="#F7BACA"/><path d="M11 8h2m6 0h2" stroke="#E5B83D"/></g></svg>`,
+  subscription:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><g stroke="#45413F" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h17q3 0 3 3v4a3 3 0 0 0 0 6v5q0 3-3 3H7q-3 0-3-3v-5a3 3 0 0 0 0-6V8q0-3 3-3Z" fill="#FFFDF4"/><path d="M9 10h8m-8 5h4m-4 5h3" fill="none"/><circle cx="22" cy="22" r="8" fill="#FFE36C"/><path d="M22 18v4l3 2" fill="none"/><path d="M21 9h1" stroke="#EBA6BC"/></g></svg>`
+}
+async function main(){fs.mkdirSync(output,{recursive:true});let bytes=0;for(const[name,svg]of Object.entries(icons)){fs.writeFileSync(path.join(output,name+'.svg'),svg+'\n');const target=path.join(output,name+'.png');await sharp(Buffer.from(svg)).resize(88,88).png({palette:true,effort:10}).toFile(target);bytes+=fs.statSync(target).size}console.log(JSON.stringify({icons:Object.keys(icons),runtimeBytes:bytes}))}
+main().catch(error=>{console.error(error);process.exitCode=1})

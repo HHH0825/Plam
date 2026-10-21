@@ -1,0 +1,27 @@
+<view class="member-themed {{memberThemeClass}} page storage-page" style="{{memberThemeStyle}}">
+  <view class="storage-heading"><view><text class="title">收纳位置</text><view class="muted">给每件物品找个小窝。</view></view><image src="/assets/purchase-entry/storage.png" class="storage-mascot" aria-hidden="true"/></view>
+  <view wx:if="{{assignItemId}}" class="storage-hint">请选择这件物品的新位置</view>
+  <view wx:if="{{error}}" class="storage-error" role="alert">{{error}}<button wx:if="{{conflict}}" class="text-button" bindtap="review" disabled="{{busy}}">刷新并核对选择</button><button wx:elif="{{!ready}}" class="text-button" bindtap="load">重新检查</button></view>
+  <view wx:if="{{loading}}" class="empty"><cat-loading label="正在找物品的小窝…"/></view>
+  <block wx:elif="{{ready}}">
+    <view wx:if="{{naming}}" class="storage-name-form"><text class="section-title">{{renameId ? '修改位置名称' : '新增位置'}}</text><input value="{{nameDraft}}" bindinput="nameInput" maxlength="40" placeholder="例如：书桌抽屉、衣柜上层" disabled="{{busy}}"/><view class="storage-actions"><button class="button" bindtap="saveName" disabled="{{busy}}">保存位置</button><button class="button light" bindtap="cancelName" disabled="{{busy}}">取消</button></view></view>
+    <block wx:if="{{mode === 'locations'}}">
+      <view class="storage-toolbar"><input class="storage-search" value="{{query}}" bindinput="search" placeholder="搜索位置"/><button class="button storage-create" bindtap="newLocation" disabled="{{busy}}">新增位置</button></view>
+      <button class="location-row" data-id="0" bindtap="enter" disabled="{{busy}}"><view class="location-icon unset">?</view><view class="location-copy"><text class="location-name">未设置位置</text><text class="muted">还没找到小窝的物品</text></view><text class="location-count">{{unassigned}} 件</text><text class="location-arrow">›</text></button>
+      <button wx:for="{{shownLocations}}" wx:key="id" class="location-row" data-id="{{item.id}}" bindtap="enter" disabled="{{busy}}"><image class="location-icon" src="/assets/purchase-entry/storage.png" aria-hidden="true"/><view class="location-copy"><text class="location-name">{{item.name}}</text></view><text class="location-count">{{item.count}} 件</text><text class="location-arrow">›</text></button>
+      <view wx:if="{{!locations.length}}" class="empty">先建一个位置，再把物品放进去吧。</view><view wx:elif="{{!shownLocations.length}}" class="empty">没有找到这个位置</view>
+    </block>
+    <block wx:else>
+      <button class="text-button" bindtap="groups" disabled="{{busy}}">‹ 全部位置</button>
+      <view class="location-detail-heading"><text class="section-title">{{locationName}}</text><view wx:if="{{locationId && !selecting}}"><button class="text-button" bindtap="rename" disabled="{{busy}}">改名</button><button class="text-button danger" bindtap="remove" disabled="{{busy}}">删除</button></view></view>
+      <view class="storage-toolbar"><input class="storage-search" value="{{itemQuery}}" bindinput="searchItems" placeholder="搜索物品"/><button wx:if="{{!selecting}}" class="button storage-create" bindtap="beginAdd" disabled="{{busy}}">添加物品</button><button wx:if="{{!selecting}}" class="text-button" bindtap="beginSelect">多选</button></view>
+      <view wx:if="{{selecting}}" class="storage-selection"><text>已选 {{chosenCount}} / 50 件</text><button class="text-button" bindtap="cancelSelect" disabled="{{busy}}">取消选择</button></view>
+      <button wx:for="{{shownItems}}" wx:key="id" class="stored-item {{item.checked ? 'checked' : ''}}" data-id="{{item.id}}" bindtap="tapItem" disabled="{{busy || item.alreadyHere}}"><text wx:if="{{selecting}}" class="selection-dot {{item.checked ? 'selected' : ''}}">{{item.checked ? '✓' : ''}}</text><image wx:if="{{item.art || (photoPaths[item.id] && !photoErrors[item.id])}}" class="stored-photo" src="{{photoPaths[item.id] && !photoErrors[item.id] ? photoPaths[item.id] : item.art}}" mode="aspectFill" data-id="{{item.id}}" binderror="photoFailed"/><view class="stored-copy"><text class="stored-name">{{item.name}}</text><view><text class="muted">{{item.category}}</text><text class="pill status-{{item.status}}">{{item.statusText}}</text></view><text class="stored-location">{{item.alreadyHere ? '已在这里' : item.storage_location_name || '未设置位置'}}</text></view><text wx:if="{{!selecting}}" class="location-arrow">›</text></button>
+      <view wx:if="{{!shownItems.length}}" class="empty">{{itemQuery ? '没有找到这件物品' : '这里还没有物品，添加几件吧。'}}</view>
+      <view wx:if="{{selecting}}" class="storage-batch"><button wx:if="{{picking}}" class="button" bindtap="addSelected" disabled="{{!chosenCount || busy || conflict}}">放到这里（{{chosenCount}}）</button><block wx:else><button class="button" bindtap="chooseTarget" disabled="{{!chosenCount || busy || conflict}}">移动位置</button><button class="button light" bindtap="clearSelected" disabled="{{!chosenCount || busy || conflict}}">清除位置</button></block></view>
+    </block>
+  </block>
+  <view wx:if="{{targetOpen}}" class="storage-target-mask"><view class="storage-target"><view class="location-detail-heading"><text class="section-title">移动到哪里？</text><button class="text-button" bindtap="closeTarget" disabled="{{busy}}">关闭</button></view><input class="storage-search" value="{{targetQuery}}" bindinput="targetSearch" placeholder="搜索目标位置"/><scroll-view scroll-y class="target-scroll"><button wx:for="{{targets}}" wx:key="id" class="target-row" data-id="{{item.id || 0}}" bindtap="targetTap" disabled="{{busy || conflict}}">{{item.name}}</button></scroll-view></view></view>
+</view>
+
+<cat-feedback id="cat-feedback"/>

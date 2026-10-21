@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>我的：圆脸小猫</title>
+  <g stroke="#35332F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.7 26.2C13.7 22.3 12.8 16.1 16.1 13.6C18.4 12.2 22.1 17 25.1 20.7C29.5 19.3 34.4 19.1 39 20.6C42.2 17.1 46.2 12.8 48.4 14C51.6 15.8 50.7 22.5 49.8 26.6C54.1 29.6 56.3 34.4 55.1 39.3C53.7 47.1 44.1 50.1 32 50C19.8 50.4 10.3 47 8.7 39.3C7.5 34.2 10.1 29.5 14.7 26.2Z" fill="#FFFFFF"/>
+    <path d="M17.4 18.3L19.1 25L23.2 22.9Z" fill="#F7D773" stroke="none"/>
+    <path d="M46.7 18.4L40.9 23L45.5 25.1Z" fill="#F7D773" stroke="none"/>
+    <path d="M9 34.9L4.6 34M8.6 39.5L4.2 40.4M55.3 35.2L59.4 34.3M55.3 39.6L59.6 40.5" fill="none" stroke-width="1.7"/>
+    <ellipse cx="17.8" cy="39.1" rx="3.5" ry="2.2" fill="#F6B5C8" stroke="none"/>
+    <ellipse cx="46.1" cy="39.1" rx="3.5" ry="2.2" fill="#F6B5C8" stroke="none"/>
+    <ellipse cx="24" cy="33.5" rx="1.8" ry="2.25" fill="#35332F" stroke="none"/>
+    <ellipse cx="40" cy="33.5" rx="1.8" ry="2.25" fill="#35332F" stroke="none"/>
+    <path d="M29.9 37.4Q32 36.3 34.1 37.4L32 39.2Z" fill="#35332F" stroke="none"/>
+    <path d="M32 39.1V40.6M32 40.5Q29.5 43.4 27.2 40.9M32 40.5Q34.5 43.3 36.8 40.9" fill="none" stroke-width="1.6"/>
+    <path d="M17.6 47.2C16.6 43.4 21 43.3 23 45.3C25.2 47.5 24.4 51.8 21.1 51.7C18.8 51.8 17.7 50 17.6 47.2Z" fill="#FFFFFF" stroke-width="2"/>
+    <path d="M40 47.1C40.7 43.6 44 43.8 45.9 45.5C48 47.8 46.9 51.6 44 51.6C41.8 51.8 40 49.8 40 47.1Z" fill="#FFFFFF" stroke-width="2"/>
+  </g>
+</svg>

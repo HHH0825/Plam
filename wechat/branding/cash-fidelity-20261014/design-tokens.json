@@ -1,0 +1,56 @@
+{
+  "referencePhoneWidth": 525,
+  "normalizedWidth": 390,
+  "crops": {
+    "ledger": [
+      118,
+      186,
+      625,
+      616
+    ],
+    "me": [
+      699,
+      367,
+      1195,
+      659
+    ],
+    "statistics": [
+      145,
+      697,
+      596,
+      1037
+    ],
+    "report": [
+      664,
+      55,
+      1224,
+      1083
+    ]
+  },
+  "ledger": {
+    "width": 376.6,
+    "height": 319.4,
+    "mainFont": 44,
+    "secondaryFont": 24,
+    "pawWidth": 48
+  },
+  "me": {
+    "sectionFont": 15,
+    "cashFont": 18,
+    "rowDividers": true
+  },
+  "statistics": {
+    "chartWidth": 146,
+    "legendRows": "inline",
+    "refundRows": "inline",
+    "discoveryMinHeight": 64
+  },
+  "report": {
+    "width": 720,
+    "referenceHeight": 1322,
+    "titleWidth": 482,
+    "mainFont": 72,
+    "ringDiameter": 276
+  },
+  "publicElements": "keep existing avatar, navigation and menu icons; native title chrome excluded from comparison"
+}

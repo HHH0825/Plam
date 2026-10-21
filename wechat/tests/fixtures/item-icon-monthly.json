@@ -1,0 +1,34 @@
+{
+  "month": "2026-10",
+  "today": "2026-10-21",
+  "cutoff_date": "2026-10-21",
+  "is_current": true,
+  "has_activity": true,
+  "totals": {
+    "purchase_count": 1,
+    "purchase_total": "100.00",
+    "maintenance_total": "0.00",
+    "disposal_total": "0.00",
+    "cashflow_net": "100.00",
+    "fixed_expense_total": "0.00",
+    "installment_principal_total": "0.00"
+  },
+  "purchases": [
+    {
+      "id": 1,
+      "name": "测试物品",
+      "purchase_date": "2026-10-01",
+      "purchase_price": "100.00",
+      "icon_type": "other"
+    }
+  ],
+  "purchase_leaders": [
+    {
+      "id": 1,
+      "name": "测试物品",
+      "purchase_price": "100.00",
+      "share": "100.00"
+    }
+  ],
+  "memories": []
+}

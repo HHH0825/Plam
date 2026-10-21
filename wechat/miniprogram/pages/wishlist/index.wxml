@@ -1,0 +1,23 @@
+<view class="member-themed {{memberThemeClass}} page purchase-page" style="{{memberThemeStyle}}">
+  <view class="purchase-heading"><view><text class="title">想买清单</text><view class="muted small">先记下来，再慢慢决定。</view></view><button class="button" bindtap="add" disabled="{{busy}}">添加心愿</button></view>
+  <view wx:if="{{error}}" class="error" role="alert">{{error}}<button wx:if="{{conflict}}" class="text-button" bindtap="reviewConflict">核对最新版本</button><button wx:elif="{{!editing}}" class="text-button" bindtap="load">重试</button></view>
+  <block wx:if="{{editing}}">
+    <view class="card purchase-form"><view class="section-title">{{selected ? '心愿详情' : '记下一个心愿'}}</view>
+      <view class="field"><text>名称 *</text><input data-field="name" value="{{form.name}}" bindinput="field" maxlength="120" placeholder="例如：一副降噪耳机" disabled="{{busy}}"/></view>
+      <view class="field"><text>预计价格（选填）</text><input data-field="expected_price" value="{{form.expected_price}}" bindinput="field" type="digit" placeholder="¥ 0.00" disabled="{{busy}}"/></view>
+      <view class="field"><text>分类（选填）</text><input data-field="category" value="{{form.category}}" bindinput="field" maxlength="60" placeholder="与已有物品分类一致，更容易找到类似物品" disabled="{{busy}}"/></view>
+      <view class="field"><text>购买理由（选填）</text><textarea data-field="reason" value="{{form.reason}}" bindinput="field" maxlength="1000" auto-height placeholder="它能解决什么需要？" disabled="{{busy}}"/></view>
+      <view class="field"><text>重新考虑日期（选填）</text><picker mode="date" value="{{form.review_on}}" data-field="review_on" bindchange="dateField" disabled="{{busy}}"><view class="picker-value">{{form.review_on || '自行选择，不默认设置期限'}} ›</view></picker><button wx:if="{{form.review_on}}" class="text-button" bindtap="clearDate">不设置日期</button></view>
+      <view class="actions"><button class="button cat-loading-button" bindtap="save" disabled="{{busy}}"><cat-loading wx:if="{{busy}}" paw label=""/>保存心愿</button><button class="button light" bindtap="back" disabled="{{busy}}">返回清单</button></view>
+    </view>
+    <view wx:if="{{similar.length}}" class="card similar-card"><view class="section-title">看看已有的物品</view><view class="muted small">仅供你核对，仍可继续购买。</view><view wx:for="{{similar}}" wx:key="id" class="similar-row" data-id="{{item.id}}" bindtap="openItem"><image wx:if="{{photoPaths[item.id] || item.art}}" src="{{photoPaths[item.id] || item.art}}" mode="aspectFit" data-id="{{item.id}}" binderror="similarCoverFailed"/><text wx:else>{{item.icon}}</text><view><text class="row-title">{{item.name}}</text><text class="muted small">{{item.statusText}} · {{item.match_reason}}</text></view><text>›</text></view></view>
+    <view wx:if="{{selected}}" class="card purchase-actions"><button class="button" bindtap="convert" disabled="{{busy || (selected.status === 'purchased' && !selected.item_available)}}">{{selected.status === 'purchased' ? selected.item_available ? '查看已购入物品' : '关联物品已删除' : '已购买，转为物品'}}</button><button wx:if="{{selected.status !== 'purchased'}}" class="button light" bindtap="state" disabled="{{busy}}">{{form.status === 'declined' ? '恢复考虑' : '暂时不买'}}</button><button class="text-button danger" bindtap="remove" disabled="{{busy}}">删除心愿</button></view>
+  </block>
+  <block wx:else>
+    <picker class="status-filter-picker" range="{{filters}}" value="{{filterIndex}}" bindchange="filter" aria-label="切换心愿状态，当前{{filters[filterIndex]}}"><view class="list-filter"><image class="status-filter-icon" src="/assets/purchase-entry/status-filter.png" mode="aspectFit" aria-hidden="true"/><text>{{filters[filterIndex]}}</text></view></picker>
+    <view wx:if="{{loading}}" class="empty"><cat-loading label="正在读取心愿…"/></view><view wx:elif="{{!shown.length && !error}}" class="empty">还没有心愿，先记下想买的东西吧。</view>
+    <view wx:for="{{shown}}" wx:key="id" class="card wish-card" data-id="{{item.id}}" bindtap="open"><view class="row"><text class="row-title">{{item.name}}</text><text class="pill wish-{{item.status}}">{{item.stateText}}</text></view><view class="wish-price">{{item.expected_price ? '预计 ¥' + item.expected_price : '预计价格未填写'}}</view><view wx:if="{{item.reason}}" class="wish-reason">{{item.reason}}</view><view class="muted small">{{item.reviewText}}<text wx:if="{{item.category}}"> · {{item.category}}</text></view></view>
+  </block>
+</view>
+
+<cat-feedback id="cat-feedback"/>

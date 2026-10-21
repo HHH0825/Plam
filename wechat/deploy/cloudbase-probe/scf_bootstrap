@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eu
+APP_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+cd "$APP_DIR"
+export PYTHONPATH="$APP_DIR/third_party:$APP_DIR${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONUNBUFFERED=1
+exec /var/lang/python310/bin/python3.10 -m gunicorn \
+  --bind 0.0.0.0:9000 --workers 1 --worker-tmp-dir /tmp \
+  --access-logfile - --error-logfile - --capture-output --timeout 90 app:app

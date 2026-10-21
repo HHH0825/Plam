@@ -1,0 +1,4 @@
+const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g stroke="#615A50" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.2 20 6M4 12h16M4 18l16-.2" fill="none"/><circle cx="8" cy="6.1" r="2.5" fill="#F5B3C7"/><circle cx="16" cy="12" r="2.5" fill="#FFE397"/><circle cx="9" cy="18" r="2.5" fill="#FFFDF2"/></g></svg>`
+async function main(){const source=path.resolve(__dirname,'../branding/status-paws-20261012'),target=path.resolve(__dirname,'../miniprogram/assets/purchase-entry/status-filter.png');fs.mkdirSync(source,{recursive:true});fs.writeFileSync(path.join(source,'status-filter.svg'),svg+'\n');const png=await sharp(Buffer.from(svg)).resize(72,72).png({palette:true,effort:10}).toBuffer();fs.writeFileSync(target,png);console.log(JSON.stringify({bytes:png.length}))}
+main().catch(e=>{console.error(e);process.exitCode=1})

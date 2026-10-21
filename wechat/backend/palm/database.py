@@ -8,6 +8,8 @@ from .schema import SCHEMA
 
 
 def get_db():
+    if current_app.config.get('STORAGE_BACKEND') == 'cloudbase':
+        raise RuntimeError('SQLite cannot be accessed in cloud mode')
     if "db" not in g:
         connection = sqlite3.connect(current_app.config["DATABASE"])
         connection.row_factory = sqlite3.Row
@@ -37,7 +39,11 @@ def initialize_database(app):
                         "SELECT 1 FROM sqlite_master WHERE type='table' AND name='users'"
                     ).fetchone()
                     old_user_columns = [r[1] for r in source.execute("PRAGMA table_info(users)")] if old_user_table else []
+                    membership_table = source.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='member_documents'").fetchone()
+                    payment_table = source.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='pay_orders'").fetchone()
                     for needed, suffix in (
+                        (bool(old_table) and not payment_table, ".pre-payments.bak"),
+                        (bool(old_table) and not membership_table, ".pre-membership.bak"),
                         (bool(old_table) and "user_id" not in old_columns, ".pre-accounts.bak"),
                         (bool(old_table) and "icon_type" not in old_columns, ".pre-icons.bak"),
                         (bool(old_table) and "daily_target_cents" not in old_columns, ".pre-goals.bak"),
@@ -45,6 +51,9 @@ def initialize_database(app):
                         (bool(old_table) and "warranty_expires_on" not in old_columns, ".pre-warranty.bak"),
                         (bool(old_table) and ("photo_key" not in old_columns or "is_pinned" not in old_columns), ".pre-photos-pins.bak"),
                         (bool(old_table) and "deleted_at" not in old_columns, ".pre-trash.bak"),
+                        (bool(old_table) and "storage_location_id" not in old_columns, ".pre-locations.bak"),
+                        (bool(old_table) and "cover_mode" not in old_columns, ".pre-covers.bak"),
+                        (bool(old_table) and "payment_info" not in old_columns, ".pre-ledger.bak"),
                     ):
                         if not needed:
                             continue
@@ -97,7 +106,20 @@ def initialize_database(app):
                 get_db().execute("ALTER TABLE items ADD COLUMN deleted_at TEXT")
             get_db().execute("CREATE INDEX IF NOT EXISTS idx_items_user ON items(user_id)")
             get_db().execute("CREATE INDEX IF NOT EXISTS idx_items_trash ON items(deleted_at)")
-            get_db().execute("PRAGMA user_version = 9")
+            if "storage_location_id" not in columns:
+                get_db().execute("ALTER TABLE items ADD COLUMN storage_location_id INTEGER")
+            if "revision" not in columns:
+                get_db().execute("ALTER TABLE items ADD COLUMN revision INTEGER NOT NULL DEFAULT 0")
+            get_db().execute("CREATE INDEX IF NOT EXISTS idx_items_location ON items(user_id, storage_location_id, id)")
+            get_db().execute("CREATE TABLE IF NOT EXISTS storage_locations (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL REFERENCES users(id), payload TEXT NOT NULL)")
+            get_db().execute("CREATE INDEX IF NOT EXISTS idx_storage_locations_user ON storage_locations(user_id, id)")
+            if "cover_mode" not in columns:
+                get_db().execute("ALTER TABLE items ADD COLUMN cover_mode TEXT")
+            if "cover_icon_key" not in columns:
+                get_db().execute("ALTER TABLE items ADD COLUMN cover_icon_key TEXT")
+            if "payment_info" not in columns:
+                get_db().execute("ALTER TABLE items ADD COLUMN payment_info TEXT")
+            get_db().execute("PRAGMA user_version = 15")
             get_db().commit()
     except Exception as exc:
         raise RuntimeError("数据库初始化或升级失败，请检查原数据库与升级前备份") from exc

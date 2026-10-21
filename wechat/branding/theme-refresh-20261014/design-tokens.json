@@ -1,0 +1,39 @@
+{
+  "login": {
+    "crop": [
+      134,
+      224,
+      846,
+      1555
+    ],
+    "width": 390,
+    "heroHeight": 231,
+    "sampleCardHeight": 155,
+    "titleWidth": 286,
+    "titleHeight": 78,
+    "brandHeight": 44,
+    "featureHeight": 34,
+    "loginHeight": 60,
+    "gap": 12
+  },
+  "switch": {
+    "referenceCrop": [
+      1040,
+      275,
+      1473,
+      352
+    ],
+    "width": 340,
+    "height": 58,
+    "inset": 4,
+    "radius": 29,
+    "icon": 22,
+    "label": 20,
+    "iconBox": 30,
+    "visibleInkApprox": 25
+  },
+  "runtimeLimits": {
+    "welcomeBytes": 307200,
+    "catsAndFallbackBytes": 204800
+  }
+}

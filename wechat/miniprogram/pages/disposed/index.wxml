@@ -1,0 +1,3 @@
+<include src="../../templates/item-list.wxml"/>
+
+<cat-feedback id="cat-feedback"/>

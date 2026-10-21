@@ -36,7 +36,7 @@ function createPhotoCache({ download, stat, remove, getScope, maxConcurrent = 3,
     ensureScope()
     const present = new Set()
     for (const item of items) {
-      const id = Number(item.id), version = item.photo_url ? (item.photo_version || 'legacy') : null
+      const id = Number(item.id), version = item.cover_mode !== 'icon' && item.photo_url ? (item.photo_version || 'legacy') : null
       present.add(id)
       if (versions.has(id) && versions.get(id) !== version) invalidate(id)
       versions.set(id, version)
@@ -91,6 +91,7 @@ function createPhotoCache({ download, stat, remove, getScope, maxConcurrent = 3,
   }
   function load(item, owner, size = 'thumb', priority = 0) {
     ensureScope()
+    if (item.cover_mode === 'icon') return Promise.resolve('')
     const spec = { id: Number(item.id), version: item.photo_version || 'legacy', size }
     if (!scope || !spec.id) return Promise.reject(cancelled())
     const key = keyOf(spec)
@@ -117,6 +118,7 @@ function createPhotoCache({ download, stat, remove, getScope, maxConcurrent = 3,
   }
   async function peek(item, size = 'thumb') {
     ensureScope()
+    if (item.cover_mode === 'icon') return ''
     const snapshot = epoch, key = keyOf({ id: Number(item.id), version: item.photo_version || 'legacy', size })
     const entry = cache.get(key)
     if (!entry) return ''

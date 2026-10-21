@@ -8,7 +8,8 @@ const METHODS = { sold: '出售', gifted: '赠送', discarded: '丢弃', other: 
 
 function icon(type) { return (TYPE_OPTIONS.find(row => row[0] === type) || TYPE_OPTIONS[8])[2] }
 function decorate(item) {
-  return { ...item, icon: icon(item.icon_type), art: '/assets/paper/type-' + (TYPE_OPTIONS.some(row => row[0] === item.icon_type) ? item.icon_type : 'other') + '.png', statusText: STATUS[item.status] || item.status,
+  const covers = require('./item-covers')
+  return { ...item, ...(item.cover_mode === 'icon' ? {photo_url:null,photo_version:null} : {}), icon: icon(item.icon_type), art: covers.art(item), fallbackArt:covers.fallback(item), statusText: STATUS[item.status] || item.status,
     dailyNet: item.daily_net_cost == null ? '暂无' : `¥${item.daily_net_cost}`,
     dailyPurchase: item.daily_purchase_cost == null ? '暂无' : `¥${item.daily_purchase_cost}` }
 }

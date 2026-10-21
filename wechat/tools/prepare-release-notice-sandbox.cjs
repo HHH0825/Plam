@@ -1,0 +1,6 @@
+const fs=require('node:fs'),path=require('node:path')
+let script=fs.readFileSync(path.join(__dirname,'prepare-growth-sandbox.cjs'),'utf8')
+script=script.replaceAll("'growth-native-project'","'release-notice-native-project'")
+new Function('require','__dirname',script)(require,__dirname)
+const folder=path.resolve(__dirname,'../../test-results/release-notice-native-project'),content=path.join(folder,'utils/release-notice-content.js')
+fs.writeFileSync(content,fs.readFileSync(content,'utf8').replace("id:'first-release-v1'","id:'offline-release-notice-"+Date.now()+"'"))

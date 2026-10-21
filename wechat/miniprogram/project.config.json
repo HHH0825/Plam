@@ -1,6 +1,6 @@
 {
   "appid": "touristappid",
-  "projectname": "物物记",
+  "projectname": "猫爪物帐",
   "miniprogramRoot": "./",
   "compileType": "miniprogram",
   "setting": {
@@ -26,11 +26,327 @@
       "outputPath": ""
     }
   },
-  "libVersion": "3.0.0",
+  "libVersion": "3.17.3",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
-    "include": []
+    "ignore": [
+      {
+        "value": ".svg",
+        "type": "suffix"
+      },
+      {
+        "value": "/minitest",
+        "type": "folder"
+      },
+      {
+        "type": "folder",
+        "value": "minitest/"
+      }
+    ],
+    "include": [
+      {
+        "value": "assets/brand/paw-ledger-mark.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/arc.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/corner-bl.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/corner-br.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/corner-tl.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/corner-tr.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/dot.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/edge-bottom.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/edge-left.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/edge-right.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/edge-top.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/mark.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/paw.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/smile.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/star.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/item-doodle/underline.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-bike.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-book.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-cat.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-sprout.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-star.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/avatar-sun.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/paper/logo.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/cat-book.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/cat-camera.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/cat-search.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/compact-feedback.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/compact-nav-items.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/compact-nav-me.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/compact-trash.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/corner-tape.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/discover.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/feedback.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-add-sage.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-add.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-collection.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-identity.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-login.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-memories.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-purchase.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-save.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/label-tape.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/leaf.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-01.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-02.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-03.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-04.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-05.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-06.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-07.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-08.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-09.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-10.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-11.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/month-12.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/nav-items.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/nav-me.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/number-tape.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/paw-button.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/paw-signature.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/paw.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/postmark.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/share-fallback.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/trash.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-books.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-clothing.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-daily.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-digital.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-home.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-mobility.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-other.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-sports.png",
+        "type": "file"
+      },
+      {
+        "value": "assets/white-doodle/type-tools.png",
+        "type": "file"
+      },
+      {
+        "value": "pages/member-benefits/assets/collector.png",
+        "type": "file"
+      },
+      {
+        "value": "pages/login/assets/hero.png",
+        "type": "file"
+      }
+    ]
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "isGameTourist": false,
+  "testRoot": "minitest/"
 }

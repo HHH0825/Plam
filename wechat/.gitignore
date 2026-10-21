@@ -1,8 +1,55 @@
+# Local runtime, caches and data
 instance/
 .venv/
 __pycache__/
 *.pyc
 *.log
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+.qa-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Local credentials and developer-specific settings; keep placeholder examples
 .env
+.env.*
+!.env.example
+env.json
+env.local.json
+env.*.json
+!env.example.json
+*.pem
+*.key
+*.credentials.json
+*.secret.json
 project.private.config.json
-.qa-*/
+
+# Generated delivery archives and checksums
+*.zip
+*.zip.sha256
+*.zip.building
+
+# Historical deployment output stays local. Retain runtime entry sources,
+# lockfiles, configuration examples, and the fixture script required by tests.
+/deploy/cloudbase/*
+!/deploy/cloudbase/.gitignore
+!/deploy/cloudbase/api/
+!/deploy/cloudbase/bridge/
+!/deploy/cloudbase/pay-notify/
+!/deploy/cloudbase/build.py
+!/deploy/cloudbase/resources.json
+!/deploy/cloudbase/cos-photo-policy.json
+!/deploy/cloudbase/miniprogram.config.example.js
+!/deploy/cloudbase/qa-controlled-load.js
+
+# Generated visual matrices, browser previews and historical design mockups.
+# Already tracked images remain tracked; this does not delete local files.
+/docs/images/
+/docs/design/

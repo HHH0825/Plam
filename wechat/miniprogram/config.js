@@ -1,7 +1,11 @@
-// 本机模拟器：localhost + DEV_LOGIN。真机请改为已备案的 HTTPS 域名并关闭 DEV_LOGIN。
-// backend/dev.py 使用 5001；修改地址后请完整编译，避免沿用旧的编译缓存。
+// 正式云端环境：直接调用 Python HTTP 云函数，使用真实微信登录。
+// 本地调试可改回 local_http、http://127.0.0.1:5001 和 DEV_LOGIN=true。
 module.exports = {
-  API_BASE: 'http://127.0.0.1:5001',
-  DEV_LOGIN: true,
+  API_TRANSPORT: 'cloud_http_function',
+  CLOUDBASE_ENV_ID: 'cloud1-example',
+  CLOUD_FUNCTION: 'palm-api-bridge',
+  CLOUD_PHOTOS_ENABLED: true,
+  API_BASE: '',
+  DEV_LOGIN: false,
   DEV_ACCOUNT: 'student'
 }

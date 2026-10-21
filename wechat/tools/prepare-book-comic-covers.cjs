@@ -1,0 +1,14 @@
+// Compose the project's original vector icon drawings into small comic book covers.
+const fs=require('node:fs'),path=require('node:path')
+const sharp=require('sharp')
+const root=path.resolve(__dirname,'..'),source=path.join(root,'branding/book-comic-20261017'),out=path.join(root,'miniprogram/pages/member-tools/assets/book-covers')
+fs.mkdirSync(source,{recursive:true});fs.mkdirSync(out,{recursive:true})
+const themes=[['daily',['notebook','cup','pen'],'#FFF4BF','#FBE2E9'],['travel',['suitcase','camera','umbrella'],'#E6EFF5','#FFF0B8'],['home',['lamp','chair','pan'],'#E3EDDE','#F9E0D3'],['hobby',['book','headphones','gamepad'],'#F9E1E8','#E4EAF8']]
+function icon(name,x,y,w,h,rotate=0){const raw=fs.readFileSync(path.join(root,'branding/item-covers-20261011',name+'.svg'),'utf8').replace(/<\?xml[^>]*>/,'').replace(/<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'');return `<g transform="rotate(${rotate} ${x+w/2} ${y+h/2})"><svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="0 0 128 128">${raw}</svg></g>`}
+async function main(){const results=[];for(const[id,items,bg,soft]of themes){
+ const dots=Array.from({length:15},(_,i)=>`<circle cx="${122+i%5*11}" cy="${24+Math.floor(i/5)*11}" r="1.2"/>`).join('')
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="192" height="252" viewBox="0 0 192 252"><defs><clipPath id="paper"><rect x="7" y="5" width="178" height="242" rx="12"/></clipPath></defs><rect x="7" y="5" width="178" height="242" rx="12" fill="${bg}" stroke="#514C42" stroke-width="3"/><g clip-path="url(#paper)"><path d="M18 8v238" stroke="#514C42" stroke-opacity=".18" stroke-width="3"/><path d="M28 19 174 16 170 104 26 108Z" fill="#FFFEF8" stroke="#514C42" stroke-width="2.4"/><path d="M26 118 95 114 98 229 24 232Z" fill="${soft}" stroke="#514C42" stroke-width="2.4"/><path d="M106 116 174 111 171 228 108 231Z" fill="#FFFEF8" stroke="#514C42" stroke-width="2.4"/><g fill="#514C42" opacity=".16">${dots}</g>${icon(items[0],39,25,96,79,-7)}${icon(items[1],25,126,72,96,4)}${icon(items[2],100,129,78,93,-9)}<path d="m151 83 3-9 3 9 9 3-9 3-3 9-3-9-9-3Z" fill="${bg}" stroke="#514C42" stroke-width="1.8"/><path d="m37 35-5-7m9 5-1-9m91 113 7-5m-5 11 9-1" stroke="#514C42" stroke-width="2" stroke-linecap="round"/><path d="m39 240 44-1m18 0 26-1m9 0 25-1" stroke="#514C42" stroke-width="2" stroke-linecap="round"/></g></svg>`
+ fs.writeFileSync(path.join(source,id+'.svg'),svg)
+ const file=path.join(out,id+'.png');await sharp(Buffer.from(svg)).png({palette:true,colours:96,compressionLevel:9,effort:10}).toFile(file);const bytes=fs.statSync(file).size;if(bytes>12*1024)throw Error(id+' too large');results.push({id,bytes,width:192,height:252})
+}fs.writeFileSync(path.join(source,'assets.json'),JSON.stringify(results,null,2));console.log(JSON.stringify({covers:results,total:results.reduce((s,r)=>s+r.bytes,0)}))}
+main().catch(e=>{console.error(e);process.exitCode=1})

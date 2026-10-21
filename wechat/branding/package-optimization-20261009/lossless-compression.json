@@ -1,0 +1,246 @@
+{
+  "applied": true,
+  "files": 21,
+  "savedBytes": 130786,
+  "skippedNonLossless": [
+    "assets/stickers/camera.png",
+    "assets/stickers/collector.png",
+    "assets/stickers/journal.png",
+    "assets/stickers/keepsake.png",
+    "assets/stickers/search.png",
+    "assets/stickers/wave.png"
+  ],
+  "rows": [
+    {
+      "file": "assets/brand/paw-ledger-card.png",
+      "before": 23900,
+      "after": 17802,
+      "saved": 6098,
+      "width": 720,
+      "height": 576,
+      "exactPixels": true,
+      "beforeSha256": "5241257e75fbaa711497f795be93f2821580778b3d73b6ee0be239ed8c0215b6",
+      "afterSha256": "0556e2ae392109417a89606a96a11f34be7a7013ab83afaed5e0ca47fd3c0375"
+    },
+    {
+      "file": "assets/brand/paw-ledger-icon-1024.png",
+      "before": 55349,
+      "after": 37065,
+      "saved": 18284,
+      "width": 1024,
+      "height": 1024,
+      "exactPixels": true,
+      "beforeSha256": "799885316496fb1232bae55f8a938cc39fa6066aa40a6804a1823511c31baa09",
+      "afterSha256": "2f4a5418adc6473f152bd0ba632a6a5d1c5282a454545d7bad0a4baaebb1ba45"
+    },
+    {
+      "file": "assets/brand/paw-ledger-icon-512.png",
+      "before": 19151,
+      "after": 17426,
+      "saved": 1725,
+      "width": 512,
+      "height": 512,
+      "exactPixels": true,
+      "beforeSha256": "21ef2a6aa4186b7d3b5142289c943e206f5c3854cb96894178f99c42f7df9b2e",
+      "afterSha256": "65e5057e95e9215b421a9ee7eebb28a94d932e9b8f68d1424b401d698916cf0d"
+    },
+    {
+      "file": "assets/collection-hero/archive-kitten-v1.png",
+      "before": 104374,
+      "after": 100498,
+      "saved": 3876,
+      "width": 512,
+      "height": 512,
+      "exactPixels": true,
+      "beforeSha256": "58087e646dd8de971108d08b00ecc666da2d5c77b2b65e88d0b87cab858d5935",
+      "afterSha256": "e31452f51e2adbc67b84416957b517eedb2ce83f97891dc80af8c21161fe976a"
+    },
+    {
+      "file": "assets/collection-hero/milk-tea-paper-v1.png",
+      "before": 130978,
+      "after": 126276,
+      "saved": 4702,
+      "width": 704,
+      "height": 352,
+      "exactPixels": true,
+      "beforeSha256": "24f276c0252daee66fd3c29c65587a9ab39a65560a7c1e2e82f7c84aac0f1722",
+      "afterSha256": "e140e9a77bb36ce75bd572c24fc517db1d74219294e641a0530a54f80c9ab8cf"
+    },
+    {
+      "file": "assets/editor-discovery/camera-kitten-v2.png",
+      "before": 67991,
+      "after": 64929,
+      "saved": 3062,
+      "width": 384,
+      "height": 384,
+      "exactPixels": true,
+      "beforeSha256": "d479f6af1ac52a0d98d243624d413c4b6ce059f14c8c0899b8aabc8cf384c2d7",
+      "afterSha256": "cd438db09fb4fc08f0d8f043eacef9e1730173d4046dba1764e44ff379d0bb0f"
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery-v3.png",
+      "before": 45682,
+      "after": 33385,
+      "saved": 12297,
+      "width": 1260,
+      "height": 630,
+      "exactPixels": true,
+      "beforeSha256": "cc6527da7d0a803ce72811d447a418ec87805a14366cb941c7ca4cab1a7e8b1c",
+      "afterSha256": "575d6b7f691588ca6cc7c7eb9d12014cc11754d69e614c94e4bcf1a7567f7acd"
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery.png",
+      "before": 19256,
+      "after": 11644,
+      "saved": 7612,
+      "width": 1080,
+      "height": 444,
+      "exactPixels": true,
+      "beforeSha256": "6d10d4cfc4131d662527319d85d42f11ff548303f820b275e680d7f11d58dce3",
+      "afterSha256": "97fccb34c050e614f9e012f9fb4fde39054adac593cc4d5467939010c5436e69"
+    },
+    {
+      "file": "assets/editor-discovery/header-editor.png",
+      "before": 20257,
+      "after": 11646,
+      "saved": 8611,
+      "width": 1080,
+      "height": 444,
+      "exactPixels": true,
+      "beforeSha256": "c121d6c927adca2aa78c27a38e858e8130e1a10c7cecd10a543e03db18c469e0",
+      "afterSha256": "320f911036ba4fa54a04fdaedc97fe817fd886765b04ff046c85e26877a9fdc6"
+    },
+    {
+      "file": "assets/editor-discovery/journal-kitten-v2.png",
+      "before": 73735,
+      "after": 71061,
+      "saved": 2674,
+      "width": 384,
+      "height": 384,
+      "exactPixels": true,
+      "beforeSha256": "ca9ee3aa65f9b4dc83e504c282f03c85a91a4d44b450d6fd7b13b5716a39b987",
+      "afterSha256": "32ee879e8755d92f440b0cceb8dcb5275018583f354c1e7b3257fe6012795a54"
+    },
+    {
+      "file": "assets/me/resting-kitten-v1.png",
+      "before": 98861,
+      "after": 94255,
+      "saved": 4606,
+      "width": 512,
+      "height": 427,
+      "exactPixels": true,
+      "beforeSha256": "2b38d46658598c0882d624d63caacaa2f0fba2f3c396b8c497b75604107ddb81",
+      "afterSha256": "0eaefdf0bb0da80c15eee9bfe6c7bfe7bb8d9e3870fd8f407c55c778320468b5"
+    },
+    {
+      "file": "assets/me/watercolor-wash-v1.png",
+      "before": 124471,
+      "after": 118003,
+      "saved": 6468,
+      "width": 768,
+      "height": 384,
+      "exactPixels": true,
+      "beforeSha256": "28d08d3a3f903b47def152df1d1d603a71c72d3ba1f7cbb9072f5a0765a7bdfb",
+      "afterSha256": "0ae8fce181d0181bdc7ec88e6ffa7bb4b8eac6c1bed2bc2dbca765654beecb27"
+    },
+    {
+      "file": "assets/paper/header-rose.png",
+      "before": 70108,
+      "after": 60229,
+      "saved": 9879,
+      "width": 1920,
+      "height": 1020,
+      "exactPixels": true,
+      "beforeSha256": "a90560ff0e36c3728ce67e3d100341a8e5fa4a64e83b37ecd461bdbcc927de68",
+      "afterSha256": "a1f018cb7b99c8b03fec72bf9fde9c6bd781403a481b7736944b8f4073dc364e"
+    },
+    {
+      "file": "assets/paper/header-sage.png",
+      "before": 118385,
+      "after": 100562,
+      "saved": 17823,
+      "width": 1920,
+      "height": 1020,
+      "exactPixels": true,
+      "beforeSha256": "77f2d7b666e956efad59b1e6c74566bc33e7ad44af00f6d4370cbacdb4d7ef72",
+      "afterSha256": "1f1d54efea9595003e5c659d38368f08c4404c5236b132f2bdc9c3d44cd6bcc8"
+    },
+    {
+      "file": "assets/paper/header-small.png",
+      "before": 26155,
+      "after": 18854,
+      "saved": 7301,
+      "width": 1920,
+      "height": 780,
+      "exactPixels": true,
+      "beforeSha256": "a0baeda6c6e52990a3c7c8f896606a40686a55e3597cfbf16591e4143946aca0",
+      "afterSha256": "070629e934955e38a20f51b0c7a58f07b57c926e327d407752aad963370cbd7a"
+    },
+    {
+      "file": "assets/paper/login.png",
+      "before": 13935,
+      "after": 13497,
+      "saved": 438,
+      "width": 1080,
+      "height": 168,
+      "exactPixels": true,
+      "beforeSha256": "00b4a04b2a4078d22cd12fc87f6135b14afe0c71ac3aabd523f3aff60c3ae17a",
+      "afterSha256": "c46bd80a90b05b7696bb6533d512b0aeb4b5f1db11e7b3b04ccde506c0186dd2"
+    },
+    {
+      "file": "assets/paper/memories.png",
+      "before": 10248,
+      "after": 9358,
+      "saved": 890,
+      "width": 552,
+      "height": 138,
+      "exactPixels": true,
+      "beforeSha256": "40ab39b00bffad428c32021c90fa1c8b99924d36502b6f7909efd042110dc54e",
+      "afterSha256": "d916c9c927710d9b18879b7f2d927b5f0c959b4700a34eb8a1f4f1be91f33744"
+    },
+    {
+      "file": "assets/paper/save.png",
+      "before": 14947,
+      "after": 13303,
+      "saved": 1644,
+      "width": 1080,
+      "height": 168,
+      "exactPixels": true,
+      "beforeSha256": "bf0e8837fd29310dfed5f7205555ace6a2abff350c8ddb76bbd6c9fdc5288a3f",
+      "afterSha256": "af44f014bed1c58f6835cd1b34050711bcc02bf216acce8f61e73f90aa30037e"
+    },
+    {
+      "file": "assets/report/archive-sketch.png",
+      "before": 21070,
+      "after": 19624,
+      "saved": 1446,
+      "width": 390,
+      "height": 444,
+      "exactPixels": true,
+      "beforeSha256": "62e8c2c31e87a9d637a4c603c3522a3f366b23dc60e6187589bcedfa217f063f",
+      "afterSha256": "1ad0e656a117eaebf1a84fedfbb3ef3bf45e73501a2d24ba765b2cd973756ab9"
+    },
+    {
+      "file": "assets/report-editorial/cover-wash.png",
+      "before": 118112,
+      "after": 111266,
+      "saved": 6846,
+      "width": 672,
+      "height": 267,
+      "exactPixels": true,
+      "beforeSha256": "4347eb7fd5e25f4fd171ea5e3ccf13077728c77d5a8b33bcc0d76ec35e47a2be",
+      "afterSha256": "2144665c7ef599e17cbfbece35dfdf181a26d2bd449978a76ce75145a91d931a"
+    },
+    {
+      "file": "assets/report-editorial/editor-kitten.png",
+      "before": 95053,
+      "after": 90549,
+      "saved": 4504,
+      "width": 512,
+      "height": 383,
+      "exactPixels": true,
+      "beforeSha256": "4f479776c824494e1b72ecd20acfcb5c202d1eef67463ecc98798b415816ae7e",
+      "afterSha256": "5a4eb9149ba87be9099b72775b9e6f665de8ba53daa529782191e63b73b43404"
+    }
+  ]
+}

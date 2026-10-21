@@ -1,10 +1,10 @@
+from .validation import natural_today
 """Monthly snapshots from currently saved, non-deleted records."""
 import calendar
 import re
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from .database import get_db
-from .journey import item_journey
 from .repository import list_item_rows
 from .validation import InputError, money
 
@@ -22,6 +22,10 @@ def month_bounds(month, today):
 
 
 def monthly_events(user_id, start, end):
+    from .cloud_runtime import enabled
+    if enabled():
+        from .cloud_repository import monthly_events as cloud_events
+        return cloud_events(user_id, start, end)
     result = {}
     for kind, table, column, amount in (
         ('maintenance', 'maintenance_records', 'maintained_on', 'cost_cents'),
@@ -42,27 +46,18 @@ def build_monthly_report(month, today, rows, events):
     first, last = start.isoformat(), cutoff.isoformat()
     purchases, memories = [], []
     purchase_cents = 0
+    from .covers import cover_payload
+    from .photo import photo_version
+    def cover(row):
+        saved = dict(row)
+        return {**cover_payload(row), 'photo_url': f"/api/mp/items/{row['id']}/photo" if saved.get('photo_key') else None,
+                'photo_version': photo_version(saved.get('photo_key'))}
     for row in rows:
         if first <= row['purchase_date'] <= last:
             purchase_cents += row['purchase_cents']
-            purchases.append({'id': row['id'], 'name': row['name'], 'icon_type': row['icon_type'],
+            purchases.append({'id': row['id'], 'name': row['name'], 'icon_type': row['icon_type'], **cover(row),
                               'purchase_date': row['purchase_date'], 'purchase_price': money(row['purchase_cents'])})
-        disposed = row['disposal_id'] is not None
-        end = date.fromisoformat(row['disposed_on']) if disposed else today
-        journey = item_journey(date.fromisoformat(row['purchase_date']), end, row['purchase_cents'],
-                               row['daily_target_cents'], today, disposed)
-        earned = journey['milestones']['earned']
-        target = journey['daily_target']
-        if target and target['status'] == 'reached':
-            earned = [*earned, {'id': 'daily-target', 'date': target['reached_on'],
-                               'label': f"购买价 / 天达到 ¥{target['amount']}"}]
-        for stamp in earned:
-            if first <= stamp['date'] <= last:
-                memories.append({'key': f"{row['id']}-{stamp['id']}", 'item_id': row['id'],
-                                 'name': row['name'], 'date': stamp['date'], 'label': stamp['label'],
-                                 'kind': 'target' if stamp['id'] == 'daily-target' else 'milestone'})
     purchases.sort(key=lambda item: (item['purchase_date'], item['id']), reverse=True)
-    memories.sort(key=lambda item: (item['date'], item['item_id'], item['key']), reverse=True)
     highest = max((row['purchase_cents'] for row in rows if first <= row['purchase_date'] <= last), default=None)
     leaders = [
         {'id': row['id'], 'name': row['name'], 'icon_type': row['icon_type'],
@@ -72,22 +67,26 @@ def build_monthly_report(month, today, rows, events):
         for row in rows if first <= row['purchase_date'] <= last and row['purchase_cents'] == highest
     ]
     leaders.sort(key=lambda item: item['id'], reverse=True)
+    fixed = events.get('fixed', {'count': 0, 'cents': 0, 'principal_cents': 0})
     return {
         'month': month, 'today': today.isoformat(), 'cutoff_date': last,
         'is_current': month == today.strftime('%Y-%m'),
         'totals': {'purchase_count': len(purchases), 'purchase_total': money(purchase_cents),
                    'maintenance_total': money(events['maintenance']['cents']),
                    'disposal_total': money(events['disposal']['cents']),
-                   'cashflow_net': money(purchase_cents + events['maintenance']['cents'] - events['disposal']['cents']),
+                   'fixed_expense_total': money(fixed['cents']), 'installment_principal_total': money(fixed['principal_cents']),
+                   'cashflow_net': money(purchase_cents + events['maintenance']['cents'] + fixed['cents'] - events['disposal']['cents']),
                    'usage_count': 0},  # Deprecated compatibility field; usage is not monthly activity.
         'purchases': purchases, 'memories': memories, 'purchase_leaders': leaders,
-        'has_activity': bool(purchases or memories or events['maintenance']['count'] or events['disposal']['count']),
+        'has_activity': bool(purchases or fixed['count'] or events['maintenance']['count'] or events['disposal']['count']),
     }
 
 
 def monthly_report(user_id, month=None, today=None):
-    today = today or date.today()
+    today = today or natural_today()
     month = month if month is not None else today.strftime('%Y-%m')
     start, cutoff = month_bounds(month, today)
-    return build_monthly_report(month, today, list_item_rows(user_id, today=today.isoformat()),
-                                monthly_events(user_id, start, cutoff))
+    from .purchases import spending
+    events = monthly_events(user_id, start, cutoff)
+    events['fixed'] = spending(user_id, start.isoformat(), cutoff.isoformat())
+    return build_monthly_report(month, today, list_item_rows(user_id, today=today.isoformat()), events)

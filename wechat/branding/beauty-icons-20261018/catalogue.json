@@ -1,0 +1,722 @@
+[
+  {
+    "key": "phone",
+    "name": "手机",
+    "group": "digital",
+    "art": "/assets/item-covers/phone.png"
+  },
+  {
+    "key": "tablet",
+    "name": "平板",
+    "group": "digital",
+    "art": "/assets/item-covers/tablet.png"
+  },
+  {
+    "key": "laptop",
+    "name": "笔记本电脑",
+    "group": "digital",
+    "art": "/assets/item-covers/laptop.png"
+  },
+  {
+    "key": "monitor",
+    "name": "显示器",
+    "group": "digital",
+    "art": "/assets/item-covers/monitor.png"
+  },
+  {
+    "key": "camera",
+    "name": "相机",
+    "group": "digital",
+    "art": "/assets/item-covers/camera.png"
+  },
+  {
+    "key": "headphones",
+    "name": "耳机",
+    "group": "digital",
+    "art": "/assets/item-covers/headphones.png"
+  },
+  {
+    "key": "watch",
+    "name": "智能手表",
+    "group": "digital",
+    "art": "/assets/item-covers/watch.png"
+  },
+  {
+    "key": "gamepad",
+    "name": "游戏手柄",
+    "group": "digital",
+    "art": "/assets/item-covers/gamepad.png"
+  },
+  {
+    "key": "chair",
+    "name": "椅子",
+    "group": "home",
+    "art": "/assets/item-covers/chair.png"
+  },
+  {
+    "key": "lamp",
+    "name": "台灯",
+    "group": "home",
+    "art": "/assets/item-covers/lamp.png"
+  },
+  {
+    "key": "fan",
+    "name": "电风扇",
+    "group": "home",
+    "art": "/assets/item-covers/fan.png"
+  },
+  {
+    "key": "purifier",
+    "name": "空气净化器",
+    "group": "home",
+    "art": "/assets/item-covers/purifier.png"
+  },
+  {
+    "key": "vacuum",
+    "name": "吸尘器",
+    "group": "home",
+    "art": "/assets/item-covers/vacuum.png"
+  },
+  {
+    "key": "cup",
+    "name": "水杯",
+    "group": "daily",
+    "art": "/assets/item-covers/cup.png"
+  },
+  {
+    "key": "thermos",
+    "name": "保温杯",
+    "group": "daily",
+    "art": "/assets/item-covers/thermos.png"
+  },
+  {
+    "key": "bowl",
+    "name": "碗",
+    "group": "daily",
+    "art": "/assets/item-covers/bowl.png"
+  },
+  {
+    "key": "pan",
+    "name": "锅",
+    "group": "daily",
+    "art": "/assets/item-covers/pan.png"
+  },
+  {
+    "key": "umbrella",
+    "name": "雨伞",
+    "group": "daily",
+    "art": "/assets/item-covers/umbrella.png"
+  },
+  {
+    "key": "toiletries",
+    "name": "洗护用品",
+    "group": "daily",
+    "art": "/assets/item-covers/toiletries.png"
+  },
+  {
+    "key": "shirt",
+    "name": "上衣",
+    "group": "clothing",
+    "art": "/assets/item-covers/shirt.png"
+  },
+  {
+    "key": "coat",
+    "name": "外套",
+    "group": "clothing",
+    "art": "/assets/item-covers/coat.png"
+  },
+  {
+    "key": "pants",
+    "name": "裤子",
+    "group": "clothing",
+    "art": "/assets/item-covers/pants.png"
+  },
+  {
+    "key": "shoes",
+    "name": "鞋子",
+    "group": "clothing",
+    "art": "/assets/item-covers/shoes.png"
+  },
+  {
+    "key": "backpack",
+    "name": "背包",
+    "group": "clothing",
+    "art": "/assets/item-covers/backpack.png"
+  },
+  {
+    "key": "book",
+    "name": "书",
+    "group": "books",
+    "art": "/assets/item-covers/book.png"
+  },
+  {
+    "key": "notebook",
+    "name": "笔记本",
+    "group": "books",
+    "art": "/assets/item-covers/notebook.png"
+  },
+  {
+    "key": "pen",
+    "name": "笔",
+    "group": "books",
+    "art": "/assets/item-covers/pen.png"
+  },
+  {
+    "key": "folder",
+    "name": "文件夹",
+    "group": "books",
+    "art": "/assets/item-covers/folder.png"
+  },
+  {
+    "key": "bike",
+    "name": "自行车",
+    "group": "mobility",
+    "art": "/assets/item-covers/bike.png"
+  },
+  {
+    "key": "ebike",
+    "name": "电动车",
+    "group": "mobility",
+    "art": "/assets/item-covers/ebike.png"
+  },
+  {
+    "key": "car",
+    "name": "汽车",
+    "group": "mobility",
+    "art": "/assets/item-covers/car.png"
+  },
+  {
+    "key": "suitcase",
+    "name": "行李箱",
+    "group": "mobility",
+    "art": "/assets/item-covers/suitcase.png"
+  },
+  {
+    "key": "dumbbell",
+    "name": "哑铃",
+    "group": "sports",
+    "art": "/assets/item-covers/dumbbell.png"
+  },
+  {
+    "key": "yoga-mat",
+    "name": "瑜伽垫",
+    "group": "sports",
+    "art": "/assets/item-covers/yoga-mat.png"
+  },
+  {
+    "key": "ball",
+    "name": "球",
+    "group": "sports",
+    "art": "/assets/item-covers/ball.png"
+  },
+  {
+    "key": "racket",
+    "name": "球拍",
+    "group": "sports",
+    "art": "/assets/item-covers/racket.png"
+  },
+  {
+    "key": "toolbox",
+    "name": "工具箱",
+    "group": "tools",
+    "art": "/assets/item-covers/toolbox.png"
+  },
+  {
+    "key": "screwdriver",
+    "name": "螺丝刀",
+    "group": "tools",
+    "art": "/assets/item-covers/screwdriver.png"
+  },
+  {
+    "key": "drill",
+    "name": "电钻",
+    "group": "tools",
+    "art": "/assets/item-covers/drill.png"
+  },
+  {
+    "key": "storage-box",
+    "name": "收纳盒",
+    "group": "other",
+    "art": "/assets/item-covers/storage-box.png"
+  },
+  {
+    "key": "keyboard",
+    "name": "键盘",
+    "group": "digital",
+    "art": "/assets/item-covers/keyboard.png",
+    "version": 2,
+    "aliases": "蓝牙键盘 机械键盘"
+  },
+  {
+    "key": "mouse",
+    "name": "鼠标",
+    "group": "digital",
+    "art": "/assets/item-covers/mouse.png",
+    "version": 2,
+    "aliases": "无线鼠标 蓝牙鼠标"
+  },
+  {
+    "key": "charger",
+    "name": "充电器",
+    "group": "digital",
+    "art": "/assets/item-covers/charger.png",
+    "version": 2,
+    "aliases": "电源适配器 充电头"
+  },
+  {
+    "key": "power-bank",
+    "name": "充电宝",
+    "group": "digital",
+    "art": "/assets/item-covers/power-bank.png",
+    "version": 2,
+    "aliases": "移动电源 备用电池"
+  },
+  {
+    "key": "router",
+    "name": "路由器",
+    "group": "digital",
+    "art": "/assets/item-covers/router.png",
+    "version": 2,
+    "aliases": "无线路由器 WiFi"
+  },
+  {
+    "key": "external-drive",
+    "name": "移动硬盘",
+    "group": "digital",
+    "art": "/assets/item-covers/external-drive.png",
+    "version": 2,
+    "aliases": "固态硬盘 SSD 硬盘"
+  },
+  {
+    "key": "usb-drive",
+    "name": "U盘",
+    "group": "digital",
+    "art": "/assets/item-covers/usb-drive.png",
+    "version": 2,
+    "aliases": "优盘 USB 闪存盘"
+  },
+  {
+    "key": "printer",
+    "name": "打印机",
+    "group": "digital",
+    "art": "/assets/item-covers/printer.png",
+    "version": 2,
+    "aliases": "喷墨打印机 激光打印机"
+  },
+  {
+    "key": "projector",
+    "name": "投影仪",
+    "group": "digital",
+    "art": "/assets/item-covers/projector.png",
+    "version": 2,
+    "aliases": "投影机"
+  },
+  {
+    "key": "ereader",
+    "name": "电子书阅读器",
+    "group": "digital",
+    "art": "/assets/item-covers/ereader.png",
+    "version": 2,
+    "aliases": "墨水屏 读书器 电纸书 阅读器"
+  },
+  {
+    "key": "fridge",
+    "name": "冰箱",
+    "group": "home",
+    "art": "/assets/item-covers/fridge.png",
+    "version": 2,
+    "aliases": "冰柜 电冰箱"
+  },
+  {
+    "key": "washing-machine",
+    "name": "洗衣机",
+    "group": "home",
+    "art": "/assets/item-covers/washing-machine.png",
+    "version": 2,
+    "aliases": "洗烘一体机 烘干机"
+  },
+  {
+    "key": "air-conditioner",
+    "name": "空调",
+    "group": "home",
+    "art": "/assets/item-covers/air-conditioner.png",
+    "version": 2,
+    "aliases": "挂机空调 空调机"
+  },
+  {
+    "key": "television",
+    "name": "电视",
+    "group": "home",
+    "art": "/assets/item-covers/television.png",
+    "version": 2,
+    "aliases": "电视机 智能电视"
+  },
+  {
+    "key": "rice-cooker",
+    "name": "电饭煲",
+    "group": "home",
+    "art": "/assets/item-covers/rice-cooker.png",
+    "version": 2,
+    "aliases": "电饭锅"
+  },
+  {
+    "key": "microwave",
+    "name": "微波炉",
+    "group": "home",
+    "art": "/assets/item-covers/microwave.png",
+    "version": 2,
+    "aliases": "微波烤箱"
+  },
+  {
+    "key": "air-fryer",
+    "name": "空气炸锅",
+    "group": "home",
+    "art": "/assets/item-covers/air-fryer.png",
+    "version": 2,
+    "aliases": "空气烤锅"
+  },
+  {
+    "key": "kettle",
+    "name": "电热水壶",
+    "group": "home",
+    "art": "/assets/item-covers/kettle.png",
+    "version": 2,
+    "aliases": "烧水壶 电水壶"
+  },
+  {
+    "key": "coffee-machine",
+    "name": "咖啡机",
+    "group": "home",
+    "art": "/assets/item-covers/coffee-machine.png",
+    "version": 2,
+    "aliases": "咖啡壶 意式咖啡机"
+  },
+  {
+    "key": "iron",
+    "name": "电熨斗",
+    "group": "home",
+    "art": "/assets/item-covers/iron.png",
+    "version": 2,
+    "aliases": "熨斗 挂烫机"
+  },
+  {
+    "key": "hair-dryer",
+    "name": "吹风机",
+    "group": "daily",
+    "art": "/assets/item-covers/hair-dryer.png",
+    "version": 2,
+    "aliases": "电吹风 风筒"
+  },
+  {
+    "key": "electric-toothbrush",
+    "name": "电动牙刷",
+    "group": "daily",
+    "art": "/assets/item-covers/electric-toothbrush.png",
+    "version": 2,
+    "aliases": "牙刷 声波牙刷"
+  },
+  {
+    "key": "shaver",
+    "name": "电动剃须刀",
+    "group": "daily",
+    "art": "/assets/item-covers/shaver.png",
+    "version": 2,
+    "aliases": "剃须刀 刮胡刀"
+  },
+  {
+    "key": "scale",
+    "name": "体重秤",
+    "group": "daily",
+    "art": "/assets/item-covers/scale.png",
+    "version": 2,
+    "aliases": "电子秤 体脂秤"
+  },
+  {
+    "key": "lunch-box",
+    "name": "饭盒",
+    "group": "daily",
+    "art": "/assets/item-covers/lunch-box.png",
+    "version": 2,
+    "aliases": "便当盒 保温饭盒"
+  },
+  {
+    "key": "cutlery",
+    "name": "餐具",
+    "group": "daily",
+    "art": "/assets/item-covers/cutlery.png",
+    "version": 2,
+    "aliases": "筷子 勺子 叉子 刀叉"
+  },
+  {
+    "key": "perfume",
+    "name": "香水",
+    "group": "daily",
+    "art": "/assets/item-covers/perfume.png",
+    "version": 2,
+    "aliases": "香氛 香水瓶"
+  },
+  {
+    "key": "comb",
+    "name": "梳子",
+    "group": "daily",
+    "art": "/assets/item-covers/comb.png",
+    "version": 2,
+    "aliases": "发梳 气垫梳"
+  },
+  {
+    "key": "dress",
+    "name": "连衣裙",
+    "group": "clothing",
+    "art": "/assets/item-covers/dress.png",
+    "version": 2,
+    "aliases": "裙子 长裙"
+  },
+  {
+    "key": "skirt",
+    "name": "半身裙",
+    "group": "clothing",
+    "art": "/assets/item-covers/skirt.png",
+    "version": 2,
+    "aliases": "短裙 百褶裙"
+  },
+  {
+    "key": "hat",
+    "name": "帽子",
+    "group": "clothing",
+    "art": "/assets/item-covers/hat.png",
+    "version": 2,
+    "aliases": "遮阳帽 棒球帽 渔夫帽"
+  },
+  {
+    "key": "scarf",
+    "name": "围巾",
+    "group": "clothing",
+    "art": "/assets/item-covers/scarf.png",
+    "version": 2,
+    "aliases": "围脖 披肩"
+  },
+  {
+    "key": "gloves",
+    "name": "手套",
+    "group": "clothing",
+    "art": "/assets/item-covers/gloves.png",
+    "version": 2,
+    "aliases": "保暖手套"
+  },
+  {
+    "key": "glasses",
+    "name": "眼镜",
+    "group": "clothing",
+    "art": "/assets/item-covers/glasses.png",
+    "version": 2,
+    "aliases": "太阳镜 近视眼镜 墨镜"
+  },
+  {
+    "key": "handbag",
+    "name": "手提包",
+    "group": "clothing",
+    "art": "/assets/item-covers/handbag.png",
+    "version": 2,
+    "aliases": "包包 单肩包 斜挎包"
+  },
+  {
+    "key": "wallet",
+    "name": "钱包",
+    "group": "clothing",
+    "art": "/assets/item-covers/wallet.png",
+    "version": 2,
+    "aliases": "卡包 零钱包"
+  },
+  {
+    "key": "calculator",
+    "name": "计算器",
+    "group": "books",
+    "art": "/assets/item-covers/calculator.png",
+    "version": 2,
+    "aliases": "计算机 科学计算器"
+  },
+  {
+    "key": "stapler",
+    "name": "订书机",
+    "group": "books",
+    "art": "/assets/item-covers/stapler.png",
+    "version": 2,
+    "aliases": "装订机"
+  },
+  {
+    "key": "pencil-case",
+    "name": "笔袋",
+    "group": "books",
+    "art": "/assets/item-covers/pencil-case.png",
+    "version": 2,
+    "aliases": "文具袋 铅笔盒 文具盒"
+  },
+  {
+    "key": "helmet",
+    "name": "头盔",
+    "group": "mobility",
+    "art": "/assets/item-covers/helmet.png",
+    "version": 2,
+    "aliases": "骑行头盔 摩托头盔 安全帽"
+  },
+  {
+    "key": "stroller",
+    "name": "儿童推车",
+    "group": "mobility",
+    "art": "/assets/item-covers/stroller.png",
+    "version": 2,
+    "aliases": "婴儿车 宝宝推车"
+  },
+  {
+    "key": "child-seat",
+    "name": "儿童安全座椅",
+    "group": "mobility",
+    "art": "/assets/item-covers/child-seat.png",
+    "version": 2,
+    "aliases": "汽车安全座椅 宝宝座椅"
+  },
+  {
+    "key": "jump-rope",
+    "name": "跳绳",
+    "group": "sports",
+    "art": "/assets/item-covers/jump-rope.png",
+    "version": 2,
+    "aliases": "健身跳绳"
+  },
+  {
+    "key": "swim-goggles",
+    "name": "游泳镜",
+    "group": "sports",
+    "art": "/assets/item-covers/swim-goggles.png",
+    "version": 2,
+    "aliases": "泳镜 游泳眼镜"
+  },
+  {
+    "key": "tent",
+    "name": "帐篷",
+    "group": "sports",
+    "art": "/assets/item-covers/tent.png",
+    "version": 2,
+    "aliases": "露营帐篷 露营装备"
+  },
+  {
+    "key": "tape-measure",
+    "name": "卷尺",
+    "group": "tools",
+    "art": "/assets/item-covers/tape-measure.png",
+    "version": 2,
+    "aliases": "测量尺 米尺"
+  },
+  {
+    "key": "flashlight",
+    "name": "手电筒",
+    "group": "tools",
+    "art": "/assets/item-covers/flashlight.png",
+    "version": 2,
+    "aliases": "手电 照明灯"
+  },
+  {
+    "key": "guitar",
+    "name": "吉他",
+    "group": "other",
+    "art": "/assets/item-covers/guitar.png",
+    "version": 2,
+    "aliases": "木吉他 乐器"
+  },
+  {
+    "key": "plush-toy",
+    "name": "玩偶",
+    "group": "other",
+    "art": "/assets/item-covers/plush-toy.png",
+    "version": 2,
+    "aliases": "毛绒玩具 玩具 公仔"
+  },
+  {
+    "key": "necklace",
+    "name": "项链",
+    "group": "other",
+    "art": "/assets/item-covers/necklace.png",
+    "version": 2,
+    "aliases": "首饰 吊坠 饰品"
+  },
+  {
+    "key": "lipstick",
+    "name": "口红",
+    "group": "daily",
+    "art": "/assets/item-covers/lipstick.png",
+    "version": 3,
+    "aliases": "唇膏 唇彩"
+  },
+  {
+    "key": "foundation",
+    "name": "粉底液",
+    "group": "daily",
+    "art": "/assets/item-covers/foundation.png",
+    "version": 3,
+    "aliases": "粉底 底妆"
+  },
+  {
+    "key": "compact",
+    "name": "粉饼／气垫",
+    "group": "daily",
+    "art": "/assets/item-covers/compact.png",
+    "version": 3,
+    "aliases": "粉饼 气垫 气垫粉底"
+  },
+  {
+    "key": "eyeshadow",
+    "name": "眼影盘",
+    "group": "daily",
+    "art": "/assets/item-covers/eyeshadow.png",
+    "version": 3,
+    "aliases": "眼影 彩妆盘"
+  },
+  {
+    "key": "mascara",
+    "name": "睫毛膏",
+    "group": "daily",
+    "art": "/assets/item-covers/mascara.png",
+    "version": 3,
+    "aliases": "睫毛刷"
+  },
+  {
+    "key": "serum",
+    "name": "精华液",
+    "group": "daily",
+    "art": "/assets/item-covers/serum.png",
+    "version": 3,
+    "aliases": "精华 滴管精华 肌底液"
+  },
+  {
+    "key": "face-cream",
+    "name": "面霜",
+    "group": "daily",
+    "art": "/assets/item-covers/face-cream.png",
+    "version": 3,
+    "aliases": "护肤霜 润肤霜"
+  },
+  {
+    "key": "sheet-mask",
+    "name": "面膜",
+    "group": "daily",
+    "art": "/assets/item-covers/sheet-mask.png",
+    "version": 3,
+    "aliases": "面膜贴 片状面膜"
+  },
+  {
+    "key": "makeup-remover",
+    "name": "卸妆水",
+    "group": "daily",
+    "art": "/assets/item-covers/makeup-remover.png",
+    "version": 3,
+    "aliases": "卸妆液 卸妆露 洁肤水"
+  },
+  {
+    "key": "makeup-brush",
+    "name": "化妆刷",
+    "group": "daily",
+    "art": "/assets/item-covers/makeup-brush.png",
+    "version": 3,
+    "aliases": "刷具 美妆刷 散粉刷"
+  }
+]

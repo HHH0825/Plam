@@ -1,0 +1,23 @@
+{
+  "bytes": 176265,
+  "limit": 204800,
+  "assets": [
+    {
+      "name": "cat-search.png",
+      "bytes": 41180
+    },
+    {
+      "name": "cat-book.png",
+      "bytes": 53032
+    },
+    {
+      "name": "cat-camera.png",
+      "bytes": 45762
+    },
+    {
+      "name": "share-fallback.png",
+      "bytes": 36291
+    }
+  ],
+  "encoding_note": "2026-10-18: lossless PNG recompression; rendered RGBA pixels unchanged."
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "daily",
+    "bytes": 8437,
+    "width": 192,
+    "height": 252
+  },
+  {
+    "id": "travel",
+    "bytes": 8835,
+    "width": 192,
+    "height": 252
+  },
+  {
+    "id": "home",
+    "bytes": 7957,
+    "width": 192,
+    "height": 252
+  },
+  {
+    "id": "hobby",
+    "bytes": 8416,
+    "width": 192,
+    "height": 252
+  }
+]

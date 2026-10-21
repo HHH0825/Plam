@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-09",
+  "tool": "create_preview_qrcode",
+  "success": true,
+  "reportedBytes": 1870592,
+  "packages": [{ "name": "TOTAL", "size": 1870592 }],
+  "limitBytes": 2097152,
+  "headroomBytes": 226560,
+  "qrPath": "wechat/docs/images/package-optimization/preview-20261009.png",
+  "screenshotPath": "wechat/docs/images/package-optimization/home-20261009.png",
+  "experienceVersionUploaded": false,
+  "note": "Sanitized transcription of the official IDE preview result; QR binary and account credentials omitted."
+}

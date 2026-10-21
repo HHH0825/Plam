@@ -1,0 +1,12 @@
+<view class="page feature-page">
+  <view class="feature-wash" aria-hidden="true"/>
+  <view class="page-heading"><view class="eyebrow">猫爪物帐 · 生活的小记录</view><view class="title">{{title}}</view><view class="subtitle">{{subtitle}}</view></view>
+  <view class="preparing-card">
+    <image wx:if="{{!artFailed}}" class="preparing-cat" src="{{art}}" mode="aspectFit" binderror="artFailed" aria-hidden="true"/>
+    <view class="preparing-state">功能正在准备中</view>
+    <view class="preparing-message">{{message}}</view>
+    <view class="preparing-description">{{description}}</view>
+    <view class="preparing-tags"><text wx:for="{{tags}}" wx:key="*this">{{item}}</text></view>
+    <button wx:if="{{analysis}}" class="button preparing-analysis" bindtap="insights" hover-class="button-hover">查看物品分析 <text aria-hidden="true">›</text></button>
+  </view>
+</view>

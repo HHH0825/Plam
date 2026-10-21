@@ -13,17 +13,22 @@ def recent_months(today):
     return months
 
 
-def build_stats(rows):
+def build_stats(rows, fixed=None):
+    fixed = fixed or {}
+    held = [row for row in rows if row["status"] in ("active", "idle")]
     category = {}
     for row in rows:
         category[row["category"]] = category.get(row["category"], 0) + row["purchase_cents"]
     return {
         "total_items": len(rows),
+        "held_items": len(held),
+        "held_purchase_total": money(sum(row["purchase_cents"] for row in held)),
         "status_counts": {state: sum(row["status"] == state for row in rows) for state in ("active", "idle", "disposed")},
         "purchase_total": money(sum(r["purchase_cents"] for r in rows)),
+        "fixed_expense_total": money(sum(fixed.get(row['id'], 0) for row in rows)),
         "maintenance_total": money(sum(row["maintenance_cents"] for row in rows)),
         "disposal_total": money(sum(row["proceeds_cents"] or 0 for row in rows)),
-        "net_cost_total": money(sum(row["purchase_cents"] + row["maintenance_cents"] - (row["proceeds_cents"] or 0) for row in rows)),
+        "net_cost_total": money(sum(row["purchase_cents"] + row["maintenance_cents"] + fixed.get(row["id"], 0) - (row["proceeds_cents"] or 0) for row in rows)),
         "categories": [{"name": name, "amount": money(amount)} for name, amount in sorted(category.items(), key=lambda x: -x[1])],
     }
 

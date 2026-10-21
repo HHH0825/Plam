@@ -1,0 +1,31 @@
+.cash-analysis-note{font-size:11px;line-height:1.7;color:#888175;overflow-wrap:anywhere}.cash-analysis-chart{display:flex;align-items:center;gap:12px;margin:12px 0}.cash-analysis-chart cash-donut{flex:none}.cash-analysis-legend{flex:1;min-width:0}.cash-analysis-legend>view{margin:7px 0;min-width:0}.cash-legend-name{display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:1.6;color:#756F64}.cash-color-dot{width:9px;height:9px;margin-top:5px;border-radius:50%;flex:none}.cash-legend-name>text{min-width:0;overflow-wrap:anywhere}.cash-analysis-legend scroll-view{width:100%;font-size:13px;font-weight:600;line-height:1.6}.cash-analysis-refund{display:flex;flex-wrap:wrap;gap:7px 12px;background:#FFF7DF;border-radius:12px;padding:8px 10px;font-size:11px;line-height:1.7}.cash-analysis-refund>view{display:flex;flex-wrap:wrap;align-items:center;gap:5px;flex:1;min-width:0}.cash-analysis-refund scroll-view{width:100%;font-weight:600}.cash-all-categories{display:block;width:100%!important;max-width:none;min-height:44px;background:transparent;text-align:right;color:#8C8069;font-size:11px;padding:6px 0;margin:0}.cash-category-list>view{border-top:1px solid #EEECE6;padding:9px 0;font-size:13px;overflow-wrap:anywhere}.cash-category-list scroll-view{line-height:1.8;width:100%;font-weight:600}.cash-discoveries-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:7px;font-size:13px;font-weight:600}.cash-discoveries-grid>view{min-width:0;overflow-wrap:anywhere}.cash-discoveries-grid text{font-size:11px;font-weight:400;color:#888175}.cash-report-entry{width:100%!important;max-width:none;min-height:72px;padding:11px 14px;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #EEE3C2;border-radius:17px;background:#FFF8E2;font-size:13px;white-space:normal;line-height:1.6;margin-top:12px}.cash-report-entry>image{width:32px;height:32px;flex:none;pointer-events:none}.cash-report-entry>view{flex:1;min-width:0;overflow-wrap:anywhere}.cash-report-entry>text:last-child{font-size:11px;color:#826C2B;flex:none}.ledger-statistics .cash-report-entry{margin-bottom:12px}@media(max-width:350px){.cash-analysis-chart{flex-direction:column;align-items:center}.cash-analysis-legend{width:100%}.cash-analysis-legend>view{display:flex;align-items:center;justify-content:space-between;gap:10px}.cash-legend-name{flex:1;min-width:0}.cash-analysis-legend scroll-view{width:auto;max-width:65%;min-width:0}.ledger-statistics .cash-report-entry{width:calc(100% - 18px)!important;margin-left:9px;margin-right:9px}}
+.cash-analysis-card.ledger-card{padding:7px 10px 9px;box-shadow:0 2px 3px rgba(139,117,60,.09)}
+.cash-analysis-heading{display:flex;align-items:center;gap:5px;min-height:30px}
+.cash-analysis-heading>image{width:20px;height:20px;flex:none;pointer-events:none}
+.cash-analysis-heading .ledger-section{font-size:15px;line-height:1.4;flex:1;min-width:0}
+.cash-all-categories{width:auto!important;max-width:none;min-width:44px;min-height:44px;margin:-7px -4px -7px 0;padding:4px 5px;background:transparent;border:0;color:#8A8478;font-size:10px;line-height:1.5;flex:none;font-weight:400;text-align:right}
+.cash-analysis-scope{margin:-2px 0 0 25px;font-size:10px}
+.cash-analysis-chart{display:flex;flex-direction:row;align-items:center;gap:10px;margin:5px 0 7px}
+.cash-analysis-legend{flex:1;min-width:0;width:auto}
+.cash-analysis-legend>view{display:flex;align-items:center;gap:5px;min-width:0;min-height:25px;margin:1px 0}
+.cash-legend-name{display:flex;align-items:center;gap:7px;flex:1;min-width:0;font-size:12px;line-height:1.5;color:#35352F}
+.cash-color-dot{width:12px;height:12px;margin:0;border-radius:50%;flex:none}
+.cash-legend-name>text{min-width:0;overflow-wrap:anywhere}
+.cash-analysis-legend scroll-view{width:auto;max-width:67%;min-width:0;font-size:12px;font-weight:600;line-height:1.6;text-align:right}
+.cash-analysis-refund{display:flex;flex-wrap:nowrap;align-items:center;gap:0;background:#FFF6D8;border-radius:18px;padding:5px 8px;font-size:10px;line-height:1.5;min-height:18px}
+.cash-analysis-refund>view{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:5px;flex:1;min-width:0;white-space:nowrap}
+.cash-analysis-refund>view+view{border-left:1px solid #D9CCAB;padding-left:5px;margin-left:5px}
+.cash-analysis-refund scroll-view{width:auto;max-width:69%;min-width:0;font-weight:600}
+.cash-discoveries.ledger-card{padding:7px 10px 9px;min-height:64px;box-sizing:border-box}
+.cash-discoveries .cash-analysis-heading{min-height:26px}
+.cash-discoveries-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:2px 0 0 26px;font-size:11px;line-height:1.6;font-weight:400}
+.cash-discoveries-grid>view{display:flex;align-items:flex-start;gap:5px;min-width:0;padding-right:5px;overflow-wrap:anywhere}
+.cash-discoveries-grid>view+view{padding-left:8px;padding-right:0;border-left:1px solid #DED5BD}
+.cash-discoveries-grid image{width:18px;height:20px;flex:none;pointer-events:none}
+.cash-discoveries-grid text{font-size:11px;font-weight:500;color:#35352F}
+.cash-report-entry{min-height:65px;padding:6px 10px;gap:10px;border:1px solid #F4EBCF;border-radius:12px;background:#FFF9E8;box-shadow:0 2px 3px rgba(139,117,60,.08);font-size:14px;line-height:1.5;margin:9px 0 12px;font-weight:600}
+.cash-report-entry>image{width:52px;height:48px}
+.cash-report-entry .cash-analysis-note{font-weight:400;font-size:10px}
+.cash-report-entry>text:last-child{font-size:11px;color:#3D3522;background:#FFE568;border-radius:22px;padding:7px 12px;box-shadow:0 2px 2px rgba(164,132,35,.09)}
+@media(max-width:350px){.cash-analysis-chart{gap:5px}.cash-analysis-legend scroll-view{font-size:11px}.cash-legend-name{font-size:11px;gap:4px}.cash-color-dot{width:10px;height:10px}.cash-analysis-refund{font-size:9px;padding:5px}.cash-report-entry>text:last-child{padding:7px 8px}.cash-discoveries-grid{margin-left:0}}
+.cash-all-categories{display:flex;align-items:center;justify-content:flex-end}.cash-discoveries-grid>view{align-items:center}

@@ -1,0 +1,56 @@
+{
+  "mode": "built-in image_gen",
+  "transparent": true,
+  "specs": [
+    {
+      "name": "cat-search",
+      "ref": "test-results/local-inputs/generated-images/exec-1ef91cc4-593b-478c-9c35-74ec2db4beb2.png",
+      "instruction": "Isolate ONLY the large magnifying-glass white kitten in the LEFT column, including its curled yellow-tipped tail, paws, pale blue lens and black magnifier handle. Preserve its exact inquisitive face, eye positions, tiny pink tongue, tilted organic head and round white fluffy haunches. Do not include any of the smaller cats, any headings/labels, yellow underfoot ellipse, stars, scattered dots or page borders."
+    },
+    {
+      "name": "cat-book",
+      "ref": "test-results/local-inputs/generated-images/exec-1ef91cc4-593b-478c-9c35-74ec2db4beb2.png",
+      "instruction": "Isolate ONLY the small READING kitten at the LOWER LEFT of the LEFT column: white fluffy kitten happily holding the open paw notebook, yellow page-edge and bookmark, smiling curved eyes, pink cheeks, curved yellow-tipped tail. Preserve the exact pose and face of this small kitten. No other cats, no label 读书记账, no underfoot shadow, no circles or page elements."
+    },
+    {
+      "name": "cat-camera",
+      "ref": "test-results/local-inputs/generated-images/exec-1ef91cc4-593b-478c-9c35-74ec2db4beb2.png",
+      "instruction": "Isolate ONLY the small CAMERA kitten at the LOWER MIDDLE of the LEFT column: white fluffy kitten happily holding the camera across its chest, pink cheeks, yellow ear interiors and yellow-tipped tail, smiling curved eyes, same body pose. Keep camera and two yellow little action strokes if part of its artwork. No other cats, no label 记录物品, no page graphics or underfoot ellipse."
+    },
+    {
+      "name": "cat-sleep",
+      "ref": "test-results/local-inputs/generated-images/exec-1ef91cc4-593b-478c-9c35-74ec2db4beb2.png",
+      "instruction": "Isolate ONLY the small SLEEPING kitten at the LOWER RIGHT of the LEFT column: a white fluffy kitten curled asleep with eyes closed, front paws under its head, yellow-tipped tail wrapped in front, short ears with yellow interiors. Preserve this exact pose and face. Keep small handdrawn z z marks. No other cats, no label 安静陪伴, no page graphics, no underfoot ellipse."
+    },
+    {
+      "name": "hero",
+      "ref": "test-results/local-inputs/generated-images/exec-6117613f-986d-47c6-908a-45313312833a.png",
+      "instruction": "Isolate ONLY the central MAIN HERO ILLUSTRATION from the approved login page: smiling white fluffy kitten holding yellow pencil and writing into the LARGE OPEN ACCOUNT BOOK, cream mug at LEFT, yellow paw storage box with camera at RIGHT BEHIND the open book. Preserve the original composition, proportions, small yellow shoulder patch, cheeks and linework exactly. Keep the entire open book with illustrated LEFT page 今日记一笔 and its little food/transport/gift icons and entries, RIGHT page 我的小物 with camera/cup/books. Keep the pale yellow ground shadow but REMOVE every surrounding floating decorative dot/star, title, subtitle, sample card, sample card tape label, phone frame and page background. No extra objects, no placard, no extra cats. The complete mug, tail, pencil, storage box and open book must fit with no clipping. Very wide illustration, approximately 1.58:1."
+    },
+    {
+      "name": "title",
+      "ref": "test-results/local-inputs/generated-images/exec-6117613f-986d-47c6-908a-45313312833a.png",
+      "instruction": "Isolate ONLY the large two-line BLACK HANDWRITTEN HEADLINE and its small pink paw and yellow underline from the login page. Exact text with line break: 收好每件小物，\\n记清每笔收支。 Preserve the approved character shapes, line spacing, stroke thickness and underline curvature exactly. Preserve the small pink paw to the right. Remove every background dot, all other text, logo, phone frame and all illustrations. This is a smooth high resolution title image, not a font substitution, not a pixelated trace. Wide horizontal shape approximately 3.5:1."
+    }
+  ],
+  "generated": {
+    "cat-search": "test-results/local-inputs/generated-images/exec-57d0084b-230a-45ef-98b5-6c6957cdf886.png",
+    "cat-book": "test-results/local-inputs/generated-images/exec-8ee3f358-efa5-4605-9f76-a416bcf9d36a.png",
+    "cat-camera": "test-results/local-inputs/generated-images/exec-da292d46-978e-4faf-823c-9743e3feeb3c.png",
+    "cat-sleep": "test-results/local-inputs/generated-images/exec-52b3c848-b5fb-4f09-bcbb-fd29857d714d.png",
+    "hero": "test-results/local-inputs/generated-images/exec-e72de256-2ace-4e71-974e-35f83f9057c5.png",
+    "title": "test-results/local-inputs/generated-images/exec-4863fb31-df07-442d-9589-69b3f8f8bd30.png"
+  },
+  "heroRevisions": [
+    {
+      "purpose": "Preserve original 1.55 aspect and deep account book, only remove background",
+      "reference": "hero-approved-crop.png",
+      "generated": "exec-4a9429f2-51d7-4cb8-ba89-f2257ea8712f.png"
+    },
+    {
+      "purpose": "Correct only right-page pale green label to 我的小物, preserve all other artwork",
+      "generated": "exec-8cfb046d-6b27-4a79-84f1-2a4ed4ed24bf.png",
+      "runtimeSource": "hero-source.png"
+    }
+  ]
+}

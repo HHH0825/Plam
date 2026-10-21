@@ -10,6 +10,10 @@ from .repository import swap_photo_key
 from .validation import InputError
 
 PHOTO_MAX_BYTES = 5 * 1024 * 1024
+PHOTO_STORED_MAX_BYTES = 200 * 1024
+THUMBNAIL_MAX_BYTES = 30 * 1024
+PHOTO_MAX_SIDE = 1280
+THUMBNAIL_MAX_SIDE = 320
 Image.MAX_IMAGE_PIXELS = 24_000_000
 
 
@@ -31,12 +35,26 @@ def write_atomic(folder, filename, encoded):
         Path(temporary).unlink(missing_ok=True)
 
 
+def bounded_jpeg(photo, longest_side, max_bytes, qualities=(82, 75, 68)):
+    """Encode a fresh RGB image, dropping metadata and never enlarging it."""
+    with photo.convert("RGB") as reduced:
+        reduced.thumbnail((longest_side, longest_side), Image.Resampling.LANCZOS)
+        while True:
+            for quality in qualities:
+                with BytesIO() as output:
+                    reduced.save(output, "JPEG", quality=quality, optimize=True)
+                    encoded = output.getvalue()
+                if len(encoded) <= max_bytes:
+                    return encoded
+            if max(reduced.size) <= 1:
+                raise InputError("照片无法压缩，请换一张照片")
+            size = max(1, int(max(reduced.size) * 0.8))
+            reduced.thumbnail((size, size), Image.Resampling.LANCZOS)
+
+
 def thumbnail_bytes(encoded):
     with Image.open(BytesIO(encoded)) as photo:
-        photo.thumbnail((480, 480), Image.Resampling.LANCZOS)
-        output = BytesIO()
-        photo.convert("RGB").save(output, "JPEG", quality=80, optimize=True)
-        return output.getvalue()
+        return bounded_jpeg(photo, THUMBNAIL_MAX_SIDE, THUMBNAIL_MAX_BYTES, (80, 74, 68))
 
 
 def ensure_thumbnail(photo_key):
@@ -60,6 +78,10 @@ def ensure_thumbnail(photo_key):
     return target
 
 def remove_photo_file(photo_key):
+    from .cloud_runtime import enabled
+    if enabled():
+        # Metadata swap queued durable GC in the same transaction.
+        return
     if not photo_key:
         return
     for filename in (photo_key, thumbnail_key(photo_key)):
@@ -80,15 +102,17 @@ def normalized_photo(upload):
                 raise InputError("照片只支持 JPEG、PNG 或 WebP")
             if source.width * source.height > Image.MAX_IMAGE_PIXELS:
                 raise InputError("照片尺寸过大")
-            photo = ImageOps.exif_transpose(source)
-            photo.load()
-            photo.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
-            rgba = photo.convert("RGBA")
-            canvas = Image.new("RGB", rgba.size, "#f7f4ec")
-            canvas.paste(rgba, mask=rgba.getchannel("A"))
-            output = BytesIO()
-            canvas.save(output, "JPEG", quality=85, optimize=True)
-            return output.getvalue()
+            # Reduce before EXIF transpose (which copies pixels). JPEG draft also
+            # avoids decoding a full camera image into several large RGB buffers.
+            source.draft('RGB', (PHOTO_MAX_SIDE, PHOTO_MAX_SIDE))
+            source.thumbnail((PHOTO_MAX_SIDE, PHOTO_MAX_SIDE), Image.Resampling.LANCZOS)
+            with ImageOps.exif_transpose(source) as photo:
+                photo.load()
+                photo.thumbnail((PHOTO_MAX_SIDE, PHOTO_MAX_SIDE), Image.Resampling.LANCZOS)
+                with photo.convert("RGBA") as rgba, Image.new("RGB", rgba.size, "#f7f4ec") as canvas:
+                    with rgba.getchannel("A") as alpha:
+                        canvas.paste(rgba, mask=alpha)
+                    return bounded_jpeg(canvas, PHOTO_MAX_SIDE, PHOTO_STORED_MAX_BYTES)
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
         raise InputError("照片文件无效，请换一张 JPEG、PNG 或 WebP 图片") from exc
 

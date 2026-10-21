@@ -1,21 +1,55 @@
 const test = require('node:test')
+require('./local-config.cjs')
 const assert = require('node:assert/strict')
 const view = require('../miniprogram/utils/view')
-const { welcomeLayout, readWindowInfo } = require('../miniprogram/utils/layout')
+const { welcomeLayout, readWindowInfo } = require('../miniprogram/pages/login/lib/layout')
 const tick = () => new Promise(resolve => setImmediate(resolve))
 
-test('archival theme text remains readable on buttons, textured paper and collages', () => {
+test('Me overview distinguishes real zero, old backend and invalid values without lifetime substitution', () => {
+  const { readOverview, readAccountAge } = require('../miniprogram/utils/me-overview')
+  assert.deepEqual(readOverview({held_items:0,held_purchase_total:'0.00'}), {heldItems:'0',heldAmount:'0.00',statsCompatible:true})
+  assert.equal(readOverview({held_items:28,held_purchase_total:'12345678.90'}).heldAmount, '12,345,678.90')
+  assert.deepEqual(readOverview({total_items:99,purchase_total:'999.00'}), {heldItems:'—',heldAmount:'—',statsCompatible:false})
+  assert.throws(()=>readOverview({held_items:-1}), /格式异常/)
+  assert.throws(()=>readOverview({held_purchase_total:12}), /格式异常/)
+  for (const value of [null, undefined, 0, -1, '128']) assert.equal(readAccountAge({account_age_days:value}), '—')
+  assert.equal(readAccountAge({account_age_days:1}), '1')
+})
+
+test('Me profile and statistics load independently, retry clears errors, hide rejects late stats', async () => {
+  const h=profileHarness(), page=h.page('me')
+  const profile=page.load(), stats=page.loadStats()
+  assert.equal(h.requests.length,2)
+  h.respond(0,{user:h.app.globalData.user,account_age_days:128});await profile
+  h.respond(1,{error:'统计暂不可用'},503);await stats
+  assert.equal(page.data.accountDays,'128');assert.equal(page.data.user.username,'原昵称')
+  assert.match(page.data.statsError,/统计暂不可用/)
+  const retry=page.loadStats();assert.equal(page.data.statsError,'')
+  h.respond(2,{held_items:28,held_purchase_total:'12680.00'});await retry
+  assert.equal(page.data.heldAmount,'12,680.00');assert.equal(page.data.heldItems,'28')
+  const late=page.loadStats();page.onHide();h.respond(3,{held_items:88,held_purchase_total:'1.00'});await late
+  assert.equal(page.data.heldItems,'—');assert.equal(page.data.user,null)
+})
+
+test('Me stats survive profile failure and account switch rejects old responses', async () => {
+  const h=profileHarness(),page=h.page('me')
+  const profile=page.load(),stats=page.loadStats()
+  h.respond(1,{held_items:2,held_purchase_total:'0.00'});await stats
+  h.respond(0,{error:'资料暂不可用'},503);await profile
+  assert.equal(page.data.heldItems,'2');assert.equal(page.data.heldAmount,'0.00')
+  assert.match(page.data.error,/资料暂不可用/)
+  const late=page.loadStats();h.app.globalData.token='bob-session'
+  h.respond(2,{held_items:88,held_purchase_total:'999.00'});await late
+  assert.equal(page.data.heldItems,'2')
+})
+
+test('white theme text and status colors retain accessible contrast', () => {
   const fs = require('node:fs')
   const path = require('node:path')
   const css = fs.readFileSync(path.join(__dirname, '../miniprogram/app.wxss'), 'utf8')
   const colors = Object.fromEntries([...css.matchAll(/--([\w-]+):\s*(#[\da-f]{6})/gi)].map(match => [match[1], match[2]]))
-  // The densest grain is #C7B8A5 at 38% over the page; check that composite, not transparent source ink.
-  colors.grain = '#' + [1, 3, 5].map(offset => Math.round(parseInt('C7B8A5'.slice(offset - 1, offset + 1), 16) * .38
-    + parseInt(colors.bg.slice(offset, offset + 2), 16) * .62).toString(16).padStart(2, '0')).join('')
-  for (const [name, ink, base, alpha] of [['rose-lines', 'AA9180', 'rose', .19], ['sage-grid', '9BA48F', 'sage', .26]]) {
-    colors[name] = '#' + [1, 3, 5].map(offset => Math.round(parseInt(ink.slice(offset - 1, offset + 1), 16) * alpha
-      + parseInt(colors[base].slice(offset, offset + 2), 16) * (1 - alpha)).toString(16).padStart(2, '0')).join('')
-  }
+  assert.equal(colors.bg, '#FFFFFF')
+  assert.equal(colors.paper, '#FFFFFF')
   const luminance = color => {
     const linear = [1, 3, 5].map(offset => parseInt(color.slice(offset, offset + 2), 16) / 255)
       .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
@@ -25,8 +59,8 @@ test('archival theme text remains readable on buttons, textured paper and collag
     ['peach-ink', 'peach'], ['yellow-ink', 'yellow'], ['mint-ink', 'mint'], ['lavender-ink', 'lavender'],
     ['blue', 'blue-soft'], ['neutral-ink', 'neutral'], ['danger', 'danger-soft'],
     ['ink', 'ledger'], ['muted', 'ledger'], ['ink-soft', 'ledger'],
-    ...['grain', 'sage', 'rose', 'tape', 'rose-lines', 'sage-grid'].flatMap(background => [['ink', background], ['muted', background]]),
-    ...['peach', 'yellow', 'mint', 'lavender', 'blue-soft', 'neutral'].map(background => ['ink-soft', background])]
+    ...['peach', 'yellow', 'mint', 'lavender', 'blue-soft', 'neutral'].map(background => ['ink-soft', background]),
+    ['mint-ink', 'glass-selection-pressed']]
   for (const [foreground, background] of pairs) {
     assert.ok(colors[foreground] && colors[background], `missing color for ${foreground}/${background}`)
     const [dark, light] = [luminance(colors[foreground]), luminance(colors[background])].sort((a, b) => a - b)
@@ -47,30 +81,19 @@ test('paper artwork references exist and native label text survives a failed ima
     }
   }
   const css = fs.readFileSync(path.join(root, 'app.wxss'), 'utf8')
-  const inline = css.match(/url\('data:image\/png;base64,([^']+)'\)/)
-  assert.ok(inline, 'WXSS grain must be embedded instead of using a local background URL')
-  assert.deepEqual(Buffer.from(inline[1], 'base64'), fs.readFileSync(path.join(root, 'assets/paper/grain.png')))
-  for (const file of fs.readdirSync(path.join(root, 'assets/paper')).filter(file => file.endsWith('.svg'))) {
-    const svg = fs.readFileSync(path.join(root, 'assets/paper', file), 'utf8')
-    const width = Number(svg.match(/width="(\d+)"/)[1]), height = Number(svg.match(/height="(\d+)"/)[1])
-    const png = fs.readFileSync(path.join(root, 'assets/paper', file.replace('.svg', '.png')))
-    assert.equal(png.readUInt32BE(16), width * 3, file)
-    assert.equal(png.readUInt32BE(20), height * 3, file)
-    assert.equal(png.readUInt8(25), 6, 'PNG uses RGBA transparency')
-    assert.doesNotMatch(svg, /<text\b|<image\b/, 'artwork does not embed fonts or external images')
-  }
+  assert.doesNotMatch(css, /data:image/, 'white background has no grain')
   let definition
   global.Component = value => { definition = value }
-  const modulePath = '../miniprogram/components/paper-label/index'
+  const modulePath = '../miniprogram/pages/editor/components/paper-label/index'
   delete require.cache[require.resolve(modulePath)]
   require(modulePath)
   const label = { data: { ...definition.data }, setData(patch) { Object.assign(this.data, patch) } }
-  for (const variant of ['add', 'collection', 'identity', 'purchase', 'memories', 'login', 'save']) {
+  for (const variant of ['add', 'add-sage', 'collection', 'identity', 'purchase', 'memories', 'login', 'save']) {
     definition.observers.variant.call(label, variant)
     for (const suffix of ['svg', 'png']) {
-      const file = path.join(root, 'assets/paper', `${label.data.art}.${suffix}`)
+      const file = path.join(root, 'assets/white-doodle', `label-${label.data.art}.${suffix}`)
       assert.ok(fs.existsSync(file), file)
-      if (suffix === 'png') assert.equal(fs.readFileSync(file).readUInt8(25), 6, 'PNG uses RGBA transparency')
+      if (suffix === 'png') assert.ok(fs.readFileSync(file).includes(Buffer.from('tRNS')), 'PNG uses palette transparency')
     }
     definition.methods.imageError.call(label)
     assert.equal(label.data.imageFailed, true)
@@ -79,24 +102,26 @@ test('paper artwork references exist and native label text survives a failed ima
   }
   definition.observers.variant.call(label, '../untrusted')
   assert.equal(label.data.art, 'identity')
-  const template = fs.readFileSync(path.join(root, 'components/paper-label/index.wxml'), 'utf8')
+  const template = fs.readFileSync(path.join(root, 'pages/editor/components/paper-label/index.wxml'), 'utf8')
   assert.match(template, /binderror="imageError"/)
   assert.match(template, /<text class="label-text">\{\{text\}\}<\/text>/)
 })
 
 // Use the real request/session/page code with a controlled WeChat runtime.
 function profileHarness() {
+  // Canvas encoding is covered separately; page tests control only submission flow.
+  require('../miniprogram/utils/photo-edit').preparePhoto = async (_page, src) => src
   const requests = [], navigation = [], storage = new Map()
   let appDefinition
   global.App = definition => { appDefinition = definition }
   global.wx = {
-    request(options) { requests.push(options) },
+    request(options) { if(options.url.endsWith('/membership'))options.success({statusCode:404,data:{error:'not supported'}});else if(options.url.endsWith('/auth/me')&&typeof getCurrentPages==='function'&&getCurrentPages().at(-1)?.route==='pages/editor/index')options.success({statusCode:200,data:{capabilities:{item_cover_icons:false,cash_ledger:0}}});else if(options.url.endsWith('/storage-locations'))options.success({statusCode:200,data:{locations:[],unassigned_count:0}});else requests.push(options) },
     setStorageSync(key, value) { storage.set(key, structuredClone(value)) },
     getStorageSync(key) { return storage.get(key) },
     removeStorageSync(key) { storage.delete(key) },
     navigateTo(options) { navigation.push(['navigateTo', options.url]) },
     navigateBack(options = {}) { navigation.push(['navigateBack', options.delta]) },
-    switchTab(options) { navigation.push(['switchTab', options.url]) },
+    switchTab(options) { navigation.push(['switchTab', options.url]);options.success?.() },
     reLaunch(options) { navigation.push(['reLaunch', options.url]) },
     showToast() {},
     getFileSystemManager() { return { stat(o) { o.success({ stats: { size: 1024 } }) }, unlink(o) { o.complete() } } }
@@ -116,7 +141,10 @@ function profileHarness() {
     require(path)
     const instance = { ...definition, data: structuredClone(definition.data),
       setData(patch) { Object.assign(this.data, patch) } }
+    instance.route='pages/'+name+'/index'
+    if(name==='editor')global.getCurrentPages=()=>[instance]
     instance.onLoad(name === 'editor' ? {} : undefined)
+    if(name==='editor')instance.data.paymentReady=true
     instance._visible = true
     return instance
   }
@@ -176,6 +204,7 @@ test('save ticket preserves validation, duplicate protection and partial photo s
   page.data.photoPath = 'synthetic-photo.png'
   const saved = page.save()
   await page.save()
+  await tick()
   assert.equal(h.requests.length, 2)
   assert.equal(h.requests[1].method, 'POST')
   h.respond(1, { id: 12 })
@@ -222,6 +251,39 @@ test('preset avatars preview all six illustrations and fall back without stale i
   assert.equal(page.data.avatarFailed, false)
 })
 
+test('profile copies only the server-issued current account ID without a write request', async () => {
+  const h = profileHarness(), page = h.page(), clipboard = []
+  global.wx.setClipboardData = options => clipboard.push(options)
+  page.copyUserId();assert.equal(clipboard.length,0)
+  const read=page.load();h.respond(0,{user:{...h.app.globalData.user,id:73}});await read
+  page.nameInput({detail:{value:'新的昵称'}});page.copyUserId()
+  assert.equal(clipboard[0].data,'73');assert.equal(h.requests.length,1)
+  assert.equal(page.data.accountId,'73')
+  page.onHide();assert.equal(page.data.accountId,'');page.copyUserId();assert.equal(clipboard.length,1)
+})
+
+test('profile account switch clears IDs and blocks copying stale account information', async () => {
+  const h=profileHarness(),page=await h.loaded(),clipboard=[]
+  global.wx.setClipboardData=options=>clipboard.push(options)
+  h.app.globalData.token='bob-session';page.copyUserId();assert.equal(clipboard.length,0)
+  const read=page.load();assert.equal(page.data.accountId,'');assert.equal(page.data.user,null)
+  page.copyUserId();assert.equal(clipboard.length,0)
+  h.respond(1,{user:{id:82,username:'乙',avatar_key:'book'}});await read
+  page.copyUserId();assert.equal(clipboard[0].data,'82')
+  const later=page.load();page.onHide();h.respond(2,{user:{id:82,username:'乙',avatar_key:'book'}});await later
+  assert.equal(page.data.accountId,'')
+})
+
+test('profile missing ID never invents an identifier; clipboard failure is scoped to its account', async () => {
+  const h=profileHarness(),page=await h.loaded(),clipboard=[],notices=[]
+  global.wx.setClipboardData=options=>clipboard.push(options)
+  global.wx.showToast=options=>notices.push(options)
+  page.copyUserId();clipboard[0].fail();assert.match(notices[0].title,/复制未完成/)
+  h.app.globalData.token='bob-session';clipboard[0].fail();assert.equal(notices.length,1)
+  const read=page.load();h.respond(1,{user:{username:'旧接口',avatar_key:'cat'}});await read
+  assert.equal(page.data.accountId,'');page.copyUserId();assert.equal(clipboard.length,1)
+})
+
 test('profile saves once, keeps credentials and persists updated user across restart', async () => {
   const h = profileHarness()
   const page = await h.loaded()
@@ -240,7 +302,7 @@ test('profile saves once, keeps credentials and persists updated user across res
   await pending
   assert.equal(page.data.busy, false)
   assert.deepEqual(h.app.globalData, { token: 'alice-session', expiresAt, user })
-  assert.deepEqual(h.storage.get('palmSession'), h.app.globalData)
+  assert.deepEqual(h.storage.get('palmSession:local:http://127.0.0.1:5001'), h.app.globalData)
   assert.deepEqual(h.navigation, [['navigateBack', 1]])
   const restarted = { ...h.appDefinition, globalData: { token: '', expiresAt: 0, user: null } }
   restarted.onLaunch()
@@ -391,15 +453,15 @@ test('Me enters profile, reloads current user and protects a new account during 
 test('welcome sizing handles short, tall and wide windows without oversized artwork', () => {
   const small = welcomeLayout({ windowWidth: 320, windowHeight: 504 })
   assert.equal(small.compact, true)
-  assert.equal(small.heroStyle, 'height:140px;')
+  assert.equal(small.heroStyle, 'height:175px;')
   assert.match(small.pageStyle, /--welcome-title:28px/)
   const tall = welcomeLayout({ windowWidth: 366, windowHeight: 745 })
   assert.equal(tall.compact, false)
-  assert.equal(tall.heroStyle, 'height:179px;')
+  assert.equal(tall.heroStyle, 'height:217px;')
   const large = welcomeLayout({ windowWidth: 1024, windowHeight: 1200 })
-  assert.equal(large.heroStyle, 'height:220px;')
+  assert.equal(large.heroStyle, 'height:245px;')
   assert.match(large.pageStyle, /--welcome-title:34px/)
-  assert.match(large.pageStyle, /padding-left:22px/)
+  assert.match(large.pageStyle, /padding-left:24px/)
 })
 
 test('missing or invalid window data preserves a usable default layout', () => {
@@ -419,9 +481,9 @@ test('welcome page reflows on window resize without triggering login', () => {
   require('../miniprogram/pages/login/index')
   const page = { ...definition, data: { ...definition.data }, setData(value) { Object.assign(this.data, value) } }
   page.onLoad()
-  assert.equal(page.data.heroStyle, 'height:181px;')
+  assert.equal(page.data.heroStyle, 'height:231px;')
   page.onResize({ size: { windowWidth: 320, windowHeight: 504 } })
-  assert.equal(page.data.heroStyle, 'height:140px;')
+  assert.equal(page.data.heroStyle, 'height:175px;')
   assert.equal(page.data.compact, true)
   assert.equal(page.data.busy, false)
 })
@@ -461,7 +523,7 @@ test('item page reuses thumbnails on return, preserves offline content and clear
   const api = require('../miniprogram/utils/api'), downloads = [], observers = []
   const originalRequest = api.request
   let definition
-  global.getApp = () => ({ globalData: { token: 'photo-owner' } })
+  global.getApp = () => ({ globalData: { token: 'photo-owner' },hasSession:()=>true,requireSession:()=>true })
   global.Page = page => { definition = page }
   global.wx = {
     downloadFile(options) { downloads.push(options); return { abort() { options.fail() } } },
@@ -544,30 +606,21 @@ test('login selects the correct credential and preserves session on failure', as
     }
     assert.equal(wechatCalls, 2)
     assert.equal(saved.length, 2)
-    assert.ok(saved.every(entry => entry.key === 'palmSession'))
+    assert.ok(saved.every(entry => entry.key.startsWith('palmSession:local:')))
   } finally { config.DEV_LOGIN = oldFlag; api.request = oldRequest }
 })
 
 
-test('native tab navigation has six local 81px icons with consistent geometry', () => {
-  const fs = require('node:fs'), path = require('node:path')
-  const root = path.join(__dirname, '../miniprogram')
-  const config = JSON.parse(fs.readFileSync(path.join(root, 'app.json')))
-  assert.equal(config.tabBar.custom, undefined)
-  assert.deepEqual(config.tabBar.list.map(row => row.text), ['物品', '发现', '我的'])
-  for (const row of config.tabBar.list) {
-    const sources = []
-    for (const key of ['iconPath', 'selectedIconPath']) {
-      const png = fs.readFileSync(path.join(root, row[key]))
-      assert.equal(png.readUInt32BE(16), 81)
-      assert.equal(png.readUInt32BE(20), 81)
-      assert.equal(png.readUInt8(25), 6)
-      assert.ok(png.length < 40 * 1024)
-      sources.push(fs.readFileSync(path.join(root, row[key].replace('.png', '.svg')), 'utf8'))
-    }
-    assert.notEqual(sources[0], sources[1])
-    const geometry = svg => svg.replace(/#[a-f0-9]{6}/gi, '#COLOR')
-    assert.equal(geometry(sources[0]), geometry(sources[1]))
+test('custom navigation registers four real tabs and keeps editor as an action', () => {
+  const fs=require('node:fs'),path=require('node:path'),root=path.join(__dirname,'../miniprogram')
+  const config=JSON.parse(fs.readFileSync(path.join(root,'app.json')))
+  assert.equal(config.tabBar.custom,true)
+  assert.deepEqual(config.tabBar.list.map(row=>row.pagePath),['pages/ledger/index','pages/items/index','pages/statistics/index','pages/me/index'])
+  assert.ok(config.pages.includes('pages/insights/index'))
+  for(const row of config.tabBar.list){
+    const png=fs.readFileSync(path.join(root,row.iconPath))
+    assert.ok(png.readUInt32BE(16)>=26);assert.ok(png.readUInt32BE(20)>=26)
+    assert.ok(png.length<40*1024)
   }
 })
 
@@ -663,6 +716,7 @@ test('crop uses square selection, keeps images on cancel or failure, and uploads
   assert.match(page.data.photoError, /不支持裁剪/)
   assert.equal(page.data.photoPath, 'cropped.jpg')
   const save = page.save()
+  await tick()
   h.respond(0, { id: 25 }); await tick()
   assert.equal(uploads[0].filePath, 'cropped.jpg')
   uploads[0].success({ statusCode: 200, data: '{}' })
@@ -693,7 +747,7 @@ test('existing photo reads are preview-only, failures can retry and save does no
   // Reordered original-photo download cannot overwrite a new selection.
   const reordered = photoHarness(), editor = reordered.editor, pending = []
   wx.downloadFile = options => pending.push(options)
-  editor.setData({ hasPhoto: true }); editor.itemId = 32
+  editor.setData({ hasPhoto: true, form:{...editor.data.form,cover_mode:'photo'} }); editor.itemId = 32
   const read = editor.loadPhoto()
   const choose = editor.choosePhoto()
   reordered.sheets[0].success({ tapIndex: 0 }); await tick()
@@ -704,9 +758,9 @@ test('existing photo reads are preview-only, failures can retry and save does no
 
 test('rotation scales without upsampling, swaps axes and applies all EXIF orientations before clockwise turn', async () => {
   const { rotationSize, orientationMatrix, rotatePhoto } = require('../miniprogram/utils/photo-edit')
-  assert.deepEqual(rotationSize(4000, 3000), { width: 1200, height: 1600, scale: .4, orientedHeight: 3000 })
+  assert.deepEqual(rotationSize(4000, 3000), { width: 960, height: 1280, scale: .32, orientedHeight: 3000 })
   assert.deepEqual(rotationSize(600, 800), { width: 800, height: 600, scale: 1, orientedHeight: 800 })
-  assert.deepEqual(rotationSize(4000, 3000, 'right'), { width: 1600, height: 1200, scale: .4, orientedHeight: 4000 })
+  assert.deepEqual(rotationSize(4000, 3000, 'right'), { width: 1280, height: 960, scale: .32, orientedHeight: 4000 })
   for (const direction of ['up', 'up-mirrored', 'down', 'down-mirrored', 'left-mirrored', 'right', 'right-mirrored', 'left']) {
     const [a,b,c,d,e,f] = orientationMatrix(600, 800, direction)
     const size = rotationSize(600, 800, direction)
@@ -720,15 +774,21 @@ test('rotation scales without upsampling, swaps axes and applies all EXIF orient
   const context = Object.fromEntries(['fillRect', 'scale', 'translate', 'rotate', 'transform', 'drawImage'].map(name => [name, (...args) => draws.push([name, ...args])]))
   const canvas = { getContext: () => context, createImage() { return { set src(value) { this.path = value; this.onload() } } } }
   global.wx = {
-    getImageInfo(options) { options.success({ width: 4000, height: 3000, orientation: 'up', path: 'original.jpg' }) },
+    getImageInfo(options) { options.success(options.src === 'original.jpg'
+      ? {width:4000,height:3000,orientation:'up',path:options.src}
+      : options.src === 'resized.jpg' ? {width:1280,height:960,orientation:'up',path:options.src}
+        : {width:960,height:1280,orientation:'up',type:'jpeg',path:options.src}) },
+    canIUse:()=>true,
+    compressImage(options) { options.success({tempFilePath:'resized.jpg'}) },
+    getFileSystemManager:()=>({stat(o){o.success({stats:{size:10000}})},unlink(o){o.complete?.()}}),
     createSelectorQuery() { return { in() { return this }, select(id) { assert.equal(id, '#photo-edit-canvas'); return this },
       fields(options, callback) { this.callback = callback; return this }, exec() { this.callback({ node: canvas }) } } },
     canvasToTempFilePath(options) { outputs.push(options); options.success({ tempFilePath: 'rotated.jpg' }) }
   }
   assert.equal(await rotatePhoto({}, 'original.jpg'), 'rotated.jpg')
-  assert.equal(canvas.width, 1200); assert.equal(canvas.height, 1600)
-  assert.equal(outputs[0].fileType, 'jpg'); assert.equal(outputs[0].quality, .85)
-  assert.deepEqual(draws.slice(0,5), [['fillRect', 0,0,1200,1600], ['scale', .4,.4], ['translate',3000,0],
+  assert.equal(canvas.width, 1); assert.equal(canvas.height, 1)
+  assert.equal(outputs[0].fileType, 'jpg'); assert.equal(outputs[0].quality, .82)
+  assert.deepEqual(draws.slice(0,5), [['fillRect', 0,0,960,1280], ['scale', 1,1], ['translate',960,0],
     ['rotate',Math.PI/2], ['transform',1,0,0,1,0,0]])
 })
 

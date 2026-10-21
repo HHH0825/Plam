@@ -1,0 +1,82 @@
+{
+  "bytes": 271818,
+  "limit": 307200,
+  "assets": [
+    {
+      "name": "camera.png",
+      "bytes": 6122
+    },
+    {
+      "name": "frame-corner-bl.png",
+      "bytes": 1142
+    },
+    {
+      "name": "frame-corner-br.png",
+      "bytes": 1128
+    },
+    {
+      "name": "frame-corner-tl.png",
+      "bytes": 1128
+    },
+    {
+      "name": "frame-corner-tr.png",
+      "bytes": 1118
+    },
+    {
+      "name": "frame-edge-bottom.png",
+      "bytes": 878
+    },
+    {
+      "name": "frame-edge-left.png",
+      "bytes": 1335
+    },
+    {
+      "name": "frame-edge-right.png",
+      "bytes": 1286
+    },
+    {
+      "name": "frame-edge-top.png",
+      "bytes": 889
+    },
+    {
+      "name": "frame.wxss",
+      "bytes": 12546
+    },
+    {
+      "name": "hero.png",
+      "bytes": 177016
+    },
+    {
+      "name": "notebook.png",
+      "bytes": 2942
+    },
+    {
+      "name": "paw.png",
+      "bytes": 1090
+    },
+    {
+      "name": "peek-paw.png",
+      "bytes": 3154
+    },
+    {
+      "name": "ring.png",
+      "bytes": 1885
+    },
+    {
+      "name": "strokes.png",
+      "bytes": 415
+    },
+    {
+      "name": "subscription.png",
+      "bytes": 2222
+    },
+    {
+      "name": "title.png",
+      "bytes": 53263
+    },
+    {
+      "name": "wishlist.png",
+      "bytes": 2259
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 const test = require('node:test')
+require('./local-config.cjs')
 const assert = require('node:assert/strict')
 const { resetNavigation } = require('../miniprogram/utils/navigation')
 
@@ -9,7 +10,7 @@ const insights = (name = '相机') => ({ analysis_cards: [{ kind: 'unknown_use',
 
 function harness(name) {
   const requests = [], navigation = [], messages = []
-  const app = { globalData: { token: 'alice' }, requireSession() { return !!this.globalData.token },
+  const app = { globalData: { token: 'alice' }, hasSession() { return !!this.globalData.token }, requireSession() { return this.hasSession() },
     clearSession() { this.globalData.token = '' } }
   global.getApp = () => app
   global.wx = { request(options) { requests.push(options) }, navigateTo(options) { navigation.push(options) },
@@ -80,11 +81,13 @@ test('discovery monthly preview accepts retired usage and rejects stale account 
     purchase_leaders: [{ id: 1, name: '陶杯', purchase_price: '10.00', share: '100.00' }], memories: [] }
   const first = h.page.loadMonthly(); h.respond(0, report); await first
   assert.match(h.page.data.monthly.page.finding, /陶杯/)
-  assert.match(h.page.data.monthly.page.cashflowNote, /回收金额超过/)
-  assert.equal(h.page.data.monthly.page.monthArt, '/assets/report/month-10.png')
+  assert.match(h.page.data.monthly.page.cashflowNote, /处置回收超过支出/)
+  assert.equal(h.page.data.monthly.page.monthArt, '/assets/white-doodle/month-10.png')
+  const preserved = structuredClone(h.page.data.monthly)
   const late = h.page.loadMonthly(); h.page.onHide(); h.app.globalData.token = 'bob'
   h.respond(1, report); await late
-  assert.equal(h.page.data.monthly, null)
+  assert.deepEqual(h.page.data.monthly, preserved)
+  h.page.syncOwner(); assert.equal(h.page.data.monthly, null)
 })
 
 test('discovery keeps the successful section and retries only the failed section', async () => {

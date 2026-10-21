@@ -1,4 +1,4 @@
-# 物物记：小猫贴纸素材
+# 猫爪物帐：小猫贴纸素材
 
 ## 风格与使用
 
@@ -26,7 +26,7 @@
 ### collector.png
 
 ```text
-Use case: illustration-story. Asset type: transparent PNG hero sticker for the Chinese mini program 物物记. Draw one original cute cream-colored round-faced kitten with tiny dark blue-gray dot eyes, pink/apricot cheeks, tiny triangular ears, short chubby paws, and a mist-blue neckerchief. The kitten is carefully arranging a small open collection box containing a simple blue camera, headphones and a notebook. Soft hand-drawn gouache colored-pencil sticker illustration, crisp simplified silhouettes and subtle paper-like texture, no glossy 3D. Palette cream #F7F5EF, mist blue #42657A, soft blue #EAF0F3, apricot #D99564, dark blue-gray #293C46. Centered horizontal composition occupying most of canvas, full kitten and box visible, small star accents, white sticker rim, true transparent background including outside sticker, no words, no lettering, no watermark, no opaque rectangular background. Happy gentle collector personality. Artwork must be legible at 200px high, minimal tiny details.
+Use case: illustration-story. Asset type: transparent PNG hero sticker for the Chinese mini program 猫爪物帐. Draw one original cute cream-colored round-faced kitten with tiny dark blue-gray dot eyes, pink/apricot cheeks, tiny triangular ears, short chubby paws, and a mist-blue neckerchief. The kitten is carefully arranging a small open collection box containing a simple blue camera, headphones and a notebook. Soft hand-drawn gouache colored-pencil sticker illustration, crisp simplified silhouettes and subtle paper-like texture, no glossy 3D. Palette cream #F7F5EF, mist blue #42657A, soft blue #EAF0F3, apricot #D99564, dark blue-gray #293C46. Centered horizontal composition occupying most of canvas, full kitten and box visible, small star accents, white sticker rim, true transparent background including outside sticker, no words, no lettering, no watermark, no opaque rectangular background. Happy gentle collector personality. Artwork must be legible at 200px high, minimal tiny details.
 ```
 
 ### camera.png

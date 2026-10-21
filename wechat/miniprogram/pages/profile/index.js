@@ -2,8 +2,8 @@ const api = require('../../utils/api')
 const view = require('../../utils/view')
 const { AVATAR_KEYS, AVATAR_LABELS, avatarState, avatarError, isCurrent } = require('../../utils/profile')
 
-Page({
-  data: { user: null, name: '', avatarSymbol: '芽', avatarLabels: AVATAR_LABELS,
+Page(require('../../utils/member').wrap({
+  data: { user: null, accountId: '', name: '', avatarSymbol: '芽', avatarLabels: AVATAR_LABELS,
     avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true, loaded: false, busy: false, focused: false, error: '' },
   onLoad() { this._sequence = 0 },
   onShow() {
@@ -12,24 +12,38 @@ Page({
   },
   onHide() {
     this._visible = false
+    this._loadedToken = ''
     this._sequence += 1
-    this.setData({ user: null, name: '', avatarSymbol: '芽', avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true,
+    this.setData({ user: null, accountId: '', name: '', avatarSymbol: '芽', avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true,
       loaded: false, busy: false, focused: false, error: '' })
   },
-  onUnload() { this._visible = false; this._sequence += 1 },
+  onUnload() { this._visible = false; this._loadedToken = ''; this._sequence += 1 },
   async load() {
     if (this.data.busy) return
     const sequence = ++this._sequence
     const token = getApp().globalData.token
-    this.setData({ loading: true, loaded: false, error: '' })
+    this._loadedToken = ''
+    this.setData({ user: null, accountId: '', loading: true, loaded: false, error: '' })
     try {
       const result = await api.request('/auth/me')
       if (!isCurrent(this, sequence, token)) return
-      this.setData({ user: result.user, name: result.user.username, ...avatarState(result.user),
+      this._loadedToken = token
+      const id = result.user.id
+      this.setData({ user: result.user, accountId: Number.isSafeInteger(id) && id > 0 ? String(id) : '', name: result.user.username, ...avatarState(result.user),
         loaded: true, loading: false })
     } catch (error) {
       if (isCurrent(this, sequence, token)) this.setData({ loading: false, error: view.errorMessage(error) })
     }
+  },
+  copyUserId() {
+    const token = this._loadedToken, sequence = this._sequence
+    if (!this.data.loaded || this.data.loading || this.data.busy || !this.data.accountId || !isCurrent(this, sequence, token)) return
+    wx.setClipboardData({
+      data: this.data.accountId,
+      fail: () => {
+        if (isCurrent(this, sequence, token)) wx.showToast({title:'复制未完成，请重试',icon:'none'})
+      }
+    })
   },
   avatarError,
   nameInput(event) { this.setData({ name: event.detail.value }) },
@@ -66,4 +80,4 @@ Page({
       wx.navigateBack({ delta: 1, fail: () => wx.switchTab({ url: '/pages/me/index' }) })
     } else wx.switchTab({ url: '/pages/me/index' })
   }
-})
+}))

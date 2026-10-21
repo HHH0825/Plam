@@ -1,0 +1,16 @@
+<view class="time-progress {{progress.urgent ? 'time-urgent' : ''}} {{progress.disabled ? 'time-disabled' : ''}}">
+  <view class="time-heading">
+    <view class="time-label-group">
+      <image wx:if="{{!pawFailed}}" class="time-paw" src="/assets/purchase-entry/progress-paw.png" mode="aspectFit" binderror="pawFailed" aria-hidden="true"/>
+      <text class="time-label">{{progress.label}}<text wx:if="{{progress.state}}" class="time-state"> · {{progress.state}}</text></text>
+    </view>
+    <view wx:if="{{isDayCount}}" class="time-value time-day-count"><text class="time-number">{{dayNumber}}</text><text class="time-unit">天</text></view>
+    <text wx:else class="time-value time-status">{{progress.value}}</text>
+  </view>
+  <view wx:if="{{!progress.completed}}" class="time-track {{progress.percent === null ? 'time-unknown' : ''}}" aria-hidden="true">
+    <view wx:if="{{progress.percent !== null}}" class="time-fill" style="width:{{progress.percent}}%"></view>
+  </view>
+  <view wx:if="{{progress.caption}}" class="time-caption">{{progress.caption}}</view>
+  <view wx:if="{{progress.hint}}" class="time-caption">{{progress.hint}}</view>
+  <view wx:if="{{footnote}}" class="time-caption time-payment">{{footnote}}</view>
+</view>

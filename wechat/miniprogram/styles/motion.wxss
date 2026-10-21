@@ -1,0 +1,22 @@
+/* Short, finite paper and paw feedback. Lists and input fields never animate. */
+button{transition:transform 120ms ease-out,background-color var(--motion-select,160ms) ease-out,border-color var(--motion-select,160ms) ease-out}
+button:not([disabled]):not(.book-drag-handle):active,.button-hover:not([disabled]),.profile-hover:not([disabled]),.entry-pressed:not([disabled]){transform:scale(var(--motion-press,.98))}
+button[disabled]{animation:none;transform:none!important}
+.ledger-segments button,.tools-segments button,.appearance-tabs button,.growth-tabs button,.appearance-chip,.template-option,.member-plan,.book-cover-option{transition:background-color var(--motion-select,160ms) ease-out,border-color var(--motion-select,160ms) ease-out,transform 120ms ease-out}
+.ledger-category.selected image,.book-cover-option.chosen image,.statistics-view-switch .selected image{animation:var(--motion-pop,motion-pop) var(--motion-enter,220ms) ease-out both}
+.motion-panel-a{animation:motion-in-a var(--motion-enter,180ms) ease-out both}.motion-panel-b{animation:motion-in-b var(--motion-enter,180ms) ease-out both}
+.motion-fold{transition:height var(--motion-enter,180ms) ease-out}.motion-fold-inner{display:flex;flex-direction:column;min-width:0}
+.filter-sheet,.ledger-sheet,.member-edit-sheet{animation:motion-sheet-in var(--motion-enter,220ms) ease-out both}
+.growth-dialog,.exchange-dialog,.amount-dialog,.draft-dialog{animation:motion-paper-in var(--motion-enter,200ms) ease-out both}
+.motion-closing .filter-sheet,.motion-closing>.ledger-sheet,.motion-closing>.member-edit-sheet{animation:motion-sheet-out var(--motion-select,160ms) ease-in both;pointer-events:none}
+.motion-closing>.growth-dialog,.motion-closing>.exchange-dialog,.motion-closing>.amount-dialog{animation:motion-paper-out var(--motion-select,160ms) ease-in both;pointer-events:none}
+.motion-closing .filter-mask{transition:opacity 160ms;opacity:0}
+@keyframes motion-pop{0%{transform:scale(.94)}55%{transform:scale(1.08) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes motion-still{from{opacity:.85}to{opacity:1}}
+@keyframes motion-in-a{from{opacity:.86;transform:translateY(var(--motion-shift,6px))}to{opacity:1;transform:translateY(0)}}
+@keyframes motion-in-b{from{opacity:.86;transform:translateY(var(--motion-shift,6px))}to{opacity:1;transform:translateY(0)}}
+@keyframes motion-sheet-in{from{opacity:.6;transform:translateY(var(--motion-shift,6px))}to{opacity:1;transform:translateY(0)}}
+@keyframes motion-sheet-out{to{opacity:0;transform:translateY(var(--motion-shift,6px))}}
+@keyframes motion-paper-in{from{opacity:.6;transform:translateY(var(--motion-shift,6px))}to{opacity:1;transform:translateY(0)}}
+@keyframes motion-paper-out{to{opacity:0;transform:translateY(var(--motion-shift,6px))}}
+@media(prefers-reduced-motion:reduce){button{transition-duration:80ms!important}button:active,.button-hover,.profile-hover,.entry-pressed{transform:none!important}.ledger-category.selected image,.book-cover-option.chosen image,.statistics-view-switch .selected image{animation:motion-still 80ms both}.motion-panel-a,.motion-panel-b,.filter-sheet,.ledger-sheet,.member-edit-sheet,.growth-dialog,.exchange-dialog,.amount-dialog,.draft-dialog{--motion-shift:0px;animation-duration:80ms!important}.motion-fold{transition-duration:80ms}}

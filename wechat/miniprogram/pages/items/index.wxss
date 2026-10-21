@@ -1,1 +1,6 @@
 @import "./collection.wxss";
+@import "./header.wxss";
+
+@import "../../styles/announcement.wxss";
+
+.startup-entry{min-height:65vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#8b7d60;font-size:14px}.startup-entry button{font-size:14px;padding:0 20px;line-height:44px;background:#fff4b8;border-radius:22px;color:#665b40}

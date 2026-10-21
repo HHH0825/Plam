@@ -1,1 +1,1 @@
-{ "navigationBarTitleText": "发现" }
+{"navigationBarTitleText":"小小发现","navigationBarBackgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}

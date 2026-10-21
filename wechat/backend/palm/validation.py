@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from flask import request
 
@@ -7,6 +7,9 @@ AVATAR_KEYS = frozenset(("sprout", "cat", "book", "sun", "bike", "star"))
 
 class InputError(Exception):
     pass
+
+def natural_today():
+    return datetime.now(timezone(timedelta(hours=8))).date()
 
 def body():
     data = request.get_json(silent=True)
@@ -31,7 +34,7 @@ def date_value(data, key, label):
         parsed = date.fromisoformat(raw)
     except ValueError as exc:
         raise InputError(f"{label}必须是有效日期") from exc
-    if parsed.isoformat() != raw or parsed > date.today():
+    if parsed.isoformat() != raw or parsed > natural_today():
         raise InputError(f"{label}必须是不晚于今天的有效日期")
     return raw
 
@@ -64,7 +67,7 @@ def cents_value(data, key, label):
     return int(number * 100)
 
 def money(cents):
-    return f"{cents / 100:.2f}"
+    return f"{Decimal(cents) / 100:.2f}"
 
 def daily_cost(cents, days):
     if days == 0:

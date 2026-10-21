@@ -1,1 +1,1 @@
-{ "navigationBarTitleText": "回收站" }
+{"navigationBarTitleText":"回收站","usingComponents":{"paper-background":"/components/paper-background/index","cat-feedback":"/components/cat-feedback/index"}}

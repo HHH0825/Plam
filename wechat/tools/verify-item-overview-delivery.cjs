@@ -1,0 +1,10 @@
+// Local evidence only; no backend requests or writes.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto')
+const root=path.resolve(__dirname,'..'),out=path.join(root,'docs/images/item-overview-20261014'),read=f=>JSON.parse(fs.readFileSync(path.join(out,f),'utf8'))
+const client=fs.readFileSync(path.join(root,'.qa-ledger-tmp/item-overview-client-tests.log'),'utf8'),browser=read('browser-results.json'),native=read('native-results.json'),audit=read('package-audit.json')
+if(!client.includes('tests 249')||!client.includes('fail 0')||!browser.passed||browser.cases!==25||!native.passed||native.compiledFiles!==8)throw Error('Missing verification gate')
+const doc=path.join(root,'docs/item-overview-20261014.md')
+for(const m of fs.readFileSync(doc,'utf8').matchAll(/\]\(([^)]+)\)/g)){if(m[1].endsWith('/verification.json'))continue;if(!fs.existsSync(path.resolve(path.dirname(doc),m[1])))throw Error('Missing delivery link '+m[1])}
+const files=['utils/item-dashboard.js','utils/ledger-tabs.js','templates/item-dashboard.wxml','templates/item-list.wxml','styles/item-dashboard.wxss','pages/items/header.wxss','pages/statistics/index.wxml','pages/statistics/index.wxss','pages/insights/index.js','pages/insights/index.wxml']
+const report={date:'2026-10-14',localOnly:true,clientTestsPassed:249,newBehaviorTests:8,browserCases:browser.cases,nativeChecksPassed:native.checks.length,wechatCompiledFiles:8,browserViewportWidths:[320,390,430,768],largeFontScale:1.3,shortScreenHeight:568,realDeviceTested:false,remoteBusinessWrites:0,deploymentApplied:false,experienceUploaded:false,backendChanged:false,newRuntimeAssets:0,packageIncludedRawBytes:audit.includedRawBytes,staticReferencesChecked:audit.checkedStaticReferences,docsLinksVerified:true,sourceHashes:Object.fromEntries(files.map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'miniprogram',f))).digest('hex')]))}
+fs.writeFileSync(path.join(out,'verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({...report,sourceHashes:undefined}))

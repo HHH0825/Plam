@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 from .repository import item_row
 from .services import item_payload
 from .trash import list_trash, restore_item, permanently_delete
+from .ledger import mutation
 
 bp = Blueprint("trash", __name__)
 
@@ -12,6 +13,7 @@ def trash():
 
 
 @bp.post("/api/mp/trash/<int:item_id>/restore")
+@mutation
 def restore(item_id):
     restore_item(item_id)
     return jsonify(item_payload(item_row(item_id), True))

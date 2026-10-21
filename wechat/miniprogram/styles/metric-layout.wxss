@@ -1,0 +1,7 @@
+.metric-probes{position:absolute;left:0;top:0;width:100%;height:0;overflow:hidden;visibility:hidden;pointer-events:none}
+.metric-probe{display:inline-block;white-space:nowrap;line-height:1.35;font-weight:700;font-variant-numeric:tabular-nums}
+.metric-probe .metric-probe-unit{font-size:12px;font-weight:400;margin-left:2px}
+.metric-probe-days{padding:0 3px}
+.metric-scroll{width:100%;overflow-x:auto;overflow-y:hidden;white-space:nowrap}
+.metric-scroll .metric-value{display:inline-flex;flex-wrap:nowrap;white-space:nowrap;max-width:none;overflow-wrap:normal;word-break:normal;margin-top:2px;gap:2px}
+.metric-scroll .daily-number,.metric-scroll .days-number{flex:none;min-width:0;max-width:none;white-space:nowrap;overflow-wrap:normal;word-break:normal}

@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path')
+let script=fs.readFileSync(path.join(__dirname,'prepare-growth-sandbox.cjs'),'utf8')
+script=script.replaceAll("'growth-native-project'","'collection-window-native-project'")
+// The reused builder contains the destination inside a replacement string.
+script=script.replace("'rewards-native-project','growth-native-project'","'rewards-native-project','collection-window-native-project'")
+new Function('require','__dirname',script)(require,__dirname)
+const out=path.resolve(__dirname,'../../test-results/collection-window-native-project'),api=path.join(out,'utils/api.js')
+let source=fs.readFileSync(api,'utf8')
+source=source.replace("if(url==='/rewards'&&action==='GET')return clone(m);","if(url==='/rewards'&&action==='GET'){if(getApp().globalData.qaGrowthError)throw Error('离线测试：读取失败');return clone(m);}")
+source=source.replace("const already=row.claimed;","if(getApp().globalData.qaSlowClaim)await new Promise(r=>setTimeout(r,700));const already=row.claimed;")
+fs.writeFileSync(api,source)

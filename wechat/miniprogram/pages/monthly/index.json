@@ -1,1 +1,1 @@
-{ "navigationBarTitleText": "收藏小报" }
+{"navigationBarTitleText":"收藏小报","navigationBarBackgroundColor":"#FFFFFF","backgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}

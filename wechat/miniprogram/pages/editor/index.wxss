@@ -1,3 +1,4 @@
+@import "../../styles/cover-picker.wxss";
 .warranty-label { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .clear-date { color: var(--accent); font-size: 11.5px; padding: 4px 0 4px 10px; }
 .photo-choice { display: flex; align-items: center; gap: 11px; padding: 5px 0; }
@@ -13,6 +14,72 @@
 .draft-note { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:4px 12px; color:var(--muted); font-size:12px; line-height:1.6; margin:12px 0; }
 .draft-discard { min-height:44px; margin:0; padding:8px 0; background:transparent; color:var(--ink-soft); font-size:12px; line-height:28px; }
 .draft-discard::after { border:none; }
-.draft-overlay { position:fixed; inset:0; z-index:100; background:rgba(73,59,53,.36); display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
+.draft-overlay { position:fixed; inset:0; z-index:100; background:rgba(41,41,41,.36); display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
 .draft-dialog { width:100%; max-width:360px; max-height:80vh; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; box-sizing:border-box; }
 .draft-title { margin-top:16px; overflow-wrap:anywhere; font-size:17px; line-height:1.5; }
+
+/* Editor-only layout; the save artwork remains the existing paper asset. */
+
+.editor-page { --bg:#FFFFFF; --paper:#FFFFFF; --ink:#292929; --line:#EAEAEA; --muted:#707070; --radius:16px; padding:18px 18px calc(28px + env(safe-area-inset-bottom)); }
+.editor-texture { position:absolute; inset:0; overflow:visible; z-index:-1; pointer-events:none; }
+.editor-paper { display:block; width:100%; height:100%; opacity:.6; pointer-events:none; }
+.editor-page .page-heading { min-height:148px; margin:0 0 16px; gap:0; padding:18px; box-sizing:border-box; isolation:isolate; }
+.editor-page .heading-copy { position:relative; z-index:1; }
+.editor-page .title { font-family:inherit; font-size:30px; line-height:1.3; letter-spacing:0; margin:7px 0; }
+.editor-page .eyebrow { font-size:11px; letter-spacing:.6px; }
+.editor-page .subtitle { font-size:12px; }
+.editor-page .heading-cat { width:106px; height:120px; align-self:flex-end; margin:0 -14px -18px 0; }
+.heading-postmark { position:absolute; right:10px; top:18px; width:44px; height:30px; opacity:.55; pointer-events:none; }
+.editor-page .card { margin:16px 0; padding:18px; border:1px solid var(--line); border-radius:16px; box-shadow:0 2px 8px rgba(41,41,41,.025); }
+.editor-page .photo-card { margin-top:0; }
+.editor-page .photo-choice { padding:0; gap:12px; align-items:center; }
+.editor-page .preview,.editor-page .photo-placeholder { width:66px; height:70px; border-radius:10px; }
+.editor-page .photo-placeholder { display:flex; justify-content:center; align-items:center; background:#FFFFFF; border:1px dashed #EAEAEA; box-sizing:border-box; }
+.photo-placeholder image { display:block; width:36px; height:36px; pointer-events:none; }
+.editor-page .photo-label { font-size:15px; font-weight:600; line-height:1.5; }
+.editor-page .photo-copy .small { font-size:11px; line-height:1.7; }
+.editor-page .photo-select { flex:none; width:auto; min-width:76px; max-width:none; min-height:44px; padding:8px 10px; background:var(--paper); border:1px solid #EAEAEA; border-radius:10px; font-size:12px; font-weight:500; }
+.editor-page .photo-actions { margin-top:14px; gap:8px; }
+.editor-page .photo-actions .button { flex:1; width:auto; min-width:0; max-width:none; min-height:44px; padding:9px 10px; border-radius:10px; font-size:13px; }
+.editor-page .field-note { font-size:12px; line-height:1.7; margin-top:9px; overflow-wrap:anywhere; }
+.form-section-head { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:0 0 20px; }
+.form-number { position:relative; display:flex; align-items:center; justify-content:center; width:48px; height:32px; flex:none; color:#292929; }
+.form-number image { position:absolute; width:100%; height:100%; pointer-events:none; }
+.form-number text { position:relative; font-family:inherit; font-size:25px; font-weight:600; font-style:italic; line-height:32px; transform:rotate(-6deg); }
+.form-section-title { font-size:19px; line-height:1.4; font-weight:600; }
+.form-paw { width:25px; height:25px; flex:none; margin-left:auto; pointer-events:none; }
+.form-section-head .optional { margin-left:auto; }
+.editor-page .field { margin:18px 0; }
+.editor-page .field:last-child { margin-bottom:0; }
+.editor-page .field-label { font-size:13px; font-weight:500; margin-bottom:8px; }
+.editor-page .field input,.editor-page .field .picker { min-height:48px; height:48px; padding:11px 12px; border-color:#EAEAEA; border-radius:10px; font-size:14px; background:#FFFFFF; }
+.editor-page .field-input { display:flex; align-items:center; min-height:48px; box-sizing:border-box; padding:0 12px; border:1px solid #EAEAEA; border-radius:10px; background:#FFFFFF; }
+/* Native input swaps rendering on focus. Keep its own vertical box unpadded. */
+.editor-page .field .field-input input { width:100%; min-height:0; height:24px; padding:0; border:0; border-radius:0; background:transparent; line-height:24px; box-shadow:none; }
+.editor-page .field-input .field-placeholder { line-height:24px; }
+.editor-page .field .is-focused { border-color:#292929; box-shadow:0 0 0 1px #E5F1EA; }
+.editor-page .field textarea { height:132px; border-color:#EAEAEA; border-radius:10px; padding:12px; font-size:14px; line-height:1.7; }
+.editor-page .notes-field { margin-top:0; }
+.notes-count { margin-top:7px; text-align:right; font-size:11px; color:var(--muted); }
+.editor-page .warranty-label { align-items:center; }
+.editor-page .warranty-label .field-label { margin-bottom:8px; }
+.editor-page .clear-date { display:flex; align-items:center; min-height:44px; min-width:44px; box-sizing:border-box; padding:8px 0 8px 10px; font-size:12px; color:#292929; }
+.editor-page .draft-note { margin:8px 0 12px; font-size:12px; }
+.editor-page .form-footer { margin-top:12px; }
+.editor-page .paper-action { max-width:none; height:auto; padding:0; margin-top:12px; min-height:56px; }
+/* Let the paper outline show through without the theme's rectangular color fill. */
+.editor-page.member-themed .paper-action { background:transparent; box-shadow:none; }
+.editor-page .paper-action[disabled] { opacity:.55; }
+.editor-page .paper-action::before { top:calc(50% - 8px); }
+.editor-page .draft-dialog .section-title { padding-left:0; }
+.editor-page .draft-dialog .section-title::before { display:none; }
+@media (max-width:350px) { .editor-page .page-heading { padding:14px; } .editor-page .heading-cat { width:84px; height:104px; margin-right:-10px; margin-bottom:-14px; } .editor-page .title { font-size:28px; } .editor-page .subtitle { font-size:11px; } .editor-page .card { padding:14px; } .editor-page .photo-choice { gap:8px; } .editor-page .preview,.editor-page .photo-placeholder { width:48px; height:62px; } .editor-page .photo-label { font-size:13px; } .editor-page .photo-copy .small { font-size:10px; } .editor-page .photo-select { min-width:68px; padding:8px; font-size:11px; } }
+
+.editor-page .page-heading { min-height:116px; padding:0; }
+.editor-page .title { font-family:inherit; font-size:28px; }
+.editor-page .heading-copy { flex:1; min-width:0; padding-right:8px; }
+.editor-page .heading-cat { width:88px; height:110px; margin:0; align-self:center; }
+.editor-page .heading-postmark { display:none; }
+.editor-page .card { box-shadow:none; background:#FFFFFF; }
+
+.location-picker-value{min-height:44px;box-sizing:border-box;padding:12px;border-radius:12px;background:#f7f7f7;font-size:15px;color:#6f5d39;overflow-wrap:anywhere}.location-picker-warning{font-size:12px;color:#997341;line-height:1.7;margin-top:6px}.location-picker-warning .text-button{min-height:44px;line-height:44px;background:transparent;font-size:12px;padding:0;text-align:left;margin:0}.location-picker-warning .text-button::after{border:0}

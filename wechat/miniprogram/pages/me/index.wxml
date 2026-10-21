@@ -1,14 +1,60 @@
-<view class="page me-page">
-  <paper-background theme="rose" />
-  <view class="page-heading heading-layout"><view class="heading-copy"><view class="eyebrow">物物记 · 我的空间</view><view class="title">我的</view><view class="subtitle">把生活，慢慢收藏。</view></view><image class="heading-cat" src="/assets/stickers/wave.png" mode="aspectFit" aria-hidden="true"/></view>
-  <button class="profile-hero" style="width:100%;" hover-class="profile-hover" bindtap="profile" aria-label="编辑个人资料">
+<view class="member-themed {{memberThemeClass}} page me-page" style="{{memberThemeStyle}}">
+  <view class="profile-section">
+  <view class="profile-wash {{overviewGlassProbe ? 'profile-wash-probe' : ''}}" aria-hidden="true"/>
+  <view class="profile-ornaments" aria-hidden="true"><image class="profile-ornament ornament-left" src="/assets/me-profile/left.png" mode="aspectFit"/><image class="profile-ornament ornament-right" src="/assets/me-profile/right.png" mode="aspectFit"/></view>
+  <view class="profile-center">
+  <button class="profile-hero" hover-class="profile-hover" bindtap="profile" aria-label="编辑个人资料">
     <view class="profile-avatar" aria-hidden="true"><image wx:if="{{avatarPath && !avatarFailed}}" class="avatar-art" src="{{avatarPath}}" data-src="{{avatarPath}}" mode="aspectFit" binderror="avatarError"/><text wx:else>{{avatarSymbol}}</text></view>
-    <view class="profile-info"><view class="profile-name">{{user ? user.username : loading ? '正在读取资料…' : '个人资料'}}</view><view class="profile-caption">编辑个人资料</view></view>
-    <text class="menu-arrow" aria-hidden="true">›</text>
   </button>
+    <view class="profile-name">{{user ? user.username : loading ? '正在读取资料…' : '个人资料'}}</view>
+  </view>
   <view wx:if="{{error}}" class="card error-panel" role="alert">{{error}}<button class="button light" hover-class="button-hover" bindtap="load">重新读取资料</button></view>
+  <view class="overview-shell {{overviewGlassFallback ? 'overview-glass-fallback' : ''}} {{overviewGlassNoBlur ? 'overview-glass-no-blur' : ''}}" aria-label="账户概览">
+    <view class="overview-glass" aria-hidden="true"/>
+    <view class="overview-section-label">我的物品</view>
+    <view class="overview-card summary-region overview-{{amountLayout.kind}}">
+    <view class="overview-cell"><view class="overview-value">{{statsLoading ? '…' : heldItems}}<text wx:if="{{!statsLoading && heldItems !== '—'}}" class="overview-unit">件</text></view><view class="overview-label">持有物品</view></view>
+    <button class="overview-cell amount-cell" bindtap="amountInfo" hover-class="amount-hover" disabled="{{statsLoading || !!statsError || !statsCompatible || heldAmount === '—'}}" aria-label="{{heldAmount === '—' || statsLoading || !!statsError || !statsCompatible ? '购入总额暂不可用' : '购入总额 ¥' + heldAmount + '，按当前持有物品统计，点击查看完整金额'}}"><scroll-view class="overview-money-scroll" scroll-x="{{amountLayout.scroll}}" style="height:{{amountLayout.height}}px;font-size:{{amountLayout.size}}px;"><text class="overview-value overview-money">{{statsLoading ? '…' : heldAmountDisplay}}</text></scroll-view><view class="overview-label">购入总额</view><text wx:if="{{!statsLoading && heldAmountCompact}}" class="overview-amount-hint">点看完整金额</text></button>
+    <view class="overview-cell"><view class="overview-value">{{loading ? '…' : accountDays}}<text wx:if="{{!loading && accountDays !== '—'}}" class="overview-unit">天</text></view><view class="overview-label">使用天数</view></view>
+    <view class="summary-probes" aria-hidden="true"><text wx:for="{{amountSizes}}" wx:key="*this" class="summary-probe overview-money-probe" data-size="{{item}}" style="font-size:{{item}}px;">{{statsLoading ? '…' : heldAmountDisplay}}</text><text class="summary-probe overview-count-probe" data-size="count">{{statsLoading ? '…' : heldItems}}<text class="overview-unit">件</text></text><text class="summary-probe overview-count-probe" data-size="days">{{loading ? '…' : accountDays}}<text class="overview-unit">天</text></text></view>
+    </view>
+    <view class="me-cash-section"><button class="me-cash-title" bindtap="cashStatistics" disabled="{{!cash || cashLoading}}" aria-label="查看本月收支统计"><text>本月收支 · {{cashMonthNumber}}月</text><text aria-hidden="true">›</text></button>
+      <view wx:if="{{cashLoading}}" class="me-cash-note"><cat-loading compact label="正在整理本月收支…"/></view>
+      <view wx:elif="{{cashError}}" class="me-cash-note" role="alert">{{cashError}}<button class="retry-button" bindtap="loadCash">重试本月收支</button></view>
+      <view wx:elif="{{!cashSupported}}" class="me-cash-note">本月收支暂不可用，请同步新版服务端。<button class="retry-button" bindtap="loadCash">重新检查</button></view>
+      <button wx:elif="{{!cashEnabled}}" class="me-cash-enable" bindtap="enableCash">开启记账，查看本月收支 ›</button>
+      <view wx:else class="me-cash-grid {{cashLayout.stacked ? 'stacked' : ''}}"><view wx:for="{{cash}}" wx:key="key"><scroll-view scroll-x style="font-size:{{cashLayout.size}}px"><text class="me-cash-amount">{{item.display}}</text></scroll-view><view class="overview-label">{{item.label}}</view></view></view>
+      <view class="summary-probes" aria-hidden="true"><block wx:for="{{cashSizes}}" wx:key="*this" wx:for-item="size"><text wx:for="{{cash}}" wx:key="key" class="me-cash-probe" data-size="{{size}}" style="font-size:{{size}}px">{{item.display}}</text></block></view>
+    </view>
+  </view>
+  <view wx:if="{{statsError}}" class="overview-error" role="alert"><text>{{statsError}}</text><button class="retry-button" bindtap="loadStats">重试统计</button></view>
+  <view wx:elif="{{!statsCompatible || !ageCompatible}}" class="overview-compat">部分统计待同步后端，暂以“—”显示</view>
+  </view>
+  <button class="member-entry member-entry-{{memberCard.kind}}" bindtap="memberOpen" aria-label="猫爪会员，{{memberCard.badge}}，{{memberCard.description}}，{{memberCard.action}}"><image src="{{memberCard.image}}" mode="aspectFit" aria-hidden="true"/><view class="member-entry-copy"><view class="member-entry-heading"><text class="member-entry-title">猫爪会员</text><text class="member-entry-badge">{{memberCard.badge}}</text></view><view class="muted">{{memberCard.description}}</view></view><text class="member-entry-arrow">{{memberCard.action}}</text></button>
+
+  <view wx:if="{{memberCard.kind === 'error'}}" class="member-card-retry"><text>基础功能仍可正常使用</text><button class="retry-button" bindtap="retryMembership">重试会员状态</button></view>
+
   <view class="section-head"><text class="section-title">我的收藏册</text></view>
-  <button class="card menu" style="width:100%;" hover-class="profile-hover" bindtap="trash" aria-label="打开回收站"><view><view class="menu-title">回收站</view><view class="muted">删除后保留 30 天，期间可恢复</view></view><text class="menu-arrow" aria-hidden="true">›</text></button>
-  <button class="card menu" style="width:100%;" hover-class="profile-hover" bindtap="keepsakes"><view><view class="menu-title">陪伴纪念册</view><view class="muted">百日与周年，按日期收好</view></view><text class="menu-arrow">›</text></button>
-  <view class="account-footer"><button class="button light block" hover-class="button-hover" bindtap="logout">退出当前账户</button><view class="account-note">小程序账户与原单机网页版独立</view></view>
+  <view class="menu-group">
+  <button id="menu-disposed" class="menu" hover-class="profile-hover" bindtap="disposedArchive" aria-label="打开已处置档案"><image class="menu-icon" src="/assets/disposed-archive/entry.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">已处置档案</view></view><text class="menu-arrow" aria-hidden="true">›</text></button>
+  <button id="menu-trash" class="menu" hover-class="profile-hover" bindtap="trash" aria-label="打开回收站"><image class="menu-icon" src="/assets/white-doodle/compact-trash.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">回收站</view></view><text class="menu-hint">保留30天</text><text class="menu-arrow" aria-hidden="true">›</text></button>
+  </view>
+  <button class="section-head member-tools-heading" bindtap="toggleMemberTools" aria-expanded="{{memberToolsExpanded}}" aria-controls="member-tools-panel" aria-label="会员工具，2项，{{memberToolsExpanded ? '收起' : '展开'}}"><text class="section-title">会员工具 · 2项</text><view class="member-tools-toggle"><text class="member-tools-hint">{{memberCard.kind === 'unsupported' ? '暂未开放' : memberToolsExpanded ? '收起' : '展开'}}</text><view class="member-tools-sign" aria-hidden="true"><view class="sign-horizontal"/><view wx:if="{{!memberToolsExpanded}}" class="sign-vertical"/></view></view></button>
+  <view wx:if="{{memberToolsExpanded}}" id="member-tools-panel" class="menu-group member-tools-group motion-fold" style="{{motionFolds.memberToolsExpanded}}"><view id="member-tools-inner" class="motion-fold-inner"><button wx:for="{{memberTools}}" wx:key="mode" id="member-tool-{{item.mode}}" class="menu member-tool-menu" hover-class="profile-hover" bindtap="openMemberTool" data-mode="{{item.mode}}" aria-label="{{item.title}}，{{item.note}}"><image class="menu-icon" src="{{item.icon}}" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">{{item.title}}</view><view class="member-tool-note">{{item.note}}</view></view><text class="menu-arrow" aria-hidden="true">›</text></button></view></view>
+  <view class="section-head"><text class="section-title">一起把它做好</text></view>
+  <view class="menu-group"><button id="menu-feedback" class="menu" hover-class="profile-hover" open-type="feedback" aria-label="反馈与建议"><image class="menu-icon" src="/assets/white-doodle/compact-feedback.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">反馈与建议</view></view><text class="menu-arrow" aria-hidden="true">›</text></button>
 </view>
+  <view class="menu-group settings-group"><button id="menu-rewards" class="menu" hover-class="profile-hover" bindtap="rewards" aria-label="签到与喵铺，签到攒喵粒和兑换永久容量"><image class="menu-icon" src="/assets/rewards/wallet-cat.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">签到与喵铺</view><view class="rewards-menu-note">签到攒喵粒，换永久容量</view></view><text wx:if="{{meSeeds !== null}}" class="menu-hint">{{meSeeds}}喵粒</text><text class="menu-arrow" aria-hidden="true">›</text></button><button id="menu-appearance" class="menu" hover-class="profile-hover" bindtap="appearance" aria-label="手账外观，免费调整配色与小报样式"><image class="menu-icon" src="/assets/membership/palette.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">手账外观</view></view><text class="menu-arrow" aria-hidden="true">›</text></button><button id="menu-settings" class="menu" hover-class="profile-hover" bindtap="profile" aria-label="个人设置，编辑昵称与头像"><image class="menu-icon" src="/assets/white-doodle/compact-settings.png" mode="aspectFit" aria-hidden="true"/><view class="menu-copy"><view class="menu-title">个人设置</view></view><text class="menu-arrow" aria-hidden="true">›</text></button></view>
+  <view class="account-footer"><button class="button logout-button" hover-class="logout-hover" bindtap="logout">退出当前账户</button></view>
+</view>
+
+<view wx:if="{{amountDialog}}" class="amount-overlay {{motionClosing === 'amountDialog' ? 'motion-closing' : ''}}" catchtap="closeAmount" catchtouchmove="keepAmountOpen">
+  <view class="amount-dialog" role="dialog" aria-modal="true" aria-label="购入总额" catchtap="keepAmountOpen">
+    <view class="amount-dialog-title">购入总额</view>
+    <scroll-view class="amount-dialog-scroll" scroll-x="true"><text class="amount-dialog-value">¥{{heldAmount}}</text></scroll-view>
+    <view class="amount-dialog-note">按当前持有物品统计</view>
+    <button class="amount-dialog-close" hover-class="amount-hover" bindtap="closeAmount">知道了</button>
+  </view>
+</view>
+
+<cat-feedback id="cat-feedback"/>

@@ -1,0 +1,5 @@
+<view class="cat-loader {{compact ? 'compact' : ''}} {{paw ? 'paw-loader' : ''}} {{visible ? 'visible' : ''}} {{reduced || reducedMotion ? 'reduce-motion' : ''}}" role="status" aria-live="polite" aria-label="{{label}}">
+ <view wx:if="{{paw}}" class="cat-paw" aria-hidden="true"><view class="cat-paw-pad"/><view class="cat-paw-pad"/><view class="cat-paw-pad"/><view class="cat-paw-pad"/><view class="cat-paw-pad"/></view>
+ <view wx:else class="cat-loader-frame" aria-hidden="true"><image src="/assets/rewards/loading-strip.png" class="cat-loader-strip"/></view>
+ <view wx:if="{{!paw}}" class="cat-loader-dots" aria-hidden="true"><view class="cat-dot"/><view class="cat-dot"/><view class="cat-dot"/></view><text wx:if="{{label}}" class="cat-loader-label">{{label}}</text>
+</view>

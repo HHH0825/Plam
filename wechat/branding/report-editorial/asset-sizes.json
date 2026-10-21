@@ -1,0 +1,57 @@
+{
+  "total": 237391,
+  "sizes": [
+    {
+      "file": "corner-tape.png",
+      "bytes": 514
+    },
+    {
+      "file": "cover-wash.png",
+      "bytes": 118112
+    },
+    {
+      "file": "editor-kitten.png",
+      "bytes": 95053
+    },
+    {
+      "file": "label-tape.png",
+      "bytes": 924
+    },
+    {
+      "file": "leaf.png",
+      "bytes": 1541
+    },
+    {
+      "file": "memory-book.png",
+      "bytes": 1436
+    },
+    {
+      "file": "memory-stamp.png",
+      "bytes": 4106
+    },
+    {
+      "file": "number-tape.png",
+      "bytes": 1105
+    },
+    {
+      "file": "paper-bottom.png",
+      "bytes": 3037
+    },
+    {
+      "file": "paper-middle.png",
+      "bytes": 1474
+    },
+    {
+      "file": "paper-top.png",
+      "bytes": 3569
+    },
+    {
+      "file": "paw-signature.png",
+      "bytes": 1178
+    },
+    {
+      "file": "postmark.png",
+      "bytes": 5342
+    }
+  ]
+}

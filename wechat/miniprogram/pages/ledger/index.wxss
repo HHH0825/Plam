@@ -1,0 +1,2 @@
+@import "../../styles/ledger.wxss";
+@import "../../styles/ledger-journal.wxss";

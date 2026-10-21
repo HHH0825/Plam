@@ -1,0 +1,82 @@
+{
+  "bytes": 296270,
+  "limit": 307200,
+  "assets": [
+    {
+      "name": "box.png",
+      "bytes": 3205
+    },
+    {
+      "name": "camera.png",
+      "bytes": 8599
+    },
+    {
+      "name": "food.png",
+      "bytes": 4934
+    },
+    {
+      "name": "frame-corner-bl.png",
+      "bytes": 2287
+    },
+    {
+      "name": "frame-corner-br.png",
+      "bytes": 2286
+    },
+    {
+      "name": "frame-corner-tl.png",
+      "bytes": 2312
+    },
+    {
+      "name": "frame-corner-tr.png",
+      "bytes": 2307
+    },
+    {
+      "name": "frame-edge-bottom.png",
+      "bytes": 2050
+    },
+    {
+      "name": "frame-edge-left.png",
+      "bytes": 2716
+    },
+    {
+      "name": "frame-edge-right.png",
+      "bytes": 2721
+    },
+    {
+      "name": "frame-edge-top.png",
+      "bytes": 2049
+    },
+    {
+      "name": "frame.wxss",
+      "bytes": 25646
+    },
+    {
+      "name": "notebook.png",
+      "bytes": 4084
+    },
+    {
+      "name": "paw.png",
+      "bytes": 2319
+    },
+    {
+      "name": "peek-paw.png",
+      "bytes": 4675
+    },
+    {
+      "name": "statistics.png",
+      "bytes": 4117
+    },
+    {
+      "name": "strokes.png",
+      "bytes": 571
+    },
+    {
+      "name": "title.png",
+      "bytes": 15650
+    },
+    {
+      "name": "hero.png",
+      "bytes": 203742
+    }
+  ]
+}

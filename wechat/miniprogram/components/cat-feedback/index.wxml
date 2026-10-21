@@ -1,0 +1,12 @@
+<view wx:if="{{working && !greetingOpen && !capacityOpen}}" class="cat-working"><cat-loading compact label="小猫正在整理中…"/></view>
+<view wx:if="{{greetingOpen}}" class="cat-dialog-mask" catchtouchmove="keepOpen">
+ <view class="cat-dialog greeting-dialog" role="dialog" aria-modal="true" aria-label="每日问候">
+  <button class="cat-dialog-button cat-dialog-close" bindtap="closeGreeting" aria-label="关闭每日问候">×</button><view class="greeting-art"><view wx:if="{{sunny}}" class="greeting-sun" aria-hidden="true"/><image class="greeting-image" src="{{greetingArt}}" mode="aspectFit" aria-hidden="true"/></view>
+  <view class="cat-dialog-title">{{model.greeting.title}}</view><view class="cat-dialog-copy">{{model.greeting.message}}</view>
+  <view class="greeting-reward"><view class="seed-icon" aria-hidden="true"/><text class="cat-dialog-text">{{model.checkin.today_claimed ? '今日已签到，小小收获已放好' : '今日签到可领' + model.checkin.today_reward + '喵粒'}}</text></view>
+  <button class="cat-dialog-button cat-dialog-primary" bindtap="goCheckin">{{model.checkin.today_claimed ? '去喵铺看看' : '去签到领喵粒'}}</button>
+ </view>
+</view>
+<view wx:if="{{capacityOpen}}" class="cat-dialog-mask" catchtouchmove="keepOpen">
+ <view class="cat-dialog capacity-dialog" role="dialog" aria-modal="true" aria-label="物品容量已满"><button class="cat-dialog-button cat-dialog-close" bindtap="closeCapacity" aria-label="关闭容量提示">×</button><image class="capacity-cat" src="/assets/rewards/cat-box.png" mode="aspectFit" aria-hidden="true"/><view class="cat-dialog-title">小窝暂时住满啦</view><view class="capacity-count">已收藏 <text class="cat-dialog-text">{{capacity.used}} / {{capacity.free_limit}}</text> 件</view><view class="cat-dialog-copy">已有物品仍可查看和编辑，添一格容量，<text class="cat-dialog-text">就能继续收好新的心爱之物。</text></view><button class="cat-dialog-button cat-dialog-primary" bindtap="goExpand">用喵粒扩容</button><button class="cat-dialog-button cat-dialog-secondary" bindtap="goMembership">查看会员权益</button><button class="cat-dialog-button cat-dialog-later" bindtap="closeCapacity">稍后再说</button></view>
+</view>

@@ -27,7 +27,8 @@ class MonthlyTest(unittest.TestCase):
         def report(month): return self.client.get('/api/mp/reports/monthly?month=' + month, headers=h).json
         january = report('2025-01')
         self.assertEqual(january['totals'], {'purchase_count': 1, 'purchase_total': '1200.00',
-            'maintenance_total': '10.01', 'disposal_total': '0.00', 'cashflow_net': '1210.01', 'usage_count': 0})
+            'maintenance_total': '10.01', 'disposal_total': '0.00', 'cashflow_net': '1210.01', 'usage_count': 0,
+            'fixed_expense_total': '0.00', 'installment_principal_total': '0.00'})
         self.assertEqual(report('2025-02')['totals']['maintenance_total'], '99.99')
         self.assertEqual(report('2025-03')['totals']['disposal_total'], '2000.00')
         self.assertEqual(report('2024-12')['has_activity'], False)
@@ -42,16 +43,15 @@ class MonthlyTest(unittest.TestCase):
         self.assertNotEqual(other['purchases'][0]['id'], item)
         self.assertEqual(self.client.get('/api/mp/reports/monthly').status_code, 401)
 
-    def test_target_recalculation_and_anniversary(self):
+    def test_retired_targets_and_anniversaries_remain_empty(self):
         token = self.token('owner'); h = self.headers(token); item = self.create_item(token)
-        self.client.put(f'/api/mp/items/{item}/daily-target', headers=h, json={'amount': '120.00'})
+        self.assertEqual(self.client.put(f'/api/mp/items/{item}/daily-target', headers=h,
+                         json={'amount': '120.00'}).status_code, 410)
         report = self.client.get('/api/mp/reports/monthly?month=2025-01', headers=h).json
-        self.assertEqual(report['memories'][0]['date'], '2025-01-11')
-        self.assertEqual(report['memories'][0]['kind'], 'target')
+        self.assertEqual(report['memories'], [])
         anniversary = self.client.get('/api/mp/reports/monthly?month=2026-01', headers=h).json
-        self.assertEqual(anniversary['memories'][0]['label'], '相伴 1 年')
-        self.client.put(f'/api/mp/items/{item}/daily-target', headers=h, json={'amount': None})
-        self.assertEqual(self.client.get('/api/mp/reports/monthly?month=2025-01', headers=h).json['memories'], [])
+        self.assertEqual(anniversary['memories'], [])
+        self.assertFalse(anniversary['has_activity'])
 
     def test_current_month_leap_and_invalid_months(self):
         token = self.token('owner'); h = self.headers(token)

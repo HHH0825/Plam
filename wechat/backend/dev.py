@@ -11,7 +11,7 @@ def create_dev_app(test_config=None):
 
 def main():
     app = initialize_app(create_dev_app())
-    print("物物记：本地模拟登录已开启", flush=True)
+    print("猫爪物帐：本地模拟登录已开启", flush=True)
     print("后端地址：http://127.0.0.1:5001", flush=True)
     print("请在开发者工具选择本地体验；保持此窗口打开，按 Ctrl+C 停止。", flush=True)
     app.run(host="127.0.0.1", port=5001, debug=False, use_reloader=False)

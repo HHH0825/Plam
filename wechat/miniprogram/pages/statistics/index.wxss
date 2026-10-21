@@ -1,0 +1,14 @@
+@import "../../styles/ledger.wxss";
+@import "../../styles/ledger-journal.wxss";
+@import "../../styles/item-dashboard.wxss";
+@import "../../styles/cash-analysis.wxss";
+/* Approved statistics switch 2026-10-14 */
+.ledger-statistics .statistics-view-switch{display:flex;align-items:stretch;width:100%;max-width:340px;min-height:58px;box-sizing:border-box;padding:4px;gap:0;margin:0 auto 22px;border:1px solid #EEE2BE;border-radius:29px;background:linear-gradient(180deg,#FFFCEF,#F8F3E5);box-shadow:inset 0 2px 4px rgba(159,137,74,.09),0 1px 2px rgba(155,130,58,.07);overflow:visible}
+.ledger-statistics .statistics-view-switch>button{display:flex;flex:1 1 0;align-items:center;justify-content:center;gap:12px;width:0!important;min-width:0;min-height:48px;margin:0;padding:7px 8px;box-sizing:border-box;border:1px solid transparent;border-radius:24px;background:rgba(255,255,255,.62);font-size:20px;line-height:1.5;font-weight:500;color:#555044;white-space:normal}
+.ledger-statistics .statistics-view-switch>button::after{border:0}
+.ledger-statistics .statistics-view-switch>button.selected{background:linear-gradient(135deg,#FFF0AA 0%,#FFE574 65%,#FFDC58 100%);border-color:#FFD34D;color:#25251F;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(183,142,35,.16)}
+.ledger-statistics .statistics-view-switch image{width:30px;height:30px;flex:none;pointer-events:none;opacity:.9}.ledger-statistics .statistics-view-switch .selected image{opacity:1}
+.ledger-statistics .statistics-view-switch text{min-width:0;overflow-wrap:anywhere}
+@media(max-width:350px){.ledger-statistics .statistics-view-switch>button{font-size:18px;gap:10px}}
+
+.ledger-statistics .statistics-view-switch{margin:0 auto 14px}.ledger-statistics .statistics-book-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 0 16px}.statistics-book-toolbar .member-book-label{flex:1;min-width:0}.statistics-book-toolbar .member-switch{justify-content:space-between;padding:9px 10px}

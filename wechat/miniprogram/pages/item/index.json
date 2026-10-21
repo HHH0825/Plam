@@ -1,1 +1,1 @@
-{ "navigationBarTitleText": "物品详情" }
+{"navigationBarTitleText":"物品详情","navigationBarBackgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}

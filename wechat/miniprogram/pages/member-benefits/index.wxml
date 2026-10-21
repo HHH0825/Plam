@@ -1,0 +1,13 @@
+<view class="member-themed {{memberThemeClass}} page member-benefits" style="{{memberThemeStyle}}">
+ <view class="benefits-heading"><view><view class="benefits-eyebrow">愿记录成为一件轻松的事</view><view class="title">刚刚好，就很好</view></view><image src="/assets/membership/cat.png" mode="aspectFit" aria-hidden="true"/></view>
+ <view class="support-letter"><view wx:for="{{introduction}}" wx:key="*this">{{item}}</view></view>
+ <view class="benefits-comparison">
+  <view class="benefits-column"><view class="benefits-column-heading"><image src="/pages/member-benefits/assets/collector.png" mode="aspectFit" aria-hidden="true"/><view>免费版</view><text>足够记录日常</text></view><view class="benefits-list"><view wx:for="{{freeFeatures}}" wx:key="*this" class="benefits-item"><text class="benefits-check" aria-hidden="true">✓</text><text>{{item}}</text></view></view><view class="benefits-free-tail">把生活记下来，<view>不必先付费。</view></view></view>
+  <view class="benefits-column benefits-vip"><view class="benefits-column-heading"><image src="/assets/membership/ticket.png" mode="aspectFit" aria-hidden="true"/><view>猫爪会员</view><text>也支持这份创作</text></view><view class="benefits-list"><view wx:for="{{freeFeatures}}" wx:key="*this" class="benefits-item"><text class="benefits-check" aria-hidden="true">✓</text><text>{{item}}</text></view></view><view class="benefits-extra-heading">再多一点从容</view><view class="benefits-list benefits-extra"><view wx:for="{{memberFeatures}}" wx:key="*this" class="benefits-item"><text class="benefits-check" aria-hidden="true">✓</text><text>{{item}}</text></view></view></view>
+ </view>
+ <view class="benefits-note">当前未投放广告。未来如接入，会员有效期内免小程序内广告。</view>
+ <view class="benefits-service"><button class="benefits-service-toggle" bindtap="toggleService" aria-expanded="{{serviceExpanded}}" aria-controls="benefits-service-body"><text>购买与服务约定</text><text aria-hidden="true">{{serviceExpanded ? '−' : '＋'}}</text></button><view wx:if="{{serviceExpanded}}" id="benefits-service-body"><view wx:if="{{catalogLoading}}"><cat-loading label="正在读取当前设备售价…"/></view><view wx:elif="{{catalogError}}">{{catalogError}}<button class="benefits-retry" bindtap="load">重试读取</button></view><view wx:else>{{service.catalog}}</view><view wx:for="{{service.terms}}" wx:key="*this">{{item}}</view></view></view>
+ <button class="button block" bindtap="returnMembership">返回会员页</button>
+</view>
+
+<cat-feedback id="cat-feedback"/>

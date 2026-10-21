@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{createRequire}=require('node:module'),assert=require('node:assert/strict'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright'),helper=require('./verify-member-tools.cjs')
+const root=path.resolve(__dirname,'../miniprogram'),out=path.resolve(__dirname,'../docs/images/save-paper-20261018')
+let definition;const file=path.join(root,'pages/editor/index.js');vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:createRequire(file),Page:d=>definition=d,wx:{},getApp:()=>({globalData:{}})})
+async function main(){fs.mkdirSync(out,{recursive:true});const preview=path.join(out,'preview.html');fs.writeFileSync(preview,'<!doctype html><meta charset="utf-8"><body>');const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true,args:['--allow-file-access-from-files']});const checks=[]
+try{const page=await browser.newPage();await page.goto(pathToFileURL(preview).href);await helper.renderer(page)
+for(const [width,large] of [[320,false],[390,false],[430,false],[768,false],[320,true],[390,true]])for(const color of ['#FFE15A','#DFE6D7','#F6CDDF','#CCE6F5'])for(const busy of [false,true]){
+const data={...definition.data,loading:false,draftReady:true,paymentReady:true,locationsReady:true,coverCapabilityLoading:false,photoBusy:false,draftWorking:false,versionConflict:false,busy,memberThemeStyle:'--member-accent:'+color,memberThemeClass:''}
+const read=n=>fs.readFileSync(path.join(root,n),'utf8'),css=n=>read(n).replace(/@import\s+["']([^"']+)["'];/g,(_,p)=>css(path.posix.normalize(path.posix.join(path.posix.dirname(n),p))))
+let markup=read('pages/editor/index.wxml').match(/<view class="form-footer">([\s\S]*?)<\/block>/)[0].replace(/<\/block>$/,'').replace(/<cat-loading\b[^>]*\/>/g,'').replace(/<paper-label\b[^>]*\/>/g,()=>`<paper-label></paper-label>`).replace(/(<\/?)(view|text)(?=[\s>])/g,(_,p,t)=>p+(t==='view'?'div':'span'))
+markup='<div class="member-themed page editor-page" style="{{memberThemeStyle}}">'+markup+'</div>'
+const sheet=(css('app.wxss')+'\n'+css('pages/editor/index.wxss')).replace(/(?<![.\w-])page\s*\{/g,'body {').replace(/\bview\b/g,'div').replace(/\bimage\b/g,'img')
+await page.setViewportSize({width,height:240});await page.evaluate(args=>render(...args),[markup,sheet,data,pathToFileURL(root).href])
+await page.evaluate(({base,css,busy})=>{const style=document.createElement('style');style.textContent=css.replace(/\bimage\b/g,'img');document.head.append(style);document.querySelectorAll('paper-label').forEach(n=>{const variant='save';n.innerHTML=`<div class="paper-label label-${variant} fit-width"><img class="label-art" src="${base}/assets/white-doodle/label-${variant}.png"><span class="label-text">${busy?'保存中…':'保存物品'}</span></div>`});document.querySelector('.paper-action').scrollIntoView({block:'end'})},{base:pathToFileURL(root).href,css:fs.readFileSync(path.join(root,'pages/editor/components/paper-label/index.wxss'),'utf8'),busy})
+await page.evaluate(()=>Promise.all([...document.images].map(i=>i.complete?Promise.resolve():new Promise(r=>{i.onload=r;i.onerror=r}))))
+if(large)await page.locator('.label-text').evaluate(n=>n.style.fontSize='20.8px')
+const result=await page.locator('.paper-action').evaluate(n=>{const c=getComputedStyle(n),r=n.getBoundingClientRect();return{background:c.backgroundColor,shadow:c.boxShadow,height:r.height,width:r.width,left:r.left,right:r.right,disabled:n.disabled,label:n.textContent,art:!!n.querySelector('.label-art')?.naturalWidth}})
+assert.equal(result.background,'rgba(0, 0, 0, 0)');assert.equal(result.shadow,'none');assert.ok(result.height>=44&&result.right<=width&&result.left>=0&&result.art);assert.equal(result.disabled,busy)
+checks.push({width,large,color,busy,...result})
+if(color==='#FFE15A'&&!busy)await page.locator('.editor-page').screenshot({path:path.join(out,`save-${width}${large?'-large':''}.png`)})
+}fs.writeFileSync(path.join(out,'layout-results.json'),JSON.stringify({passed:true,checks,fixtureOnly:true},null,2));console.log(JSON.stringify({passed:true,checks:checks.length}))}finally{await browser.close()}}
+main().catch(e=>{console.error(e);process.exitCode=1})

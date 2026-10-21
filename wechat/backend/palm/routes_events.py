@@ -4,6 +4,7 @@ from .repository import (item_row, record_row, usage_rows, maintenance_rows, dis
                          create_disposal, update_disposal, delete_disposal)
 from .services import ensure_event_date, event_data, disposal_data, maintenance_payload, disposal_payload
 from .validation import InputError, body
+from .ledger import mutation, sync_event
 
 bp = Blueprint("events", __name__)
 
@@ -13,6 +14,7 @@ def quick_usage(item_id):
     abort(410, description="使用记录已停用，历史记录仍可查看")
 
 @bp.route("/api/mp/items/<int:item_id>/<kind>", methods=["GET", "POST"])
+@mutation
 def events(item_id, kind):
     if kind not in ("usage", "maintenance"):
         abort(404)
@@ -28,9 +30,11 @@ def events(item_id, kind):
     fields = event_data(kind, body())
     ensure_event_date(item, fields["used_on" if kind == "usage" else "maintained_on"])
     record = record_row(table, create_event(item_id, kind, fields))
+    sync_event(kind, record, new=True)
     return jsonify(dict(record) if kind == "usage" else maintenance_payload(record)), 201
 
 @bp.route("/api/mp/<kind>/<int:record_id>", methods=["PUT", "DELETE"])
+@mutation
 def event_detail(kind, record_id):
     if kind not in ("usage", "maintenance"):
         abort(404)
@@ -40,15 +44,18 @@ def event_detail(kind, record_id):
     if kind == "usage":
         abort(410, description="使用记录已停用，历史记录仍可查看")
     if request.method == "DELETE":
+        sync_event(kind, record, void=True)
         delete_event(kind, record_id)
         return "", 204
     fields = event_data(kind, body())
     ensure_event_date(item, fields["used_on" if kind == "usage" else "maintained_on"])
     update_event(kind, record_id, fields)
     record = record_row(table, record_id)
+    sync_event(kind, record)
     return jsonify(dict(record) if kind == "usage" else maintenance_payload(record))
 
 @bp.route("/api/mp/items/<int:item_id>/disposal", methods=["GET", "POST"])
+@mutation
 def disposal(item_id):
     item = item_row(item_id)
     existing = disposal_by_item(item_id)
@@ -58,16 +65,20 @@ def disposal(item_id):
         raise InputError("该物品已有处置记录")
     fields = disposal_data(body(), item)
     record = create_disposal(item_id, fields)
+    sync_event('disposal', record, new=True)
     return jsonify(disposal_payload(record)), 201
 
 @bp.route("/api/mp/disposal/<int:record_id>", methods=["PUT", "DELETE"])
+@mutation
 def disposal_detail(record_id):
     record = record_row("disposal_records", record_id)
     item = item_row(record["item_id"])
     if request.method == "DELETE":
+        sync_event('disposal', record, void=True)
         delete_disposal(record_id, item["id"])
         return "", 204
     fields = disposal_data(body(), item)
     update_disposal(record_id, fields)
     record = record_row("disposal_records", record_id)
+    sync_event('disposal', record)
     return jsonify(disposal_payload(record))

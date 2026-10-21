@@ -1,12 +1,14 @@
 const test = require('node:test')
+require('./local-config.cjs')
 const assert = require('node:assert/strict')
-const drafts = require('../miniprogram/utils/drafts')
+const drafts = require('../miniprogram/pages/editor/lib/drafts')
 const config = require('../miniprogram/config')
 const tick = () => new Promise(resolve => setImmediate(resolve))
 function runtime() {
+  require('../miniprogram/utils/photo-edit').preparePhoto = async (_page, src) => src
   const storage = new Map(), files = new Map([['temp.jpg', 'original'], ['crop.jpg', 'cropped'], ['rotate.jpg', 'rotated']])
   const requests = [], navigation = [], uploads = [], notices = [], operations = []
-  const app = { globalData: { token: 'alice', user: { id: 1 } }, requireSession() { return !!this.globalData.token } }
+  const app = { globalData: { token: 'alice', user: { id: 1 } }, hasSession() { return !!this.globalData.token }, requireSession() { return this.hasSession() } }
   global.getApp = () => app
   const fs = {
     copyFile(o) { operations.push(['copy', o.srcPath, o.destPath]); if (!files.has(o.srcPath)) return o.fail({ errMsg: 'missing' }); files.set(o.destPath, files.get(o.srcPath)); o.success() },
@@ -16,7 +18,7 @@ function runtime() {
   global.wx = {
     env: { USER_DATA_PATH: 'wxfile://usr' }, getFileSystemManager: () => fs,
     getStorageSync: key => storage.get(key), setStorageSync: (key, row) => storage.set(key, structuredClone(row)), removeStorageSync: key => storage.delete(key),
-    request: o => requests.push(o), uploadFile: o => uploads.push(o),
+    request: o => { if(o.url.endsWith('/auth/me'))o.success({statusCode:200,data:{capabilities:{item_cover_icons:false}}});else if(o.url.endsWith('/storage-locations')) o.success({statusCode:200,data:{locations:[],unassigned_count:0}}); else requests.push(o) }, uploadFile: o => uploads.push(o),
     showModal: o => notices.push(o), showActionSheet: o => notices.push(o), showToast: o => notices.push(o),
     navigateBack: o => navigation.push(['back', o]), switchTab: o => navigation.push(['tab', o.url]), navigateTo: o => navigation.push(['open', o.url])
   }
@@ -45,6 +47,18 @@ function runtime() {
 }
 const input = (page, key, value) => page.input({ currentTarget: { dataset: { key } }, detail: { value } })
 const form = name => ({ name, category: '摄影', icon_type: 'digital', status: 'idle', purchase_date: '2026-01-01', purchase_price: '123.45', warranty_expires_on: '', notes: '换行\n逗号,保留' })
+test('wish conversion prefill and draft stay separate; uncertain retries reuse the same request ID', async () => {
+  const h=runtime();await h.store().save(form('普通新增草稿'),'')
+  const page=h.page('editor',{wishId:4})
+  h.respond(0,{id:4,name:'想买的耳机',category:'数码',expected_price:'399.00',reason:'通勤降噪',status:'considering',revision:2});await tick()
+  assert.equal(page.data.draftPrompt,false);assert.equal(page.data.form.notes,'通勤降噪');assert.equal(page.data.form.purchase_price,'399.00')
+  input(page,'notes','实际购买理由');await page.flushDraft();assert.equal(h.store().read().form.name,'普通新增草稿')
+  const first=page.save();await tick();assert.match(h.requests[1].url,/\/wishlist\/4\/convert$/);assert.equal(h.requests[1].header['If-Match'],'"2"')
+  const key=h.requests[1].header['Idempotency-Key'];h.requests[1].fail({errMsg:'timeout'});await first
+  const retry=page.save();await tick();assert.equal(h.requests[2].header['Idempotency-Key'],key)
+  h.respond(2,{id:8,revision:0},201);await retry;assert.equal(page.itemId,8);assert.equal(h.store().read().form.name,'普通新增草稿')
+  const later=page.save();await tick();assert.match(h.requests[3].url,/\/items\/8$/);assert.equal(h.requests[3].method,'PUT');h.respond(3,{id:8,revision:1});await later
+})
 test('drafts separate servers and stable user ids, omit credentials, and survive a fresh store', async () => {
   const h = runtime(), store = h.store()
   await store.save(form('相机'), 'crop.jpg')
@@ -117,7 +131,7 @@ test('draft prompt can close without deleting, continue with fields and photo, o
   const page = h.page(); assert.equal(page.data.draftPrompt, true); assert.equal(page.data.draftReady, false)
   await page.save(); assert.equal(h.requests.length, 0)
   page.closeDraft(); assert.equal(h.navigation[0][0], 'back'); assert.ok(h.store().read())
-  await page.continueDraft(); assert.deepEqual(page.data.form, form('恢复相机'))
+  await page.continueDraft(); assert.deepEqual(page.data.form, {...form('恢复相机'),category:'数码',cover_mode:'photo',cover_icon_key:null,payment_info:null})
   assert.equal(page.data.typeIndex, 0); assert.equal(page.data.statusIndex, 1); assert.equal(page.data.photoPath, row.photoPath)
   const discard = page.discardDraft(); h.notices.at(-1).success({ confirm: false }); await discard
   assert.equal(page.data.form.name, '恢复相机')
@@ -148,7 +162,7 @@ test('create completes draft before upload, uploads final edited file, and canno
   // Simulate the interrupted upload failing before any automatic cleanup.
   h.uploads[0].fail(); await tick(); h.notices.at(-1).complete(); await pending
   assert.equal(h.files.has(finalPath), false); assert.equal(h.store().read(), null)
-  const again = page.save(); assert.equal(h.requests[1].method, 'PUT')
+  const again = page.save(); await tick(); assert.equal(h.requests[1].method, 'PUT')
   h.respond(1, { id: 7 }); await tick(); h.uploads[1].fail(); await tick(); h.notices.at(-1).complete(); await again
 })
 test('successful photo edits persist the latest result immediately and unload does not duplicate copies', async () => {
@@ -174,16 +188,16 @@ const item = () => ({ id: 1, name: '名称很长的相机', status: 'active', ph
   daily_purchase_cost: null, usage_records: Array.from({ length: 5 }, (_, i) => ({ id: i + 1, used_on: `2026-01-0${i + 1}`, notes: `使用 ${i + 1}` })),
   maintenance_records: Array.from({ length: 5 }, (_, i) => ({ id: i + 1, maintained_on: `2026-02-0${i + 1}`, cost: '1.00', description: `维修 ${i + 1}` })), disposal: null,
   milestones: { earned: [{ id: 'a', label: '百日', date: '2026-01-01' }, { id: 'b', label: '周年', date: '2026-02-01' }], next: null }, daily_target: null })
-test('detail initially shows one stamp, three records and collapsed facts; folds remain independent', async () => {
+test('detail removes stamps while keeping three records and independent facts folds', async () => {
   const h = runtime(), page = h.page('item', { id: 1 }), pending = page.load()
   h.respond(0, item()); await pending
-  assert.equal(page.data.stamps.length, 1); assert.equal(page.data.timeline.length, 3); assert.equal(page.data.allTimeline.length, 5)
+  assert.equal(page.data.stamps, undefined); assert.equal(page.data.timeline.length, 3); assert.equal(page.data.allTimeline.length, 5)
   assert.equal(page.data.factsExpanded, false); assert.equal(page.data.item.dailyPurchase, '暂无'); assert.equal(page.data.item.net_cost, '-20.00')
   assert.equal(page.data.historyExpanded, false); assert.equal(page.data.historyUsage.length, 5)
   assert.ok(page.data.allTimeline.every(row => row.kind === 'maintenance'))
   page.toggleHistory(); assert.equal(page.data.historyExpanded, true)
-  page.toggleFacts(); page.toggleStamps(); page.toggleTimeline()
-  assert.equal(page.data.timeline.length, 5); assert.equal(page.data.stamps.length, 2)
+  page.toggleFacts(); page.toggleTimeline()
+  assert.equal(page.data.timeline.length, 5); assert.equal(page.toggleStamps, undefined)
   page.editRecord({ currentTarget: { dataset: { id: 1, kind: 'usage' } } })
   page.record({ currentTarget: { dataset: { kind: 'usage' } } })
   assert.equal(h.navigation.length, 0)
@@ -195,9 +209,9 @@ test('return restores folds and clamps scroll; stale measurements and new accoun
   const h = runtime(), page = h.page('item', { id: 1 }), callbacks = [], scrolls = []
   wx.createSelectorQuery = () => ({ in() { return this }, select() { return this }, boundingClientRect(cb) { callbacks.push(cb); return this }, exec() {} })
   wx.getWindowInfo = () => ({ windowHeight: 500 }); wx.pageScrollTo = o => scrolls.push(o)
-  page.setData({ factsExpanded: true, expanded: true, timelineExpanded: true, historyExpanded: true }); page.onPageScroll({ scrollTop: 800 }); page.onHide(); page.onShow()
+  page.setData({ factsExpanded: true, timelineExpanded: true, historyExpanded: true }); page.onPageScroll({ scrollTop: 800 }); page.onHide(); page.onShow()
   h.respond(0, item()); await tick(); callbacks[0]({ height: 900 })
-  assert.equal(scrolls[0].scrollTop, 400); assert.equal(page.data.timeline.length, 5); assert.equal(page.data.stamps.length, 2)
+  assert.equal(scrolls[0].scrollTop, 400); assert.equal(page.data.timeline.length, 5); assert.equal(page.data.factsExpanded, true)
   assert.equal(page.data.historyExpanded, true)
   page.onHide(); page.onShow(); h.respond(1, item()); await tick()
   h.app.globalData.token = 'bob'; h.app.globalData.user = { id: 2 }; callbacks[1]({ height: 1800 })
@@ -211,11 +225,11 @@ test('return restores folds and clamps scroll; stale measurements and new accoun
   delete wx.createSelectorQuery
   page._returnScroll = 80; page.restoreScroll(page._sequence, 'bob')
   assert.equal(scrolls.at(-1).scrollTop, 80)
-  const reopened = h.page('item', { id: 1 }); assert.equal(reopened.data.expanded, false)
+  const reopened = h.page('item', { id: 1 }); assert.equal(reopened.data.factsExpanded, false)
 })
 test('more menu includes unread photos; disposed restrictions and old confirmation callbacks remain safe', async () => {
   const h = runtime(), page = h.page('item', { id: 1 }); page.setData({ item: { ...item(), photo_url: '/photo', status: 'disposed' } })
-  assert.equal(page.quickUse, undefined); await page.writeTarget('5'); assert.equal(h.requests.length, 0)
+  assert.equal(page.quickUse, undefined); assert.equal(page.writeTarget, undefined); assert.equal(h.requests.length, 0)
   const more = page.more(); assert.deepEqual(h.notices[0].itemList, ['置顶', '移除照片', '移入回收站'])
   h.notices[0].success({ tapIndex: 1 }); await tick()
   h.app.globalData.token = 'bob'; h.notices[1].success({ confirm: true }); await more

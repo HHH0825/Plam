@@ -1,0 +1,1508 @@
+{
+  "date": "2026-10-11",
+  "rawBytes": 2703852,
+  "excludedBytes": 1720400,
+  "includedRawBytes": 983452,
+  "excluded": [
+    {
+      "file": "assets/brand/paw-ledger-card.png",
+      "bytes": 17802
+    },
+    {
+      "file": "assets/brand/paw-ledger-icon-1024.png",
+      "bytes": 37065
+    },
+    {
+      "file": "assets/brand/paw-ledger-icon-512.png",
+      "bytes": 17426
+    },
+    {
+      "file": "assets/brand/paw-ledger-icon.svg",
+      "bytes": 1010
+    },
+    {
+      "file": "assets/brand/paw-ledger-mark.svg",
+      "bytes": 836
+    },
+    {
+      "file": "assets/collection-hero/archive-kitten-v1.png",
+      "bytes": 100498
+    },
+    {
+      "file": "assets/collection-hero/milk-tea-paper-v1.png",
+      "bytes": 126276
+    },
+    {
+      "file": "assets/detail/archive.png",
+      "bytes": 576
+    },
+    {
+      "file": "assets/detail/archive.svg",
+      "bytes": 233
+    },
+    {
+      "file": "assets/detail/maintenance.png",
+      "bytes": 1859
+    },
+    {
+      "file": "assets/detail/maintenance.svg",
+      "bytes": 295
+    },
+    {
+      "file": "assets/detail/paw.png",
+      "bytes": 4503
+    },
+    {
+      "file": "assets/detail/paw.svg",
+      "bytes": 467
+    },
+    {
+      "file": "assets/detail/postmark.png",
+      "bytes": 2630
+    },
+    {
+      "file": "assets/detail/postmark.svg",
+      "bytes": 249
+    },
+    {
+      "file": "assets/editor-discovery/calendar.png",
+      "bytes": 664
+    },
+    {
+      "file": "assets/editor-discovery/calendar.svg",
+      "bytes": 248
+    },
+    {
+      "file": "assets/editor-discovery/camera-add.png",
+      "bytes": 2429
+    },
+    {
+      "file": "assets/editor-discovery/camera-add.svg",
+      "bytes": 331
+    },
+    {
+      "file": "assets/editor-discovery/camera-kitten-v2.png",
+      "bytes": 64929
+    },
+    {
+      "file": "assets/editor-discovery/down.png",
+      "bytes": 310
+    },
+    {
+      "file": "assets/editor-discovery/down.svg",
+      "bytes": 208
+    },
+    {
+      "file": "assets/editor-discovery/form-paw.png",
+      "bytes": 2010
+    },
+    {
+      "file": "assets/editor-discovery/form-paw.svg",
+      "bytes": 460
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery-v3.png",
+      "bytes": 33385
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery-v3.svg",
+      "bytes": 1588
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery.png",
+      "bytes": 11644
+    },
+    {
+      "file": "assets/editor-discovery/header-discovery.svg",
+      "bytes": 3152
+    },
+    {
+      "file": "assets/editor-discovery/header-editor.png",
+      "bytes": 11646
+    },
+    {
+      "file": "assets/editor-discovery/header-editor.svg",
+      "bytes": 3059
+    },
+    {
+      "file": "assets/editor-discovery/journal-kitten-v2.png",
+      "bytes": 71061
+    },
+    {
+      "file": "assets/editor-discovery/number-tape.png",
+      "bytes": 1763
+    },
+    {
+      "file": "assets/editor-discovery/number-tape.svg",
+      "bytes": 232
+    },
+    {
+      "file": "assets/item-doodle/arc.svg",
+      "bytes": 198
+    },
+    {
+      "file": "assets/item-doodle/corner-bl.svg",
+      "bytes": 280
+    },
+    {
+      "file": "assets/item-doodle/corner-br.svg",
+      "bytes": 282
+    },
+    {
+      "file": "assets/item-doodle/corner-tl.svg",
+      "bytes": 233
+    },
+    {
+      "file": "assets/item-doodle/corner-tr.svg",
+      "bytes": 280
+    },
+    {
+      "file": "assets/item-doodle/dot.svg",
+      "bytes": 133
+    },
+    {
+      "file": "assets/item-doodle/edge-bottom.svg",
+      "bytes": 264
+    },
+    {
+      "file": "assets/item-doodle/edge-left.svg",
+      "bytes": 257
+    },
+    {
+      "file": "assets/item-doodle/edge-right.svg",
+      "bytes": 258
+    },
+    {
+      "file": "assets/item-doodle/edge-top.svg",
+      "bytes": 218
+    },
+    {
+      "file": "assets/item-doodle/mark.svg",
+      "bytes": 190
+    },
+    {
+      "file": "assets/item-doodle/paw.svg",
+      "bytes": 448
+    },
+    {
+      "file": "assets/item-doodle/smile.svg",
+      "bytes": 186
+    },
+    {
+      "file": "assets/item-doodle/star.svg",
+      "bytes": 192
+    },
+    {
+      "file": "assets/item-doodle/underline.svg",
+      "bytes": 209
+    },
+    {
+      "file": "assets/me/feedback.png",
+      "bytes": 2389
+    },
+    {
+      "file": "assets/me/feedback.svg",
+      "bytes": 330
+    },
+    {
+      "file": "assets/me/keepsakes.png",
+      "bytes": 1519
+    },
+    {
+      "file": "assets/me/keepsakes.svg",
+      "bytes": 484
+    },
+    {
+      "file": "assets/me/resting-kitten-v1.png",
+      "bytes": 94255
+    },
+    {
+      "file": "assets/me/support.png",
+      "bytes": 2787
+    },
+    {
+      "file": "assets/me/support.svg",
+      "bytes": 490
+    },
+    {
+      "file": "assets/me/trash.png",
+      "bytes": 1212
+    },
+    {
+      "file": "assets/me/trash.svg",
+      "bytes": 296
+    },
+    {
+      "file": "assets/me/watercolor-wash-v1.png",
+      "bytes": 118003
+    },
+    {
+      "file": "assets/paper/add-sage.png",
+      "bytes": 2925
+    },
+    {
+      "file": "assets/paper/add-sage.svg",
+      "bytes": 783
+    },
+    {
+      "file": "assets/paper/add.png",
+      "bytes": 5458
+    },
+    {
+      "file": "assets/paper/add.svg",
+      "bytes": 822
+    },
+    {
+      "file": "assets/paper/avatar-bike.svg",
+      "bytes": 798
+    },
+    {
+      "file": "assets/paper/avatar-book.svg",
+      "bytes": 629
+    },
+    {
+      "file": "assets/paper/avatar-cat.svg",
+      "bytes": 811
+    },
+    {
+      "file": "assets/paper/avatar-sprout.svg",
+      "bytes": 686
+    },
+    {
+      "file": "assets/paper/avatar-star.svg",
+      "bytes": 761
+    },
+    {
+      "file": "assets/paper/avatar-sun.svg",
+      "bytes": 712
+    },
+    {
+      "file": "assets/paper/collection.png",
+      "bytes": 6172
+    },
+    {
+      "file": "assets/paper/collection.svg",
+      "bytes": 520
+    },
+    {
+      "file": "assets/paper/grain.png",
+      "bytes": 978
+    },
+    {
+      "file": "assets/paper/grain.svg",
+      "bytes": 420
+    },
+    {
+      "file": "assets/paper/header-rose.png",
+      "bytes": 60229
+    },
+    {
+      "file": "assets/paper/header-rose.svg",
+      "bytes": 1066
+    },
+    {
+      "file": "assets/paper/header-sage.png",
+      "bytes": 100562
+    },
+    {
+      "file": "assets/paper/header-sage.svg",
+      "bytes": 965
+    },
+    {
+      "file": "assets/paper/header-small.png",
+      "bytes": 18854
+    },
+    {
+      "file": "assets/paper/header-small.svg",
+      "bytes": 546
+    },
+    {
+      "file": "assets/paper/identity.png",
+      "bytes": 6437
+    },
+    {
+      "file": "assets/paper/identity.svg",
+      "bytes": 630
+    },
+    {
+      "file": "assets/paper/login.png",
+      "bytes": 13497
+    },
+    {
+      "file": "assets/paper/login.svg",
+      "bytes": 1041
+    },
+    {
+      "file": "assets/paper/logo.svg",
+      "bytes": 865
+    },
+    {
+      "file": "assets/paper/memories.png",
+      "bytes": 9358
+    },
+    {
+      "file": "assets/paper/memories.svg",
+      "bytes": 580
+    },
+    {
+      "file": "assets/paper/nav-insights-selected.png",
+      "bytes": 1770
+    },
+    {
+      "file": "assets/paper/nav-insights-selected.svg",
+      "bytes": 478
+    },
+    {
+      "file": "assets/paper/nav-insights.png",
+      "bytes": 1774
+    },
+    {
+      "file": "assets/paper/nav-insights.svg",
+      "bytes": 478
+    },
+    {
+      "file": "assets/paper/nav-items-selected.png",
+      "bytes": 1587
+    },
+    {
+      "file": "assets/paper/nav-items-selected.svg",
+      "bytes": 671
+    },
+    {
+      "file": "assets/paper/nav-items.png",
+      "bytes": 1592
+    },
+    {
+      "file": "assets/paper/nav-items.svg",
+      "bytes": 671
+    },
+    {
+      "file": "assets/paper/nav-me-selected.png",
+      "bytes": 1671
+    },
+    {
+      "file": "assets/paper/nav-me-selected.svg",
+      "bytes": 444
+    },
+    {
+      "file": "assets/paper/nav-me.png",
+      "bytes": 1657
+    },
+    {
+      "file": "assets/paper/nav-me.svg",
+      "bytes": 444
+    },
+    {
+      "file": "assets/paper/purchase.png",
+      "bytes": 5332
+    },
+    {
+      "file": "assets/paper/purchase.svg",
+      "bytes": 904
+    },
+    {
+      "file": "assets/paper/save.png",
+      "bytes": 13303
+    },
+    {
+      "file": "assets/paper/save.svg",
+      "bytes": 1149
+    },
+    {
+      "file": "assets/paper/type-books.png",
+      "bytes": 4237
+    },
+    {
+      "file": "assets/paper/type-books.svg",
+      "bytes": 333
+    },
+    {
+      "file": "assets/paper/type-clothing.png",
+      "bytes": 5661
+    },
+    {
+      "file": "assets/paper/type-clothing.svg",
+      "bytes": 319
+    },
+    {
+      "file": "assets/paper/type-daily.png",
+      "bytes": 4495
+    },
+    {
+      "file": "assets/paper/type-daily.svg",
+      "bytes": 304
+    },
+    {
+      "file": "assets/paper/type-digital.png",
+      "bytes": 7166
+    },
+    {
+      "file": "assets/paper/type-digital.svg",
+      "bytes": 386
+    },
+    {
+      "file": "assets/paper/type-home.png",
+      "bytes": 3647
+    },
+    {
+      "file": "assets/paper/type-home.svg",
+      "bytes": 339
+    },
+    {
+      "file": "assets/paper/type-mobility.png",
+      "bytes": 6637
+    },
+    {
+      "file": "assets/paper/type-mobility.svg",
+      "bytes": 331
+    },
+    {
+      "file": "assets/paper/type-other.png",
+      "bytes": 5757
+    },
+    {
+      "file": "assets/paper/type-other.svg",
+      "bytes": 318
+    },
+    {
+      "file": "assets/paper/type-sports.png",
+      "bytes": 10092
+    },
+    {
+      "file": "assets/paper/type-sports.svg",
+      "bytes": 306
+    },
+    {
+      "file": "assets/paper/type-tools.png",
+      "bytes": 6845
+    },
+    {
+      "file": "assets/paper/type-tools.svg",
+      "bytes": 316
+    },
+    {
+      "file": "assets/purchase-entry/filter.svg",
+      "bytes": 316
+    },
+    {
+      "file": "assets/purchase-entry/sort.svg",
+      "bytes": 239
+    },
+    {
+      "file": "assets/purchase-entry/storage.svg",
+      "bytes": 404
+    },
+    {
+      "file": "assets/purchase-entry/subscription.svg",
+      "bytes": 427
+    },
+    {
+      "file": "assets/purchase-entry/wishlist.svg",
+      "bytes": 366
+    },
+    {
+      "file": "assets/report/archive-sketch.png",
+      "bytes": 19624
+    },
+    {
+      "file": "assets/report/archive-sketch.svg",
+      "bytes": 1011
+    },
+    {
+      "file": "assets/report/masthead.png",
+      "bytes": 3615
+    },
+    {
+      "file": "assets/report/masthead.svg",
+      "bytes": 652
+    },
+    {
+      "file": "assets/report/month-01.png",
+      "bytes": 14364
+    },
+    {
+      "file": "assets/report/month-01.svg",
+      "bytes": 501
+    },
+    {
+      "file": "assets/report/month-02.png",
+      "bytes": 17718
+    },
+    {
+      "file": "assets/report/month-02.svg",
+      "bytes": 531
+    },
+    {
+      "file": "assets/report/month-03.png",
+      "bytes": 18355
+    },
+    {
+      "file": "assets/report/month-03.svg",
+      "bytes": 560
+    },
+    {
+      "file": "assets/report/month-04.png",
+      "bytes": 16299
+    },
+    {
+      "file": "assets/report/month-04.svg",
+      "bytes": 515
+    },
+    {
+      "file": "assets/report/month-05.png",
+      "bytes": 17912
+    },
+    {
+      "file": "assets/report/month-05.svg",
+      "bytes": 524
+    },
+    {
+      "file": "assets/report/month-06.png",
+      "bytes": 20505
+    },
+    {
+      "file": "assets/report/month-06.svg",
+      "bytes": 561
+    },
+    {
+      "file": "assets/report/month-07.png",
+      "bytes": 19103
+    },
+    {
+      "file": "assets/report/month-07.svg",
+      "bytes": 512
+    },
+    {
+      "file": "assets/report/month-08.png",
+      "bytes": 21983
+    },
+    {
+      "file": "assets/report/month-08.svg",
+      "bytes": 577
+    },
+    {
+      "file": "assets/report/month-09.png",
+      "bytes": 19928
+    },
+    {
+      "file": "assets/report/month-09.svg",
+      "bytes": 537
+    },
+    {
+      "file": "assets/report/month-10.png",
+      "bytes": 14476
+    },
+    {
+      "file": "assets/report/month-10.svg",
+      "bytes": 501
+    },
+    {
+      "file": "assets/report/month-11.png",
+      "bytes": 3675
+    },
+    {
+      "file": "assets/report/month-11.svg",
+      "bytes": 422
+    },
+    {
+      "file": "assets/report/month-12.png",
+      "bytes": 8892
+    },
+    {
+      "file": "assets/report/month-12.svg",
+      "bytes": 452
+    },
+    {
+      "file": "assets/report-editorial/corner-tape.png",
+      "bytes": 514
+    },
+    {
+      "file": "assets/report-editorial/corner-tape.svg",
+      "bytes": 151
+    },
+    {
+      "file": "assets/report-editorial/cover-wash.png",
+      "bytes": 111266
+    },
+    {
+      "file": "assets/report-editorial/editor-kitten.png",
+      "bytes": 90549
+    },
+    {
+      "file": "assets/report-editorial/label-tape.png",
+      "bytes": 924
+    },
+    {
+      "file": "assets/report-editorial/label-tape.svg",
+      "bytes": 157
+    },
+    {
+      "file": "assets/report-editorial/leaf.png",
+      "bytes": 1541
+    },
+    {
+      "file": "assets/report-editorial/leaf.svg",
+      "bytes": 308
+    },
+    {
+      "file": "assets/report-editorial/memory-book.png",
+      "bytes": 1436
+    },
+    {
+      "file": "assets/report-editorial/memory-book.svg",
+      "bytes": 591
+    },
+    {
+      "file": "assets/report-editorial/memory-stamp.png",
+      "bytes": 4106
+    },
+    {
+      "file": "assets/report-editorial/memory-stamp.svg",
+      "bytes": 575
+    },
+    {
+      "file": "assets/report-editorial/number-tape.png",
+      "bytes": 1105
+    },
+    {
+      "file": "assets/report-editorial/number-tape.svg",
+      "bytes": 223
+    },
+    {
+      "file": "assets/report-editorial/paper-bottom.png",
+      "bytes": 3037
+    },
+    {
+      "file": "assets/report-editorial/paper-bottom.svg",
+      "bytes": 389
+    },
+    {
+      "file": "assets/report-editorial/paper-middle.png",
+      "bytes": 1474
+    },
+    {
+      "file": "assets/report-editorial/paper-middle.svg",
+      "bytes": 343
+    },
+    {
+      "file": "assets/report-editorial/paper-top.png",
+      "bytes": 3569
+    },
+    {
+      "file": "assets/report-editorial/paper-top.svg",
+      "bytes": 368
+    },
+    {
+      "file": "assets/report-editorial/paw-signature.png",
+      "bytes": 1178
+    },
+    {
+      "file": "assets/report-editorial/paw-signature.svg",
+      "bytes": 374
+    },
+    {
+      "file": "assets/report-editorial/postmark.png",
+      "bytes": 5342
+    },
+    {
+      "file": "assets/report-editorial/postmark.svg",
+      "bytes": 631
+    },
+    {
+      "file": "assets/stickers/camera.png",
+      "bytes": 18136
+    },
+    {
+      "file": "assets/stickers/collector.png",
+      "bytes": 64938
+    },
+    {
+      "file": "assets/stickers/journal.png",
+      "bytes": 18628
+    },
+    {
+      "file": "assets/stickers/keepsake.png",
+      "bytes": 22582
+    },
+    {
+      "file": "assets/stickers/search.png",
+      "bytes": 18486
+    },
+    {
+      "file": "assets/stickers/wave.png",
+      "bytes": 17873
+    },
+    {
+      "file": "assets/white-doodle/camera-add.svg",
+      "bytes": 343
+    },
+    {
+      "file": "assets/white-doodle/cat-book.svg",
+      "bytes": 1386
+    },
+    {
+      "file": "assets/white-doodle/cat-camera.svg",
+      "bytes": 1429
+    },
+    {
+      "file": "assets/white-doodle/cat-search.svg",
+      "bytes": 1319
+    },
+    {
+      "file": "assets/white-doodle/cat-sleep.svg",
+      "bytes": 1284
+    },
+    {
+      "file": "assets/white-doodle/compact-discover.svg",
+      "bytes": 379
+    },
+    {
+      "file": "assets/white-doodle/compact-feedback.svg",
+      "bytes": 269
+    },
+    {
+      "file": "assets/white-doodle/compact-keepsakes.svg",
+      "bytes": 375
+    },
+    {
+      "file": "assets/white-doodle/compact-nav-items.svg",
+      "bytes": 327
+    },
+    {
+      "file": "assets/white-doodle/compact-nav-me.svg",
+      "bytes": 407
+    },
+    {
+      "file": "assets/white-doodle/compact-support.svg",
+      "bytes": 265
+    },
+    {
+      "file": "assets/white-doodle/compact-trash.svg",
+      "bytes": 283
+    },
+    {
+      "file": "assets/white-doodle/corner-tape.svg",
+      "bytes": 248
+    },
+    {
+      "file": "assets/white-doodle/discover.svg",
+      "bytes": 379
+    },
+    {
+      "file": "assets/white-doodle/feedback.svg",
+      "bytes": 269
+    },
+    {
+      "file": "assets/white-doodle/keepsakes.svg",
+      "bytes": 375
+    },
+    {
+      "file": "assets/white-doodle/label-add-sage.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-add.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-collection.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-identity.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-login.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-memories.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-purchase.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-save.svg",
+      "bytes": 612
+    },
+    {
+      "file": "assets/white-doodle/label-tape.svg",
+      "bytes": 239
+    },
+    {
+      "file": "assets/white-doodle/leaf.svg",
+      "bytes": 323
+    },
+    {
+      "file": "assets/white-doodle/memory-book.svg",
+      "bytes": 611
+    },
+    {
+      "file": "assets/white-doodle/memory-stamp.svg",
+      "bytes": 639
+    },
+    {
+      "file": "assets/white-doodle/month-01.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-02.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-03.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-04.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-05.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-06.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-07.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-08.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-09.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-10.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-11.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/month-12.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/nav-items.svg",
+      "bytes": 327
+    },
+    {
+      "file": "assets/white-doodle/nav-me.svg",
+      "bytes": 407
+    },
+    {
+      "file": "assets/white-doodle/number-tape.svg",
+      "bytes": 247
+    },
+    {
+      "file": "assets/white-doodle/paw-button.svg",
+      "bytes": 521
+    },
+    {
+      "file": "assets/white-doodle/paw-signature.svg",
+      "bytes": 565
+    },
+    {
+      "file": "assets/white-doodle/paw.svg",
+      "bytes": 523
+    },
+    {
+      "file": "assets/white-doodle/postmark.svg",
+      "bytes": 387
+    },
+    {
+      "file": "assets/white-doodle/share-fallback.svg",
+      "bytes": 1695
+    },
+    {
+      "file": "assets/white-doodle/support.svg",
+      "bytes": 265
+    },
+    {
+      "file": "assets/white-doodle/trash.svg",
+      "bytes": 283
+    },
+    {
+      "file": "assets/white-doodle/type-books.svg",
+      "bytes": 323
+    },
+    {
+      "file": "assets/white-doodle/type-clothing.svg",
+      "bytes": 341
+    },
+    {
+      "file": "assets/white-doodle/type-daily.svg",
+      "bytes": 308
+    },
+    {
+      "file": "assets/white-doodle/type-digital.svg",
+      "bytes": 393
+    },
+    {
+      "file": "assets/white-doodle/type-home.svg",
+      "bytes": 286
+    },
+    {
+      "file": "assets/white-doodle/type-mobility.svg",
+      "bytes": 372
+    },
+    {
+      "file": "assets/white-doodle/type-other.svg",
+      "bytes": 268
+    },
+    {
+      "file": "assets/white-doodle/type-sports.svg",
+      "bytes": 309
+    },
+    {
+      "file": "assets/white-doodle/type-tools.svg",
+      "bytes": 284
+    }
+  ],
+  "checkedStaticReferences": 133,
+  "references": [
+    {
+      "source": "app.json",
+      "asset": "assets/white-doodle/nav-items.png"
+    },
+    {
+      "source": "app.json",
+      "asset": "assets/white-doodle/nav-items.png"
+    },
+    {
+      "source": "app.json",
+      "asset": "assets/white-doodle/nav-me.png"
+    },
+    {
+      "source": "app.json",
+      "asset": "assets/white-doodle/nav-me.png"
+    },
+    {
+      "source": "custom-tab-bar/index.wxml",
+      "asset": "assets/white-doodle/compact-nav-items.png"
+    },
+    {
+      "source": "custom-tab-bar/index.wxml",
+      "asset": "assets/white-doodle/paw-button.png"
+    },
+    {
+      "source": "custom-tab-bar/index.wxml",
+      "asset": "assets/white-doodle/compact-nav-me.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/postmark.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/cat-camera.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/paw.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/paw.png"
+    },
+    {
+      "source": "pages/editor/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/insights/index.wxml",
+      "asset": "assets/white-doodle/postmark.png"
+    },
+    {
+      "source": "pages/insights/index.wxml",
+      "asset": "assets/white-doodle/cat-search.png"
+    },
+    {
+      "source": "pages/insights/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/insights/index.wxml",
+      "asset": "assets/white-doodle/paw.png"
+    },
+    {
+      "source": "pages/insights/index.wxml",
+      "asset": "assets/white-doodle/postmark.png"
+    },
+    {
+      "source": "pages/item/index.wxml",
+      "asset": "assets/item-doodle/arc.png"
+    },
+    {
+      "source": "pages/item/index.wxml",
+      "asset": "assets/purchase-entry/storage.png"
+    },
+    {
+      "source": "pages/item/index.wxml",
+      "asset": "assets/white-doodle/type-tools.png"
+    },
+    {
+      "source": "pages/item/index.wxml",
+      "asset": "assets/white-doodle/nav-items.png"
+    },
+    {
+      "source": "pages/item/index.wxml",
+      "asset": "assets/brand/paw-ledger-mark.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/notebook.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/strokes.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/title.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/hero.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/strokes.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/camera.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/ring.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/notebook.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/wishlist.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/subscription.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/peek-paw.png"
+    },
+    {
+      "source": "pages/login/index.wxml",
+      "asset": "assets/welcome-collection/paw.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/white-doodle/compact-discover.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/disposed-archive/entry.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/white-doodle/compact-trash.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/white-doodle/compact-feedback.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/white-doodle/compact-support.png"
+    },
+    {
+      "source": "pages/me/index.wxml",
+      "asset": "assets/white-doodle/compact-settings.png"
+    },
+    {
+      "source": "pages/monthly/index.js",
+      "asset": "assets/white-doodle/share-fallback.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/brand/paw-ledger-mark.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/postmark.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/leaf.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/leaf.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/label-tape.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/number-tape.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/leaf.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/corner-tape.png"
+    },
+    {
+      "source": "pages/monthly/index.wxml",
+      "asset": "assets/white-doodle/paw-signature.png"
+    },
+    {
+      "source": "pages/profile/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/record/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/storage-locations/index.wxml",
+      "asset": "assets/purchase-entry/storage.png"
+    },
+    {
+      "source": "pages/storage-locations/index.wxml",
+      "asset": "assets/purchase-entry/storage.png"
+    },
+    {
+      "source": "pages/support/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/trash/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "pages/trash/index.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/corner-tl.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/corner-tr.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/corner-bl.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/corner-br.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/edge-top.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/edge-bottom.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/edge-left.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/edge-right.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/paw.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/star.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/dot.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/dot.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/underline.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/disposed-archive/entry.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/purchase-entry/wishlist.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/purchase-entry/subscription.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/purchase-entry/storage.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/purchase-entry/filter.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/purchase-entry/sort.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/white-doodle/cat-search.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/white-doodle/cat-book.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/paw.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/star.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/arc.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/disposed-archive/mark.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/mark.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/dot.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/paw.png"
+    },
+    {
+      "source": "templates/item-list.wxml",
+      "asset": "assets/item-doodle/star.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/phone.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/tablet.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/laptop.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/monitor.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/camera.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/headphones.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/watch.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/gamepad.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/chair.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/lamp.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/fan.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/purifier.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/vacuum.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/cup.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/thermos.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/bowl.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/pan.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/umbrella.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/toiletries.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/shirt.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/coat.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/pants.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/shoes.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/backpack.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/book.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/notebook.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/pen.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/folder.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/bike.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/ebike.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/car.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/suitcase.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/dumbbell.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/yoga-mat.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/ball.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/racket.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/toolbox.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/screwdriver.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/drill.png"
+    },
+    {
+      "source": "utils/item-cover-catalogue.js",
+      "asset": "assets/item-covers/storage-box.png"
+    },
+    {
+      "source": "utils/report-image.js",
+      "asset": "assets/brand/paw-ledger-mark.png"
+    }
+  ],
+  "dynamicAssets": "Preserved all remaining PNGs, including all paper-label variants, header-{sage,rose,small}, classification icons, month numbers and preset avatars."
+}

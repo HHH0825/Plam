@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "format": "png",
+  "width": 960,
+  "height": 627,
+  "masterBytes": 204510,
+  "pngBytes": 203742,
+  "budgetBytes": 204800,
+  "visiblePixels": 421011,
+  "alphaIdentical": true,
+  "visiblePixelsIdentical": true,
+  "exactPixelsIdentical": true,
+  "runtimeSha256": "2946fad0df3ffa23995e8e1474d63381ff5aa8ea2006908578c6fa56ee2bb36b"
+}

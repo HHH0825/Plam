@@ -1,0 +1,56 @@
+@import "../../styles/announcement.wxss";
+/* Original approved two-screen sketch: 390px is the visual baseline. */
+.membership-page .member-feedback-link{width:auto!important;max-width:none;display:inline-block;padding:4px 0;margin:7px 0 0;background:transparent;color:#8C6E24;font-size:12px;line-height:1.5;font-weight:500}.member-feedback-link::after{border:0}
+.member-owned-badge{position:absolute;right:5px;top:5px;font-size:10px;padding:1px 6px;border-radius:10px;background:#EAF3EB;color:#527158;line-height:1.5}.member-owned-note{font-size:11px;text-align:center;color:#707070;margin:10px 0;line-height:1.6}.membership-page .member-plan[disabled]{opacity:1;color:#202024;background:#FFFEF7}.membership-page .member-purchase .button[disabled]{background:#F0E9CE;color:#776B48}
+.membership-page{padding:8px 15px calc(20px + env(safe-area-inset-bottom));color:#202024;background:linear-gradient(180deg,rgba(255,249,229,.88),rgba(255,250,235,.5) 160px,rgba(255,255,255,0) 320px)}
+.member-hero{position:relative;display:flex;align-items:center;min-height:129px;margin-bottom:10px}
+.member-hero-copy{position:relative;z-index:1;flex:1;min-width:0;padding-right:112px;transform:translateY(8px)}
+.member-hero .title{font-size:23px;line-height:1.4;letter-spacing:0;margin:0 0 3px;white-space:normal;overflow-wrap:normal}
+.member-hero .title text{display:inline-block;white-space:nowrap}
+.member-subtitle{font-size:13px;line-height:1.6;white-space:normal;color:#545454}
+.member-cat{position:absolute;right:-3px;bottom:-12px;width:122px;height:137px}
+.member-state{display:inline-block;font-size:11px;line-height:1.5;padding:3px 11px;border-radius:20px;background:#EEEEEC;color:#545454;margin-top:10px}
+.member-expiry{font-size:10px;line-height:1.5;margin-top:5px;color:#707070}
+.member-plans{display:flex;align-items:stretch;gap:8px}
+.membership-page .member-plan{position:relative;flex:1;min-width:0;width:0!important;max-width:none!important;min-height:136px;padding:16px 4px 4px;margin:0!important;box-sizing:border-box;border:1px solid #E8E8E8;border-radius:14px;background:rgba(255,255,255,.94);color:#202024;font-size:15px;font-weight:400;line-height:1.5;overflow:visible}
+.member-plan::after,.member-feature::after{border:0}
+.membership-page .member-plan.chosen{border:1.5px solid #292929;background:linear-gradient(130deg,#FFF5BD,#FFE88A 65%,#FFF0B2);box-shadow:inset 0 0 0 2px rgba(255,255,255,.45)}
+.member-price{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;column-gap:1px;font-size:29px;font-weight:700;line-height:1.2;margin-top:10px}
+.member-price .member-currency{font-size:18px}
+.member-price .member-digits{font-size:inherit;white-space:nowrap}
+.member-plan .muted{font-size:12px;line-height:1.6;margin-top:3px;color:#545454}
+.member-promise{text-align:center;background:rgba(248,246,241,.9);padding:9px 4px;margin:10px 0 18px;font-size:13px;font-weight:600;line-height:1.55;border-radius:15px}
+.member-promise .muted{font-size:11px;font-weight:400;margin-top:2px}
+.member-rights-heading{font-size:15px;font-weight:700;line-height:1.5;margin:0 2px 7px}
+.membership-page .member-feature{display:flex;align-items:center;gap:20px;width:100%!important;max-width:none!important;min-height:70px;margin:8px 0!important;padding:4px 12px;box-sizing:border-box;background:rgba(255,255,255,.95);border:1px solid #E8E8E8;border-radius:15px;text-align:left;color:#202024;font-weight:400;line-height:1.6;white-space:normal}
+.member-feature image{width:76px;height:61px;flex:none}
+.member-feature>view{flex:1;min-width:0}
+.member-feature-title{font-size:14px;font-weight:600;line-height:1.6}
+.membership-page .member-feature .muted{font-size:11px;font-weight:400;line-height:1.6;margin-top:3px;color:#707070}
+.member-free{display:flex;align-items:center;gap:10px;background:linear-gradient(110deg,#ECFAF0,#EDF9F4);padding:10px 12px;margin-top:10px;border-radius:14px;color:#244D47}
+.member-free image{width:37px;height:37px;flex:none}
+.member-free>view{flex:1;min-width:0}
+.member-free-title{font-size:13px;font-weight:600;line-height:1.6}
+.member-free .muted{font-size:10px;line-height:1.6;margin-top:2px;color:#677B76}
+.member-purchase{display:flex;align-items:center;gap:12px;margin-top:15px;flex-wrap:wrap}
+.member-selected-price{font-size:13px;font-weight:600;white-space:nowrap;line-height:1.6}
+.member-selected-price text{font-size:19px;font-weight:700;margin-left:3px}
+.membership-page .member-purchase .button[disabled]{flex:1;width:auto!important;max-width:none!important;min-width:155px;min-height:44px;margin:0!important;padding:9px 12px;box-sizing:border-box;border:1px solid #F6C932;border-radius:18px;background:linear-gradient(110deg,#FFDF59,#FFE56B);color:#292929;opacity:1;font-size:14px;font-weight:600;line-height:1.5}
+.membership-page .text-button{display:block;width:auto!important;max-width:none!important;background:transparent;border:0;padding:0;text-align:center;margin:10px auto 0!important;font-size:11px;font-weight:400;line-height:1.7;color:#858585}
+.membership-page .text-button::after{border:0}
+.member-footnote{text-align:center;color:#858585;font-size:10px;line-height:1.7;margin-top:3px}
+@media(max-width:350px){.member-hero{min-height:135px}.member-hero .title{font-size:19px}.member-subtitle{font-size:11px}.member-cat{width:104px;height:123px}.member-hero-copy{padding-right:80px}.member-feature image{width:50px;height:47px}.member-feature-title{font-size:13px}.member-price{font-size:27px}.member-selected-price{font-size:12px}.member-selected-price text{font-size:17px}.member-purchase{gap:8px}.membership-page .member-purchase .button[disabled]{min-width:135px}}
+
+.member-payment-note{font-size:13px;line-height:1.6;text-align:center;padding:8px 6px;color:#655735;overflow-wrap:anywhere}.member-order-actions{display:flex;justify-content:center;gap:12px}.membership-page .member-comparison-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%!important;max-width:none!important;margin:12px 0 24px!important;padding:14px 16px;background:white;border:1px solid #EAE8DF;border-radius:16px;text-align:left;white-space:normal;line-height:1.7}.member-comparison-entry::after{border:0}.member-comparison-title{font-size:14px;font-weight:600;color:#3E3B32}.member-comparison-entry .muted{font-size:11px}.member-comparison-arrow{font-size:22px;color:#B39B55;flex:none}.member-ad-benefit{box-sizing:border-box}.member-ad-shield{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:52px;flex:none;border:2px solid #776D4A;border-radius:13px 13px 24px 24px;background:#FFF5C5;transform:rotate(-5deg);box-sizing:border-box;margin:5px 5px 5px 4px}.member-feature .member-ad-shield image{width:37px;height:34px}.member-ad-benefit>view:last-child{flex:1;min-width:0}
+
+.member-feature .member-ad-shield{flex:0 0 56px;width:56px;height:52px}
+
+/* Compact hero and an account-scoped, explicitly dismissed announcement. */
+.member-hero{display:block;min-height:136px;margin:12px 0 8px}.member-hero-copy{padding-right:108px;transform:none}.member-hero-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 7px;margin-top:8px}.member-hero-meta .member-state,.member-hero-meta .member-expiry{margin:0}.member-cat{width:108px;height:132px;right:0;bottom:-4px}
+/* The notice is an icon attached to the end of the headline. */
+.member-hero-copy{padding-right:0}.member-hero .member-subtitle,.member-hero .member-hero-meta{margin-right:108px}.member-hero .title{line-height:44px}.member-title-ending{display:inline-flex;align-items:center;vertical-align:middle;white-space:nowrap;gap:3px}
+.member-state.member-state-active{background:linear-gradient(115deg,#FFF0B8,#F7D776);border:1px solid #E7C56A;box-shadow:inset 0 1px 0 #FFFAE2;color:#735523;box-sizing:border-box}
+
+@media(max-width:350px){.member-hero-copy{padding-right:0}.member-hero .member-subtitle,.member-hero .member-hero-meta{margin-right:90px}.member-cat{width:91px;height:120px}.member-hero .title{font-size:21px}.member-announcement-body{padding-left:17px;padding-right:17px}}
+
+/* Fold the message into a letter, then return it to its measured title icon. */

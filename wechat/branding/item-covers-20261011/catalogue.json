@@ -1,0 +1,242 @@
+[
+  {
+    "key": "phone",
+    "name": "手机",
+    "group": "digital",
+    "art": "/assets/item-covers/phone.png"
+  },
+  {
+    "key": "tablet",
+    "name": "平板",
+    "group": "digital",
+    "art": "/assets/item-covers/tablet.png"
+  },
+  {
+    "key": "laptop",
+    "name": "笔记本电脑",
+    "group": "digital",
+    "art": "/assets/item-covers/laptop.png"
+  },
+  {
+    "key": "monitor",
+    "name": "显示器",
+    "group": "digital",
+    "art": "/assets/item-covers/monitor.png"
+  },
+  {
+    "key": "camera",
+    "name": "相机",
+    "group": "digital",
+    "art": "/assets/item-covers/camera.png"
+  },
+  {
+    "key": "headphones",
+    "name": "耳机",
+    "group": "digital",
+    "art": "/assets/item-covers/headphones.png"
+  },
+  {
+    "key": "watch",
+    "name": "智能手表",
+    "group": "digital",
+    "art": "/assets/item-covers/watch.png"
+  },
+  {
+    "key": "gamepad",
+    "name": "游戏手柄",
+    "group": "digital",
+    "art": "/assets/item-covers/gamepad.png"
+  },
+  {
+    "key": "chair",
+    "name": "椅子",
+    "group": "home",
+    "art": "/assets/item-covers/chair.png"
+  },
+  {
+    "key": "lamp",
+    "name": "台灯",
+    "group": "home",
+    "art": "/assets/item-covers/lamp.png"
+  },
+  {
+    "key": "fan",
+    "name": "电风扇",
+    "group": "home",
+    "art": "/assets/item-covers/fan.png"
+  },
+  {
+    "key": "purifier",
+    "name": "空气净化器",
+    "group": "home",
+    "art": "/assets/item-covers/purifier.png"
+  },
+  {
+    "key": "vacuum",
+    "name": "吸尘器",
+    "group": "home",
+    "art": "/assets/item-covers/vacuum.png"
+  },
+  {
+    "key": "cup",
+    "name": "水杯",
+    "group": "daily",
+    "art": "/assets/item-covers/cup.png"
+  },
+  {
+    "key": "thermos",
+    "name": "保温杯",
+    "group": "daily",
+    "art": "/assets/item-covers/thermos.png"
+  },
+  {
+    "key": "bowl",
+    "name": "碗",
+    "group": "daily",
+    "art": "/assets/item-covers/bowl.png"
+  },
+  {
+    "key": "pan",
+    "name": "锅",
+    "group": "daily",
+    "art": "/assets/item-covers/pan.png"
+  },
+  {
+    "key": "umbrella",
+    "name": "雨伞",
+    "group": "daily",
+    "art": "/assets/item-covers/umbrella.png"
+  },
+  {
+    "key": "toiletries",
+    "name": "洗护用品",
+    "group": "daily",
+    "art": "/assets/item-covers/toiletries.png"
+  },
+  {
+    "key": "shirt",
+    "name": "上衣",
+    "group": "clothing",
+    "art": "/assets/item-covers/shirt.png"
+  },
+  {
+    "key": "coat",
+    "name": "外套",
+    "group": "clothing",
+    "art": "/assets/item-covers/coat.png"
+  },
+  {
+    "key": "pants",
+    "name": "裤子",
+    "group": "clothing",
+    "art": "/assets/item-covers/pants.png"
+  },
+  {
+    "key": "shoes",
+    "name": "鞋子",
+    "group": "clothing",
+    "art": "/assets/item-covers/shoes.png"
+  },
+  {
+    "key": "backpack",
+    "name": "背包",
+    "group": "clothing",
+    "art": "/assets/item-covers/backpack.png"
+  },
+  {
+    "key": "book",
+    "name": "书",
+    "group": "books",
+    "art": "/assets/item-covers/book.png"
+  },
+  {
+    "key": "notebook",
+    "name": "笔记本",
+    "group": "books",
+    "art": "/assets/item-covers/notebook.png"
+  },
+  {
+    "key": "pen",
+    "name": "笔",
+    "group": "books",
+    "art": "/assets/item-covers/pen.png"
+  },
+  {
+    "key": "folder",
+    "name": "文件夹",
+    "group": "books",
+    "art": "/assets/item-covers/folder.png"
+  },
+  {
+    "key": "bike",
+    "name": "自行车",
+    "group": "mobility",
+    "art": "/assets/item-covers/bike.png"
+  },
+  {
+    "key": "ebike",
+    "name": "电动车",
+    "group": "mobility",
+    "art": "/assets/item-covers/ebike.png"
+  },
+  {
+    "key": "car",
+    "name": "汽车",
+    "group": "mobility",
+    "art": "/assets/item-covers/car.png"
+  },
+  {
+    "key": "suitcase",
+    "name": "行李箱",
+    "group": "mobility",
+    "art": "/assets/item-covers/suitcase.png"
+  },
+  {
+    "key": "dumbbell",
+    "name": "哑铃",
+    "group": "sports",
+    "art": "/assets/item-covers/dumbbell.png"
+  },
+  {
+    "key": "yoga-mat",
+    "name": "瑜伽垫",
+    "group": "sports",
+    "art": "/assets/item-covers/yoga-mat.png"
+  },
+  {
+    "key": "ball",
+    "name": "球",
+    "group": "sports",
+    "art": "/assets/item-covers/ball.png"
+  },
+  {
+    "key": "racket",
+    "name": "球拍",
+    "group": "sports",
+    "art": "/assets/item-covers/racket.png"
+  },
+  {
+    "key": "toolbox",
+    "name": "工具箱",
+    "group": "tools",
+    "art": "/assets/item-covers/toolbox.png"
+  },
+  {
+    "key": "screwdriver",
+    "name": "螺丝刀",
+    "group": "tools",
+    "art": "/assets/item-covers/screwdriver.png"
+  },
+  {
+    "key": "drill",
+    "name": "电钻",
+    "group": "tools",
+    "art": "/assets/item-covers/drill.png"
+  },
+  {
+    "key": "storage-box",
+    "name": "收纳盒",
+    "group": "other",
+    "art": "/assets/item-covers/storage-box.png"
+  }
+]

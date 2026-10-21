@@ -26,7 +26,12 @@ def protect_api():
     if len(token) != 64 or any(char not in "0123456789abcdefABCDEF" for char in token):
         return jsonify(error="登录状态已失效"), 401
     digest = hashlib.sha256(token.encode("ascii")).hexdigest()
-    row = get_db().execute(
+    from .cloud_runtime import enabled
+    if enabled():
+        from .cloud_repository import session_user
+        row = session_user(digest)
+    else:
+        row = get_db().execute(
         "SELECT s.user_id FROM wechat_sessions AS s JOIN users AS u ON u.id = s.user_id "
         "WHERE s.token_hash = ? AND s.expires_at > ?", (digest, int(time.time())),
     ).fetchone()

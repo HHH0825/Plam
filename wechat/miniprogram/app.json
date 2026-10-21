@@ -1,52 +1,132 @@
 {
   "pages": [
     "pages/items/index",
+    "pages/ledger/index",
+    "pages/ledger-record/index",
+    "pages/ledger-detail/index",
+    "pages/ledger-history/index",
+    "pages/ledger-report/index",
+    "pages/statistics/index",
     "pages/insights/index",
     "pages/me/index",
-    "pages/login/index",
-    "pages/item/index",
-    "pages/editor/index",
     "pages/record/index",
     "pages/trash/index",
+    "pages/disposed/index",
     "pages/profile/index",
-    "pages/keepsakes/index",
-    "pages/monthly/index"
+    "pages/wishlist/index"
   ],
   "window": {
-    "navigationBarTitleText": "物物记",
-    "navigationBarBackgroundColor": "#F2EADF",
+    "navigationBarTitleText": "猫爪物帐",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F2EADF"
+    "backgroundColor": "#FFFFFF"
   },
   "tabBar": {
-    "color": "#635147",
-    "selectedColor": "#845645",
-    "backgroundColor": "#FFFCF7",
+    "color": "#707070",
+    "selectedColor": "#292929",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/items/index",
-        "text": "物品",
-        "iconPath": "assets/paper/nav-items.png",
-        "selectedIconPath": "assets/paper/nav-items-selected.png"
+        "pagePath": "pages/ledger/index",
+        "text": "记账",
+        "iconPath": "assets/ledger-nav/ledger.png",
+        "selectedIconPath": "assets/ledger-nav/ledger.png"
       },
       {
-        "pagePath": "pages/insights/index",
-        "text": "发现",
-        "iconPath": "assets/paper/nav-insights.png",
-        "selectedIconPath": "assets/paper/nav-insights-selected.png"
+        "pagePath": "pages/items/index",
+        "text": "物品",
+        "iconPath": "assets/white-doodle/nav-items.png",
+        "selectedIconPath": "assets/white-doodle/nav-items.png"
+      },
+      {
+        "pagePath": "pages/statistics/index",
+        "text": "统计",
+        "iconPath": "assets/ledger-nav/statistics.png",
+        "selectedIconPath": "assets/ledger-nav/statistics.png"
       },
       {
         "pagePath": "pages/me/index",
         "text": "我的",
-        "iconPath": "assets/paper/nav-me.png",
-        "selectedIconPath": "assets/paper/nav-me-selected.png"
+        "iconPath": "assets/white-doodle/nav-me.png",
+        "selectedIconPath": "assets/white-doodle/nav-me.png"
       }
-    ]
-  },
-  "usingComponents": {
-    "paper-background": "/components/paper-background/index"
+    ],
+    "custom": true
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "subPackages": [
+    {
+      "root": "pages/member-tools",
+      "name": "member-tools",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/editor",
+      "name": "editor",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/rewards",
+      "name": "rewards",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/item",
+      "name": "item",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/monthly",
+      "name": "monthly",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/fixed-expenses",
+      "name": "fixed-expenses",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/storage-locations",
+      "name": "storage-locations",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/membership",
+      "name": "membership",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/login",
+      "name": "login",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/member-benefits",
+      "name": "member-benefits",
+      "pages": [
+        "index"
+      ]
+    }
+  ]
 }

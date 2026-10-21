@@ -1,5 +1,6 @@
 """Photo variants, legacy lazy generation, atomic swaps and tenant boundaries."""
 import io
+import random
 import sys
 import tempfile
 import unittest
@@ -12,7 +13,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 from palm import create_app, initialize_app
 from palm.database import get_db
-from palm.photo import thumbnail_key
+from palm.photo import thumbnail_key, PHOTO_STORED_MAX_BYTES, THUMBNAIL_MAX_BYTES
 
 
 class PhotoTest(unittest.TestCase):
@@ -48,7 +49,7 @@ class PhotoTest(unittest.TestCase):
         self.assertTrue(version)
         self.assertNotIn(self.key(), version)
         self.assertEqual(self.client.get("/api/mp/items", headers=self.headers).json[0]["photo_version"], version)
-        for suffix, size in (("", (1400, 1000)), ("?size=thumb", (480, 343))):
+        for suffix, size in (("", (1280, 914)), ("?size=thumb", (320, 229))):
             with self.client.get(self.url + suffix, headers=self.headers) as image:
                 self.assertEqual(Image.open(io.BytesIO(image.data)).size, size)
                 self.assertIn("no-store", image.headers["Cache-Control"])
@@ -93,6 +94,46 @@ class PhotoTest(unittest.TestCase):
             get_db().execute("UPDATE items SET deleted_at=? WHERE id=?", (old, self.id)); get_db().commit()
         self.client.get("/api/mp/trash", headers=self.headers)
         self.assertEqual(list(self.folder.iterdir()), [])
+
+    def test_busy_photo_is_bounded_and_small_photos_are_not_enlarged(self):
+        # High-frequency generated pixels exercise quality reduction and downscaling.
+        size = (2300, 1500)
+        photo = Image.frombytes("RGB", size, random.Random(41).randbytes(size[0] * size[1] * 3))
+        stream = io.BytesIO(); photo.save(stream, "JPEG", quality=93); stream.seek(0)
+        response = self.client.post(self.url, headers=self.headers, data={"photo": (stream, "busy.jpg")})
+        self.assertEqual(response.status_code, 200)
+        response.request.environ["wsgi.input"].close()
+        response.request.close()
+        response.close()
+        for suffix, limit, side in (("", PHOTO_STORED_MAX_BYTES, 1600), ("?size=thumb", THUMBNAIL_MAX_BYTES, 480)):
+            with self.client.get(self.url + suffix, headers=self.headers) as response:
+                self.assertLessEqual(len(response.data), limit)
+                with Image.open(io.BytesIO(response.data)) as saved:
+                    self.assertLessEqual(max(saved.size), side)
+                    self.assertAlmostEqual(saved.width / saved.height, size[0] / size[1], delta=.01)
+                    self.assertEqual(saved.format, "JPEG")
+        self.upload(size=(100, 70))
+        with self.client.get(self.url + "?size=thumb", headers=self.headers) as response:
+            self.assertEqual(Image.open(io.BytesIO(response.data)).size, (100, 70))
+
+    def test_orientation_metadata_and_transparency_are_normalized(self):
+        stream = io.BytesIO()
+        photo = Image.new("RGB", (180, 100), "#807060")
+        exif = photo.getexif(); exif[274] = 6; exif[315] = "synthetic metadata"
+        photo.save(stream, "JPEG", exif=exif); stream.seek(0)
+        self.assertEqual(self.client.post(self.url, headers=self.headers,
+            data={"photo": (stream, "camera.jpg")}).status_code, 200)
+        with self.client.get(self.url, headers=self.headers) as response:
+            with Image.open(io.BytesIO(response.data)) as result:
+                self.assertEqual(result.size, (100, 180))
+                self.assertEqual(dict(result.getexif()), {})
+        stream = io.BytesIO(); Image.new("RGBA", (45, 30), (0, 0, 0, 0)).save(stream, "PNG"); stream.seek(0)
+        self.assertEqual(self.client.post(self.url, headers=self.headers,
+            data={"photo": (stream, "transparent.png")}).status_code, 200)
+        with self.client.get(self.url, headers=self.headers) as response:
+            with Image.open(io.BytesIO(response.data)) as result:
+                self.assertEqual(result.mode, "RGB")
+                self.assertTrue(all(channel > 230 for channel in result.getpixel((10, 10))))
 
 
 if __name__ == "__main__": unittest.main()

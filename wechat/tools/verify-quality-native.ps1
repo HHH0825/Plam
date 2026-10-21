@@ -1,0 +1,20 @@
+$ErrorActionPreference = 'Stop'
+$project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/beauty-icons-native-project'))
+$output = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/code-quality/native'))
+[IO.Directory]::CreateDirectory($output) | Out-Null
+$source = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'quality-native.js')).Replace("`r", '').Replace("`n", ' ')
+$checks = [System.Collections.Generic.List[object]]::new()
+function Ide([string]$tool,[string[]]$flags) { $raw = (& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags | Out-String); if ($raw.IndexOf('{') -lt 0) { throw $raw }; $r = $raw.Substring($raw.IndexOf('{')) | ConvertFrom-Json; if (!$r.ok -or !$r.result.success) { throw $raw }; return $r.result }
+function Run([string]$action) { $file = Join-Path $output 'args.json'; [IO.File]::WriteAllText($file,(ConvertTo-Json -InputObject @($action) -Compress)); return (Ide automation_evaluate @('--fn-source',$source,'--args-file',$file)).result.result }
+function Check($condition,[string]$name,$state) { if (!$condition) { throw ($name+' '+($state|ConvertTo-Json -Compress -Depth 10)) }; $checks.Add(@{ name=$name; passed=$true; state=$state }) }
+function Shot([string]$name) { Ide simulator_screenshot @('--path',(Join-Path $output ($name+'.png')),'--optimize','false','--wait','1') | Out-Null }
+Run guest | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run guest-state;if($s.route -eq 'pages/login/index' -and $s.image.passed){break}}; Check ($s.route -eq 'pages/login/index' -and $s.image.passed -and $s.image.width -eq 960 -and $s.image.height -eq 627 -and !$s.heroFailed -and !$s.error) 'Guest opens login subpackage and native decoder reads lossless PNG' $s; Shot login
+$s=Run login-failure; Check ($s.route -eq 'pages/login/index' -and $s.error -and !$s.busy) 'Failed mock login keeps retry and page' $s
+Run login-success | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run session-state;if($s.route -eq 'pages/items/index'){break}}; Check ($s.route -eq 'pages/items/index' -and $s.session -and !$s.busy -and $s.calls -eq 2) 'Successful mock login switches to main tab' $s
+Run existing | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run session-state;if($s.route -eq 'pages/items/index'){break}}; Check ($s.route -eq 'pages/items/index' -and $s.session) 'Existing session redirects login subpackage to main' $s
+Run expired | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run session-state;if($s.route -eq 'pages/login/index'){break}}; Check ($s.route -eq 'pages/login/index' -and !$s.session -and !$s.heroFailed) 'Expired session route relaunch opens login subpackage' $s
+Run logout | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run session-state;if($s.route -eq 'pages/login/index'){break}}; Check ($s.route -eq 'pages/login/index' -and !$s.session -and $null -eq $s.user -and !$s.heroFailed) 'Original logout handler clears mock session and relaunches login' $s
+Run benefits | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run benefits-state;if($s.route -eq 'pages/member-benefits/index' -and $s.free -gt 0){break}}; Check ($s.route -eq 'pages/member-benefits/index' -and $s.free -gt 0 -and $s.member -gt 0 -and !$s.loading -and !$s.error) 'Membership opens benefits subpackage with full content' $s; Shot benefits
+Run return | Out-Null; for($poll=0;$poll -lt 15;$poll++){Start-Sleep -Milliseconds 1000;$s=Run benefits-state;if($s.route -eq 'pages/membership/index' -and $s.plans -eq 2){break}}; Check ($s.route -eq 'pages/membership/index' -and $s.plans -eq 2 -and !$s.error) 'Benefits returns to membership subpackage' $s
+@{ passed=$true; checks=$checks; fixtureOnly=$true; realPayments=0; cloudWrites=0; mockAuthentication=$true; realDevice=$false } | ConvertTo-Json -Depth 14 | Set-Content -LiteralPath (Join-Path $output 'results.json') -Encoding UTF8
+Write-Output "Passed $($checks.Count) isolated login and cross-package checks"

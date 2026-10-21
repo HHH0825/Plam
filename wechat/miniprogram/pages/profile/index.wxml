@@ -1,17 +1,24 @@
-<view class="page profile-page">
+<view class="member-themed {{memberThemeClass}} page profile-page" style="{{memberThemeStyle}}">
   <paper-background theme="small" />
-  <view class="page-heading heading-layout"><view class="heading-copy"><view class="eyebrow">物物记 · 关于自己</view><view class="title">个人资料</view><view class="subtitle">给这本收藏册，签上你的名字。</view></view><image class="heading-cat" src="/assets/stickers/wave.png" mode="aspectFit" aria-hidden="true"/></view>
-  <view wx:if="{{loading}}" class="empty"><text class="empty-mark">· · ·</text>正在读取个人资料…</view>
+  <view class="page-heading heading-layout"><view class="heading-copy"><view class="eyebrow">猫爪物帐 · 关于自己</view><view class="title">个人资料</view><view class="subtitle">给这本收藏册，签上你的名字。</view></view><image class="heading-cat" src="/assets/white-doodle/cat-book.png" mode="aspectFit" aria-hidden="true"/></view>
+  <view wx:if="{{loading}}" class="empty"><cat-loading label="正在读取个人资料…"/></view>
   <view wx:elif="{{!loaded}}" class="card error-panel" role="alert">{{error}}<button class="button light" hover-class="button-hover" bindtap="load">重新读取资料</button></view>
   <block wx:else>
     <view class="card profile-form">
       <view class="profile-preview"><view class="avatar-preview" aria-hidden="true"><image wx:if="{{avatarPath && !avatarFailed}}" class="avatar-art" src="{{avatarPath}}" data-src="{{avatarPath}}" mode="aspectFit" binderror="avatarError"/><text wx:else>{{avatarSymbol}}</text></view><view><view class="preview-title">你的手账署名</view><view class="muted">选一个小标记，记录自己的生活。</view></view></view>
       <view class="line"></view>
+      <view class="field account-id-card">
+        <text class="field-label">用户ID</text>
+        <view wx:if="{{accountId}}" class="account-id-row"><text class="account-id-value" user-select="true">{{accountId}}</text><button class="account-id-copy" hover-class="button-hover" bindtap="copyUserId" disabled="{{busy}}" aria-label="复制我的用户ID">复制ID</button></view>
+        <view wx:else class="account-id-missing"><text>暂未获取用户ID</text><button class="account-id-copy" hover-class="button-hover" bindtap="load" disabled="{{busy}}">重新读取</button></view>
+      </view>
       <view class="field"><text class="field-label">显示名称</text><input class="{{focused ? 'is-focused' : ''}}" maxlength="32" value="{{name}}" disabled="{{busy}}" bindinput="nameInput" bindfocus="focus" bindblur="blur" cursor-spacing="24" placeholder="给自己起个名字" placeholder-class="field-placeholder" aria-label="显示名称"/><view class="field-note">2–32 个字符，点击保存后生效。</view></view>
       <view class="field"><text class="field-label">预设头像</text><picker range="{{avatarLabels}}" value="{{avatarIndex}}" disabled="{{busy}}" bindchange="avatarChange"><view class="picker" aria-label="选择预设头像"><text>{{avatarLabels[avatarIndex]}}</text><text class="picker-caret">⌄</text></view></picker></view>
     </view>
     <view wx:if="{{error}}" class="card error-panel" role="alert">{{error}}</view>
-    <button class="button block" hover-class="button-hover" loading="{{busy}}" disabled="{{busy || loading || !loaded}}" bindtap="save">保存资料</button>
+    <button class="button block cat-loading-button" hover-class="button-hover" disabled="{{busy || loading || !loaded}}" bindtap="save"><cat-loading wx:if="{{busy}}" paw label=""/>保存资料</button>
     <view class="profile-note">未保存就返回，将保留原来的资料。</view>
   </block>
 </view>
+
+<cat-feedback id="cat-feedback"/>
