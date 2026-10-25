@@ -27,3 +27,9 @@ test('missing identity or unreadable/unsupported content is never acknowledged',
  h.app.globalData.user={id:1};h.notice.present(p);assert.equal(p.data.announcementOpen,true)
  p.data.promotion=null;p.data.feedbackMessage='';h.notice.present(p);assert.equal(p.data.announcementOpen,false);h.notice.close(p);assert.equal(h.writes.length,0)
 })
+
+
+test('a new announcement version is unread and a stale close cannot acknowledge it',()=>{
+ const h=harness(),p=h.page();p.data.announcementId='previous';h.notice.present(p);h.notice.close(p);
+ p.data.announcementId='free-tools-month-290-v1';h.notice.close(p);assert.equal(h.writes.length,1);h.notice.present(p);assert.equal(p.data.announcementOpen,true);h.notice.close(p);assert.equal(h.writes.length,2);assert.ok(h.writes[1].endsWith(':free-tools-month-290-v1'))
+})

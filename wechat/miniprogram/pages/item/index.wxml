@@ -45,3 +45,5 @@
 </view>
 
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

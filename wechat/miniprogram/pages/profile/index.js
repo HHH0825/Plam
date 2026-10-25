@@ -4,13 +4,14 @@ const { AVATAR_KEYS, AVATAR_LABELS, avatarState, avatarError, isCurrent } = requ
 
 Page(require('../../utils/member').wrap({
   data: { user: null, accountId: '', name: '', avatarSymbol: '芽', avatarLabels: AVATAR_LABELS,
-    avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true, loaded: false, busy: false, focused: false, error: '' },
+    avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true, loaded: false, busy: false, reconnecting:false, focused: false, error: '' },
   onLoad() { this._sequence = 0 },
   onShow() {
     this._visible = true
     if (getApp().requireSession()) this.load()
   },
   onHide() {
+    this.captureSessionDraft()
     this._visible = false
     this._loadedToken = ''
     this._sequence += 1
@@ -28,9 +29,12 @@ Page(require('../../utils/member').wrap({
       const result = await api.request('/auth/me')
       if (!isCurrent(this, sequence, token)) return
       this._loadedToken = token
+      this._savedName=result.user.username;this._savedAvatar=result.user.avatar_key
       const id = result.user.id
       this.setData({ user: result.user, accountId: Number.isSafeInteger(id) && id > 0 ? String(id) : '', name: result.user.username, ...avatarState(result.user),
         loaded: true, loading: false })
+      const draft=getApp()._profileDrafts?.[this.draftKey(id)]
+      if(draft)this.setData({name:draft.name,...avatarState({avatar_key:draft.avatar})})
     } catch (error) {
       if (isCurrent(this, sequence, token)) this.setData({ loading: false, error: view.errorMessage(error) })
     }
@@ -46,6 +50,26 @@ Page(require('../../utils/member').wrap({
     })
   },
   avatarError,
+  draftKey(id=this.data.user?.id){return require('../../utils/cloud-transport').serviceScope()+':'+id},
+  dirty(){return this.data.loaded&&(this.data.name!==this._savedName||AVATAR_KEYS[this.data.avatarIndex]!==this._savedAvatar)},
+  captureSessionDraft(){
+    if(!this.dirty()||this._discardDraft||this._loadedToken!==getApp().globalData.token)return
+    const app=getApp();(app._profileDrafts||(app._profileDrafts={}))[this.draftKey()]={name:this.data.name,avatar:AVATAR_KEYS[this.data.avatarIndex]}
+  },
+  async reconnect(){
+    if(this.data.busy||this.data.reconnecting||this._connectingPrompt)return
+    const token=getApp().globalData.token;this._connectingPrompt=true
+    if(this.dirty()){
+      const discard=await new Promise(resolve=>wx.showModal({title:'放弃未保存的资料？',content:'重新连接后将读取已保存的资料。',confirmText:'重新连接',cancelText:'返回编辑',success:r=>resolve(r.confirm),fail:()=>resolve(false)}))
+      this._connectingPrompt=false
+      if(!discard||!this._visible||token!==getApp().globalData.token)return
+    }
+    this._discardDraft=true
+    if(getApp()._profileDrafts)delete getApp()._profileDrafts[this.draftKey()]
+    this.setData({reconnecting:true})
+    try{await getApp().reconnect()}catch(_){/* Shared connection UI provides retry. */}
+    finally{this._connectingPrompt=false;if(this._visible)this.setData({reconnecting:false})}
+  },
   nameInput(event) { this.setData({ name: event.detail.value }) },
   focus() { this.setData({ focused: true }) },
   blur() { this.setData({ focused: false }) },
@@ -66,6 +90,8 @@ Page(require('../../utils/member').wrap({
       if (!isCurrent(this, sequence, token)) return
       saved = true
       if (!getApp().updateUser(result.user, token)) return
+      this._savedName=result.user.username;this._savedAvatar=result.user.avatar_key
+      if(getApp()._profileDrafts)delete getApp()._profileDrafts[this.draftKey()]
       wx.showToast({ title: '已保存', icon: 'success' })
       this.back()
     } catch (error) {

@@ -1,1 +1,10 @@
-{"navigationBarTitleText":"已处置档案","enablePullDownRefresh":true,"backgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}
+{
+  "navigationBarTitleText": "已处置档案",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "cat-loading": "/components/cat-loading/index",
+    "cat-feedback": "/components/cat-feedback/index",
+    "session-status": "/components/session-status/index"
+  }
+}

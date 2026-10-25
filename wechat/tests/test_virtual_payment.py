@@ -25,7 +25,7 @@ class PaymentContract:
             path += '?platform=android'
         if method == 'POST' and path == '/pay/order' and isinstance(data, dict):
             try:
-                price = int(self.app.config.get('PAY_TEST_PRICE_CENTS', '1')) if self.app.config.get('PAY_TEST_ENABLED') and data.get('plan_id') == 'month' else {'month':390,'quarter':990,'year':2990}.get(data.get('plan_id'),0)
+                price = int(self.app.config.get('PAY_TEST_PRICE_CENTS', '1')) if self.app.config.get('PAY_TEST_ENABLED') and data.get('plan_id') == 'month' else {'month':290,'quarter':990,'year':2990}.get(data.get('plan_id'),0)
             except (ValueError, TypeError):
                 price = 0
             data = {'platform':'android','expected_price_cents':price,**data}
@@ -40,7 +40,7 @@ class PaymentContract:
         self.provider = Mock()
         self.app.extensions['wechat_payment_client'] = self.provider
 
-    def order(self, plan='quarter', **extra):
+    def order(self, plan='month', **extra):
         result = self.send('POST', '/pay/order', {'plan_id': plan, 'code': 'alice', **extra})
         self.assertEqual(result.status_code, 201, result.json)
         return result.json
@@ -58,8 +58,8 @@ class PaymentContract:
             for key in ('fulfilled_at','grant_index','refunded_at','can_purchase_again'):
                 row.pop(key, None)
             if plan:
-                catalog={'id':'year','months':12,'price_cents':2990} if plan=='year' else next(x for x in p.checkout_plans('android') if x['id']==plan)
-                row.update(plan_id=plan, months=catalog['months'],price_cents=catalog['price_cents'],product_id='cat-year' if plan=='year' else self.app.config['PAY_PRODUCTS'][plan])
+                catalog={'year':{'months':12,'price_cents':2990},'quarter':{'months':3,'price_cents':990}}.get(plan) or next(x for x in p.checkout_plans('android') if x['id']==plan)
+                row.update(plan_id=plan, months=catalog['months'],price_cents=catalog['price_cents'],product_id='cat-year' if plan=='year' else self.app.config['PAY_PRODUCTS'].get(plan, 'retired-' + plan))
             p.save_order(row, new=True)
             return p.public_order(row)
 
@@ -104,6 +104,28 @@ class PaymentContract:
             self.assertFalse(self.send('GET','/membership').json['active'])
             old=self.legacy_order(seed,plan='year') if terminal=='android' else old
 
+    def test_old_month_and_quarter_snapshots_survive_new_price_and_product_mapping(self):
+        seed = self.order('month')['order']; self.sync(seed, status=6)
+        self.app.config.update(PAY_PRODUCTS={'month': 'new-month-290'}, PAY_IOS_ENABLED=True, PAY_IOS_PRODUCTS={'month': 'new-ios-290'})
+        for platform, plan, price, months in [('android','month',390,1),('ios','month',450,1),('android','quarter',990,3),('ios','quarter',1150,3)]:
+            old = self.legacy_order(seed, plan=plan)
+            with self.app.app_context(), p.transaction():
+                row = p.read_order(old['id']); row.update(platform=platform, price_cents=price, months=months, product_id='retired-' + platform + '-' + plan); p.save_order(row)
+            old = {**old, 'price_cents': price}
+            result = self.sync(old)
+            self.assertEqual(result.json['order']['status'], 'fulfilled')
+            with self.app.app_context():
+                row = p.read_order(old['id'])
+                expected = p.add_months(row['fulfilled_at'], months)
+            self.assertEqual(self.send('GET', '/membership').json['expires_at'], expected)
+            self.reset_throttle(old); self.sync(old)
+            self.assertEqual(self.send('GET', '/pay/orders/' + old['id']).json['order']['price_cents'], price)
+            self.reset_throttle(old)
+            self.assertEqual(self.sync(old, left_fee=0).json['order']['status'], 'refunded')
+            self.assertFalse(self.send('GET', '/membership').json['active'])
+        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'}).status_code,410)
+        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'month','code':'alice','expected_price_cents':390}).status_code,409)
+
     def test_live_checkout_requires_explicit_config_and_keeps_free_features(self):
         self.app.config['PAY_ENABLED'] = False
         self.assertFalse(self.send('GET', '/membership').json['payment_open'])
@@ -117,7 +139,7 @@ class PaymentContract:
 
     def test_price_env_fresh_unique_order_and_no_persisted_login_secrets(self):
         ids = set()
-        for plan, price in [('month',390),('quarter',990)]:
+        for plan, price in [('month',290)]:
             result = self.order(plan)
             pay = result['payData']; sign = json.loads(pay['signData']); ids.add(sign['outTradeNo'])
             self.assertEqual(sign['goodsPrice'],price);self.assertEqual(sign['env'],0);self.assertEqual(sign['buyQuantity'],1)
@@ -125,14 +147,14 @@ class PaymentContract:
             self.assertEqual(pay['paySig'],hmac.new(b'formal-test-key',('requestVirtualPayment&'+pay['signData']).encode(),hashlib.sha256).hexdigest())
             self.assertEqual(pay['signature'],hmac.new(b'session-test-key',pay['signData'].encode(),hashlib.sha256).hexdigest())
             self.assertEqual(self.sync(result['order'],status=6).json['order']['status'],'closed')
-        self.assertEqual(len(ids),2)
-        a=self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'},key='payment-request-unique-01')
-        b=self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'},key='payment-request-unique-01')
+        self.assertEqual(len(ids),1)
+        a=self.send('POST','/pay/order',{'plan_id':'month','code':'alice'},key='payment-request-unique-01')
+        b=self.send('POST','/pay/order',{'plan_id':'month','code':'alice'},key='payment-request-unique-01')
         self.assertEqual(a.status_code,201)
         self.assertEqual(b.status_code,409)
         self.assertEqual(b.json['code'],'PAYMENT_ORDER_PENDING')
         self.sync(a.json['order'],status=6)
-        c=self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'},key='payment-request-unique-01')
+        c=self.send('POST','/pay/order',{'plan_id':'month','code':'alice'},key='payment-request-unique-01')
         self.assertNotEqual(a.json['order']['id'],c.json['order']['id'])
         with self.app.app_context():
             stored = str(self.db.rows) if self.cloud else '\n'.join(r['payload'] for r in get_db().execute('SELECT payload FROM pay_orders'))
@@ -140,9 +162,9 @@ class PaymentContract:
 
     def test_client_cannot_choose_price_owner_quantity_or_payment_state(self):
         for extra in ({'goodsPrice':1},{'openid':'owner-bob'},{'status':'fulfilled'},{'buyQuantity':50},{'env':1}):
-            self.assertEqual(self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice',**extra}).status_code,400)
-        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'quarter','code':'bob'}).status_code,403)
-        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'quarter','code':'dev:alice'}).status_code,400)
+            self.assertEqual(self.send('POST','/pay/order',{'plan_id':'month','code':'alice',**extra}).status_code,400)
+        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'month','code':'bob'}).status_code,403)
+        self.assertEqual(self.send('POST','/pay/order',{'plan_id':'month','code':'dev:alice'}).status_code,400)
         self.assertEqual(self.send('GET','/membership').json['status'],'free')
 
     def enable_small_payment(self):
@@ -158,9 +180,9 @@ class PaymentContract:
         other = self.send('GET', '/membership', token=self.bob).json
         self.assertFalse(other['payment_open'])
         self.assertFalse(other['payment_test'])
-        self.assertEqual([v['price_cents'] for v in other['plans']], [390, 990])
+        self.assertEqual([v['price_cents'] for v in other['plans']], [290])
         self.assertEqual(self.send('POST', '/pay/order', {'plan_id':'month','code':'bob'}, token=self.bob).status_code, 503)
-        self.assertEqual(self.send('POST', '/pay/order', {'plan_id':'quarter','code':'alice'}).status_code, 400)
+        self.assertEqual(self.send('POST', '/pay/order', {'plan_id':'quarter','code':'alice'}).status_code, 410)
         response = self.order('month')
         signed = json.loads(response['payData']['signData'])
         self.assertEqual((signed['goodsPrice'], signed['productId'], signed['env']), (1, 'cat_test_month', 0))
@@ -199,7 +221,7 @@ class PaymentContract:
         self.assertEqual(self.sync(order, left_fee=0).json['order']['status'], 'refunded')
         self.assertFalse(self.send('GET', '/membership').json['active'])
         self.app.config['PAY_ENABLED'] = True
-        self.assertEqual(self.order('month')['order']['price_cents'], 390)
+        self.assertEqual(self.order('month')['order']['price_cents'], 290)
 
     def test_small_order_rejects_wrong_provider_amount_and_accepts_configured_fen(self):
         self.enable_small_payment()

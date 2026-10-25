@@ -65,7 +65,7 @@ function send(path, options, token) {
         if (typeof result.data === 'string' && result.statusCode !== 204) {
           try { result.data = JSON.parse(result.data) } catch (_) { reject(new Error('云端响应无效')); return }
         }
-        if (mutation && result.statusCode < 500 && (result.statusCode !== 409 ||
+        if (mutation && result.statusCode !== 401 && result.statusCode < 500 && (result.statusCode !== 409 ||
             (['ITEM_VERSION_CONFLICT','LOCATION_NAME_EXISTS','ITEM_CAPACITY_REACHED'].includes(result.data?.code) && result.data.retry_same_request === false))) {
           retries.delete(fingerprint)
           if (journal) {

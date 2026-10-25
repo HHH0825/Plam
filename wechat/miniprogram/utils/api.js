@@ -48,10 +48,12 @@ function photoCache() {
 }
 function clearPhotos() { for (const cancel of photoUploads) cancel(); if (photos) photos.reset(); transport.clear();require('./display-cache').clear() }
 
-function sessionExpired(token) {
-  const app=getApp();if(app.globalData.token!==token)return
+function sessionExpired(token,credential) {
+  const app=getApp();if(app.globalData.token!==token)return Promise.reject(Error('账户已切换'))
+  if(app.recoverSession)return app.recoverSession(token,credential)
   app.clearSession()
-  require('./session-navigation').go(app,'login')
+  require('./session-navigation').go(app,'home')
+  return Promise.reject(Error('连接已过期，请重新连接'))
 }
 
 function errorFrom(body, status) {
@@ -68,22 +70,38 @@ function errorFrom(body, status) {
   return error
 }
 
-function request(path, options = {}) {
+function request(path, options = {}, attempt = 0) {
+  const app=getApp()
+  if(!options.anonymous&&path!=='/auth/logout'&&app._sessionPhase==='error')return Promise.reject(Object.assign(Error(app._sessionError||'连接失败，请重新连接'),{notSubmitted:true}))
+  if(!options.anonymous&&path!=='/auth/logout'&&app._sessionPhase==='connecting'){
+    if((options.method||'GET')!=='GET')return Promise.reject(Object.assign(Error('正在恢复连接，填写已保留，请稍后再提交'),{notSubmitted:true}))
+    const queuedOwner=app.globalData.token;let stopped=false,child;const deferred=app.ensureSession().then(()=>{if(queuedOwner&&queuedOwner!==app.globalData.token)throw Error('账户已切换');if(stopped)throw Error('读取已取消');child=request(path,options,attempt);return child});deferred.cancel=()=>{stopped=true;child?.cancel?.()};return deferred
+  }
   const token = getApp().globalData.token
+  const credential=app.globalData.accessToken||token
   const stopActivity=require('./loading-activity').begin(path,options.method||'GET',token)
-  let pending
+  let pending,cancelled=false
   const promise = new Promise((resolve, reject) => {
     const spec = {
       url: `${API_BASE}/api/mp${path}`,
       method: options.method || 'GET',
       data: options.data,
-      header: { 'Content-Type': 'application/json', ...(options.anonymous ? {} : { Authorization: `Bearer ${token}` }), ...(options.revision !== undefined ? {'If-Match':`"${options.revision}"`} : {}) },
+      header: { 'Content-Type': 'application/json', ...(options.anonymous ? {} : { Authorization: `Bearer ${credential}` }), ...(options.revision !== undefined ? {'If-Match':`"${options.revision}"`} : {}) },
       success(response) {
         if (!options.anonymous && getApp().globalData.token !== token) { reject(new Error('登录账户已切换')); return }
-        if (!cloud && response.statusCode < 500 && (response.statusCode !== 409 || response.data?.code === 'ITEM_CAPACITY_REACHED')) acknowledgeWorkflow(path, options)
-        if (response.statusCode === 401 && !options.anonymous) sessionExpired(token)
+        if(cancelled){reject(Error('读取已取消'));return}
+        if (!cloud && response.statusCode < 500 && response.statusCode!==401 && (response.statusCode !== 409 || response.data?.code === 'ITEM_CAPACITY_REACHED')) acknowledgeWorkflow(path, options)
+        if(response.statusCode===401&&!options.anonymous&&path!=='/auth/logout'){
+          const error=Object.assign(Error('连接已过期，填写已保留，请重试'),{status:401,notSubmitted:true})
+          if(attempt){app.failSession?.(error);reject(error);return}
+          sessionExpired(token,credential).then(()=>{
+            if(cancelled||getApp().globalData.token!==token){reject(Error('读取已取消或账户已切换'));return}
+            if((options.method||'GET')==='GET'){pending=request(path,options,1);pending.then(resolve,reject)}
+            else reject(Object.assign(error,{message:'连接已恢复，填写已保留，请核对后再次提交',sessionRecovered:true}))
+          },e=>reject(Object.assign(error,{message:e.message||error.message})));return
+        }
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          require('./display-cache').invalidate(path,options.method||'GET')
+          if(!/^\/auth\/(login|logout)$/.test(path))require('./display-cache').invalidate(path,options.method||'GET')
           const removed = (options.method === 'DELETE') && path.match(/^\/items\/(\d+)(?:\/photo)?$/)
           if (removed && photos) photos.invalidate(Number(removed[1]))
           resolve(response.data)
@@ -94,12 +112,13 @@ function request(path, options = {}) {
     }
     if (!cloud) { try { Object.assign(spec.header, workflowHeaders(path, options)) } catch(error) { error.notSubmitted=true; reject(error); return } }
     if (cloud) {
-      pending = transport.send(path, options, token)
+      pending = transport.send(path, options, credential)
       pending.then(spec.success, error => reject(error))
     } else pending = wx.request(spec)
   })
   promise.finally(stopActivity).catch(()=>{})
   promise.cancel = () => {
+    cancelled=true
     if (pending && pending.cancel) pending.cancel()
     else if (pending && pending.abort) pending.abort()
   }
@@ -164,14 +183,14 @@ function uploadCloudPhoto(itemId, filePath, options = {}) {
 
 function uploadPhoto(itemId, filePath, options) {
   if (cloud) return uploadCloudPhoto(itemId, filePath, options)
-  const token = getApp().globalData.token
+  const token = getApp().globalData.token,credential=getApp().globalData.accessToken||token
   return new Promise((resolve, reject) => {
     wx.uploadFile({
       url: `${API_BASE}/api/mp/items/${itemId}/photo`, filePath, name: 'photo',
-      header: { Authorization: `Bearer ${token}`, ...(options.revision !== undefined ? {'If-Match':`"${options.revision}"`} : {}) },
+      header: { Authorization: `Bearer ${credential}`, ...(options.revision !== undefined ? {'If-Match':`"${options.revision}"`} : {}) },
       success(response) {
         if (getApp().globalData.token !== token) { reject(new Error('登录账户已切换')); return }
-        if (response.statusCode === 401) sessionExpired()
+        if (response.statusCode === 401) sessionExpired(token,credential).catch(()=>{})
         let body = {}
         try { body = JSON.parse(response.data) } catch (_) { /* error handled below */ }
         if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -209,19 +228,19 @@ function startCloudPhotoDownload(spec) {
 
 function startPhotoDownload(spec) {
   if (cloud) return startCloudPhotoDownload(spec)
-  const token = getApp().globalData.token
+  const token = getApp().globalData.token,credential=getApp().globalData.accessToken||token
   let task
   const promise = new Promise((resolve, reject) => {
     task = wx.downloadFile({
       url: `${API_BASE}/api/mp/items/${spec.id}/photo?size=${spec.size}&v=${encodeURIComponent(spec.version)}`,
       timeout: 15000,
-      header: { Authorization: `Bearer ${token}` },
+      header: { Authorization: `Bearer ${credential}` },
       success(response) {
         if (getApp().globalData.token !== token) {
           if (response.tempFilePath) removeDownload(response.tempFilePath)
           reject(new Error('登录账户已切换')); return
         }
-        if (response.statusCode === 401) sessionExpired()
+        if (response.statusCode === 401) sessionExpired(token,credential).catch(()=>{})
         if (response.statusCode === 200) resolve(response.tempFilePath)
         else { if (response.tempFilePath) removeDownload(response.tempFilePath); reject(errorFrom({}, response.statusCode)) }
       }, fail() { reject(new Error('照片读取失败')) }

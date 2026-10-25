@@ -1,1 +1,10 @@
-{"navigationBarTitleText":"我的","navigationBarBackgroundColor":"#FFFFFF","backgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}
+{
+  "navigationBarTitleText": "我的",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "backgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "cat-loading": "/components/cat-loading/index",
+    "cat-feedback": "/components/cat-feedback/index",
+    "session-status": "/components/session-status/index"
+  }
+}

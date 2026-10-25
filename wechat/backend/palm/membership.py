@@ -13,17 +13,22 @@ from .purchases import mutation
 from .cloud_versions import require_revision
 
 bp = Blueprint('membership', __name__)
-ENTITLEMENTS = ['ad_free', 'unlimited_items', 'books', 'budgets']
-PLANS = [{'id': 'month', 'name': '月会员', 'price_cents': 390, 'months': 1},
-         {'id': 'quarter', 'name': '季会员', 'price_cents': 990, 'months': 3}]
-IOS_PLANS = [{**p, 'price_cents': price} for p, price in zip(PLANS, (450, 1150))]
+ENTITLEMENTS = ['ad_free', 'unlimited_items']
+FREE_ENTITLEMENTS = ['books', 'budgets']
+PLANS = [{'id': 'month', 'name': '月会员', 'price_cents': 290, 'months': 1}]
+IOS_PLANS = [dict(p) for p in PLANS]
 DEFAULT_BOOK = {'id': 'default', 'name': '日常账本', 'cover': 'daily', 'sticker': '', 'order': 0, 'archived': False, 'revision': 0}
 THEMES = ['default', 'sage', 'pink', 'blue']
 COVERS = ['daily', 'travel', 'home', 'hobby']
 STICKERS = ['paw', 'cat', 'sleep', 'book', 'heart', 'fish']
 TEMPLATES = ['default', 'simple', 'journal']
-FEEDBACK_MESSAGE = ('感谢你陪猫爪慢慢成长。目前部分功能和使用体验仍在完善。如果遇到问题，或有想要的功能，'
-                    '请通过“反馈与建议”告诉我。感谢你的理解与支持。')
+ANNOUNCEMENT_ID = 'free-tools-month-290-v1'
+ANNOUNCEMENT_TITLE = '整理工具免费啦，喵～'
+FEEDBACK_MESSAGE = ('目前使用猫爪的朋友还不多，也希望大家能更轻松地开始记录，所以这次把「多账本与流水整理」'
+                    '「月度与分类预算」都开放免费使用啦。\n\n'
+                    '会员调整为每月2.9元，仅保留月会员，享有免小程序内广告和会员有效期内无限物品容量。\n\n'
+                    '大家按自己的需要选择就好。如果猫爪帮到了你，也欢迎支持开发者，让这只小猫慢慢长大。'
+                    '愿意来记录、提建议，就已经很感谢啦，喵～')
 
 
 def key(kind, ident):
@@ -111,10 +116,11 @@ def membership():
     from .rewards import capacity
     identity['capacity'] = capacity()
     opened = payment_open(platform)
-    return jsonify(**identity, plans=checkout_plans(platform), payment_open=opened, platform=platform,
+    return jsonify(**identity, free_entitlements=FREE_ENTITLEMENTS, plans=checkout_plans(platform), payment_open=opened, platform=platform,
                    purchase_allowed=opened and not identity['active'],
                    purchase_block_reason='active_membership' if identity['active'] else '' if opened else 'payment_unavailable',
-                   promotion={'active': False, 'feedback_message': FEEDBACK_MESSAGE},
+                   promotion={'active': False, 'feedback_message': FEEDBACK_MESSAGE,
+                              'announcement_id': ANNOUNCEMENT_ID, 'announcement_title': ANNOUNCEMENT_TITLE},
                    payment_test_mode=bool(current_app.config.get('PAY_TEST_ENABLED')), payment_test=bool(test_offer()),
                    ios_payment_open=payment_open('ios'), appearance=appearance_value(),
                    catalog={'themes': THEMES, 'covers': COVERS, 'stickers': [], 'templates': TEMPLATES})
@@ -139,7 +145,6 @@ def save_book_order(ids):
 @bp.put('/api/mp/member/books/order')
 @mutation
 def book_order_change():
-    require_member()
     from .cloud_versions import VersionError
     try:
         require_revision(get('book_order', 'current') or {'revision': 0})
@@ -191,7 +196,6 @@ def filter_book(rows):
 def assign_new(row, data):
     ident = data.get('book_id', 'default')
     if ident != 'default':
-        require_member()
         book(ident, True)
         put('entry', row['id'], {'book_id': ident})
 
@@ -209,7 +213,6 @@ def book_list():
         order = get('book_order', 'current') or {}
         return jsonify(books=[{**r, 'count': counts.get(r['id'], 0)} for r in books(order)],
                        order_revision=order.get('revision', 0))
-    require_member()
     data = body()
     ids = active_book_ids()
     result = put('book', uuid.uuid4().hex, book_fields(data))
@@ -232,7 +235,6 @@ def book_fields(data, old=None):
 @bp.route('/api/mp/member/books/<ident>', methods=['PUT', 'DELETE'])
 @mutation
 def book_change(ident):
-    require_member()
     if ident == 'default':
         raise InputError('日常账本固定保留')
     old = book(ident)
@@ -274,7 +276,6 @@ def entry_list():
 @bp.post('/api/mp/member/entries/move')
 @mutation
 def move_entries():
-    require_member()
     from .ledger import owned
     data = body()
     ids = data.get('entries')
@@ -348,7 +349,6 @@ def budget():
     ident = budget_id(month, scope)
     old = get('budget', ident)
     if request.method == 'PUT':
-        require_member()
         require_revision(old or {'revision': 0})
         if data.get('copy_previous') is True:
             previous = (date.fromisoformat(month + '-01') - timedelta(days=1)).strftime('%Y-%m')
@@ -391,7 +391,7 @@ def assign_payment(row):
     """Called within the existing payment transaction. Never rewrites old routing."""
     from .ledger import entry_key
     ident = entry_key(row['kind'], row['id'])
-    if get('entry', ident) or not state()['active']:
+    if get('entry', ident):
         return
     target = (get('plan', row['expense_id']) or {}).get('book_id', 'default')
     if target != 'default':

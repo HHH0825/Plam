@@ -276,7 +276,7 @@ function create(statistics) {
       finally { if (active(this, token)) this.setData({ loading: false }) }
     },
     open(e) { navigate(this, '/pages/ledger-detail/index?id=' + e.currentTarget.dataset.id) },
-    record() { navigate(this, '/pages/ledger-record/index' + (this.data.memberActive && this._memberBookId && this._memberBookId !== 'all' ? '?book_id='+this._memberBookId : '')) },
+    record() { navigate(this, '/pages/ledger-record/index' + (this.data.freeToolsSupported && this._memberBookId && this._memberBookId !== 'all' ? '?book_id='+this._memberBookId : '')) },
     history() { navigate(this, '/pages/ledger-history/index') },
     insights() { navigate(this, '/pages/insights/index') },
     toggleCategories(){this.setData({categoriesExpanded:!this.data.categoriesExpanded})},

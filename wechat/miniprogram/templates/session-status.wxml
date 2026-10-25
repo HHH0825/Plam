@@ -1,0 +1,1 @@
+<session-status blocked="{{sessionBlocked && !(sessionHome && entryBlocked)}}" busy="{{sessionBusy}}" message="{{sessionError}}" bindretry="retrySession"/>

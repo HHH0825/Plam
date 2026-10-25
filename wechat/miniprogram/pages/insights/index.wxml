@@ -23,3 +23,5 @@
   <view class="analysis-note">这些小发现来自已保存的记录，仅供你核对，不会自动改变物品状态。</view>
 </view>
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

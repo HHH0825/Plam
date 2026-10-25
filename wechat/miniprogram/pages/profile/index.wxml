@@ -18,7 +18,10 @@
     <view wx:if="{{error}}" class="card error-panel" role="alert">{{error}}</view>
     <button class="button block cat-loading-button" hover-class="button-hover" disabled="{{busy || loading || !loaded}}" bindtap="save"><cat-loading wx:if="{{busy}}" paw label=""/>保存资料</button>
     <view class="profile-note">未保存就返回，将保留原来的资料。</view>
+    <view class="card connection-settings"><button class="button light" disabled="{{busy || reconnecting}}" bindtap="reconnect">{{reconnecting ? '正在重新连接…' : '重新连接微信'}}</button><view class="profile-note">连接异常时使用，仍连接当前微信对应的账户。</view></view>
   </block>
 </view>
 
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

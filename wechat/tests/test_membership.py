@@ -60,14 +60,14 @@ class MemberContract:
         self.assertEqual(self.send('PUT','/member/appearance',{**values,'theme':'invalid'},revision=1).status_code,400)
         self.assertEqual(self.send('GET','/member/appearance',anonymous=True).status_code,401)
         self.assertEqual(self.send('PUT','/member/appearance',values,revision=1,anonymous=True).status_code,401)
-        self.assertEqual(self.send('PUT','/member/budget',{'month':'2026-10','total':'100'},revision=0).status_code,403)
+        self.assertEqual(self.send('PUT','/member/budget',{'month':'2026-10','total':'100'},revision=0).status_code,200)
 
-    def test_expiry_during_transaction_rolls_back_and_offline_tool_rejects_production(self):
+    def test_membership_expiry_does_not_interrupt_free_tools_and_offline_tool_rejects_production(self):
         self.grant()
         with patch('palm.membership.state', side_effect=[{'active': True}, {'active': False}]):
             r = self.send('POST', '/member/books', {'name': '操作途中到期'})
-        self.assertEqual(r.status_code, 403, r.json)
-        self.assertEqual(len(self.send('GET', '/member/books').json['books']), 1)
+        self.assertEqual(r.status_code, 201, r.json)
+        self.assertEqual(len(self.send('GET', '/member/books').json['books']), 2)
         with self.app.app_context():
             self.app.testing = False
             try:
@@ -96,7 +96,27 @@ class MemberContract:
         for method,path,data in [('GET','/member/bills?month=2025-01',None),('POST',f"/member/bills/{plan['id']}/confirm",{'amount':'10','paid_on':'2025-01-31','cycle_index':0}),('PUT',f"/member/plans/{plan['id']}/book",{'book_id':'default'})]:
             self.assertEqual(self.send(method,path,data).status_code,404)
         self.assertEqual(len(self.latest(plan)['payments']),0)
-        self.assertEqual(self.send('GET','/membership').json['entitlements'],['ad_free','unlimited_items','books','budgets'])
+        self.assertEqual(self.send('GET','/membership').json['entitlements'],['ad_free','unlimited_items'])
+
+    def test_free_tools_keep_identity_capacity_conflicts_and_anonymous_protection(self):
+        for status in ('free', 'expired'):
+            if status == 'expired': self.grant(status)
+            state = self.send('GET', '/membership').json
+            self.assertFalse(state['active'])
+            self.assertEqual(state['entitlements'], [])
+            self.assertEqual(state['free_entitlements'], ['books', 'budgets'])
+            self.assertEqual(state['plans'][0]['price_cents'], 290)
+            self.assertEqual(state['promotion']['announcement_id'], 'free-tools-month-290-v1')
+            self.assertFalse(state['capacity']['unlimited'])
+            b = self.send('POST', '/member/books', {'name': '免费账本-' + status}).json
+            budget = {'month': '2025-01', 'book_id': b['id'], 'total': '100', 'categories': {'food': '20'}}
+            saved = self.send('PUT', '/member/budget', budget, revision=0, key='free-budget-' + status)
+            self.assertEqual(saved.status_code, 200, saved.json)
+            self.assertEqual(self.send('PUT', '/member/budget', budget, revision=0, key='free-budget-' + status).json, saved.json)
+            self.assertEqual(self.send('PUT', '/member/budget', budget, revision=0).status_code, 409)
+            self.assertEqual(self.send('GET', '/member/budget?month=2025-01&book_id=' + b['id'], token=self.bob).status_code, 404)
+        self.assertEqual(self.send('POST', '/member/books', {'name': '匿名'}, anonymous=True).status_code, 401)
+        self.assertEqual(self.send('PUT', '/member/budget', {'month': '2025-01'}, revision=0, anonymous=True).status_code, 401)
 
     def legacy_routing(self, plan, target):
         # Existing routing written by a previous release must survive retirement.
@@ -139,9 +159,9 @@ class MemberContract:
 
     def test_free_paid_expired_and_no_grant_route(self):
         r = self.send('GET', '/membership').json
-        self.assertEqual([p['price_cents'] for p in r['plans']], [390, 990])
+        self.assertEqual([p['price_cents'] for p in r['plans']], [290])
         self.assertFalse(r['active']); self.assertFalse(r['payment_open'])
-        self.assertEqual(self.send('POST', '/member/books', {'name': '私有'}).status_code, 403)
+        self.assertEqual(self.send('POST', '/member/books', {'name': '私有'}).status_code, 201)
         self.assertEqual(self.send('POST', '/membership/grant', {}).status_code, 404)
         self.grant(); self.assertTrue(self.send('GET', '/membership').json['active'])
         b = self.new_book()
@@ -151,9 +171,9 @@ class MemberContract:
         self.grant('expired')
         self.assertEqual(self.send('GET', '/membership').json['status'], 'expired')
         self.assertEqual(self.send('GET', '/ledger/entries/' + row['id']).json['book_id'], b['id'])
-        self.assertEqual(self.send('POST', '/member/entries/move', {'book_id': 'default', 'entries': [{'id': row['id'], 'revision': 0}]}).status_code, 403)
+        self.assertEqual(self.send('POST', '/member/entries/move', {'book_id': 'default', 'entries': [{'id': row['id'], 'revision': row['member_revision']}]}).status_code, 200)
         self.assertEqual(self.manual()['book_id'], 'default')
-        self.assertEqual(self.send('POST', '/ledger/entries', {'kind': 'expense','category':'food','amount':'1','occurred_on':'2025-01-13','book_id':b['id']}).status_code,403)
+        self.assertEqual(self.send('POST', '/ledger/entries', {'kind': 'expense','category':'food','amount':'1','occurred_on':'2025-01-13','book_id':b['id']}).status_code,201)
 
     def test_deleted_plan_routing_does_not_lock_empty_book_or_orphan_payment_metadata(self):
         self.grant(); b = self.new_book(); plan = self.plan()
@@ -181,7 +201,7 @@ class MemberContract:
         self.assertEqual(self.send('GET','/ledger/statistics?month=2025-01').json['summary']['count'],1)
         self.assertEqual(self.send('POST','/member/entries/move',{'book_id':b['id'],'entries':[{'id':row['id'],'revision':0}]}).status_code,409)
         self.assertEqual(self.send('GET','/member/books',token=self.bob).json['books'][0]['count'],0)
-        self.assertEqual(self.send('PUT','/member/books/'+b['id'],{'name':'盗取'},revision=0,token=self.bob).status_code,403)
+        self.assertEqual(self.send('PUT','/member/books/'+b['id'],{'name':'盗取'},revision=0,token=self.bob).status_code,404)
         self.assertEqual(self.send('DELETE','/member/books/'+b['id'],revision=0).status_code,409)
         self.assertEqual(self.send('PUT','/member/books/'+b['id'],{**b,'archived':True},revision=0).status_code,200)
 
@@ -241,7 +261,7 @@ class MemberContract:
         self.grant('expired');latest=self.latest(p)
         paid=self.send('POST',route,{'amount':'10','paid_on':'2025-02-28','cycle_index':1},revision=latest['revision'])
         self.assertEqual(paid.status_code,201,paid.json)
-        self.assertEqual(self.send('GET','/ledger/statistics?month=2025-02&book_id=default').json['summary']['expense'],'10.00')
+        self.assertEqual(self.send('GET','/ledger/statistics?month=2025-02&book_id='+b['id']).json['summary']['expense'],'10.00')
         self.assertEqual(len(self.latest(p)['payments']),2)
 
 

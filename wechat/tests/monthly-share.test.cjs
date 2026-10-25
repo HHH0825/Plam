@@ -85,7 +85,7 @@ test('preview, save and image share reuse the same scoped PNG and survive native
   assert.equal(h.requests.length, 1); assert.equal(h.page.data.imagePath, first)
   action = h.page.saveImage(); await tick(); h.pending().resolve(); await action
   action = h.page.shareImage(); await tick()
-  assert.deepEqual(JSON.parse(JSON.stringify(h.native[2])), { name: 'showShareImageMenu', options: { path: first, needShowEntrance: true, entrancePath: '/pages/login/index' } })
+  assert.deepEqual(JSON.parse(JSON.stringify(h.native[2])), { name: 'showShareImageMenu', options: { path: first, needShowEntrance: true, entrancePath: '/pages/items/index' } })
   h.pending().reject({ errMsg: 'share:fail cancel' }); await action
   assert.equal(h.generated.length, 1); assert.equal(h.page.data.imageError, ''); assert.equal(h.page.data.shareFallback, false)
   assert.equal(h.notices.length, 1); assert.equal(h.notices[0].title, '已保存到相册')
@@ -93,7 +93,7 @@ test('preview, save and image share reuse the same scoped PNG and survive native
 test('unsupported or failed share offers a second native card tap and keeps its cover on return', async () => {
   const h = runtime(); await h.page.load(); h.wx.canIUse = () => false
   await h.page.shareImage(); assert.equal(h.page.data.shareFallback, true)
-  const card = h.page.onShareAppMessage({from:'button'}); assert.equal(card.path, '/pages/login/index'); assert.equal(card.imageUrl, h.page.data.coverPath)
+  const card = h.page.onShareAppMessage({from:'button'}); assert.equal(card.path, '/pages/items/index'); assert.equal(card.imageUrl, h.page.data.coverPath)
   h.page.onHide(); h.page.onShow(); assert.equal(h.requests.length, 1); assert.ok(h.page.data.coverPath)
   h.wx.canIUse = () => true
   const action = h.page.shareImage(); await tick(); h.pending().reject({ errMsg: 'share:fail unsupported' }); await action

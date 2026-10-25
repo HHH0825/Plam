@@ -2,8 +2,8 @@
 function currentRoute(){try{const pages=getCurrentPages();return pages[pages.length-1]?.route}catch(_){return ''}}
 function go(app,target,token=app.globalData.token){
  if(token!==app.globalData.token)return false
- const route=target==='login'?'pages/login/index':'pages/items/index'
- if(currentRoute()===route)return false
+ const route='pages/items/index'
+ if(currentRoute()===route&&target!=='reset')return false
  if(app._sessionNavigation){
   if(app._sessionNavigation.route!==route)app._nextSessionNavigation={target,token}
   return false
@@ -16,7 +16,7 @@ function go(app,target,token=app.globalData.token){
   if(next&&next.token===app.globalData.token)go(app,next.target,next.token)
  }
  const fail=()=>{finish();wx.showToast?.({title:'页面暂时没打开，请点击重试',icon:'none'})}
- try{wx[target==='login'?'reLaunch':'switchTab']({url:'/'+route,success:finish,fail})}catch(_){fail()}
+ try{wx[target==='reset'?'reLaunch':'switchTab']({url:'/'+route,success:finish,fail})}catch(_){fail()}
  return true
 }
 module.exports={go}

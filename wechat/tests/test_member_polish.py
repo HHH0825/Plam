@@ -28,11 +28,11 @@ class PolishContract:
         self.app.config.update(PAY_IOS_ENABLED=True, PAY_IOS_PRODUCTS={'month':'im','quarter':'iq','year':'iy'})
         exchanger = self.app.config['WECHAT_CODE_EXCHANGER']
         with patch.dict(self.app.config, WECHAT_CODE_EXCHANGER=lambda _: self.fail('must not exchange login')):
-            for terminal, prices in [('android',[390,990]), ('ios',[450,1150])]:
+            for terminal, prices in [('android',[290]), ('ios',[290])]:
                 state=self.send('GET','/membership?platform='+terminal).json
                 self.assertTrue(state['active']);self.assertFalse(state['purchase_allowed'])
                 self.assertEqual(state['purchase_block_reason'],'active_membership')
-                for plan,price in zip(('month','quarter'),prices):
+                for plan,price in zip(('month',),prices):
                     r=self.send('POST','/pay/order',{'plan_id':plan,'platform':terminal,'expected_price_cents':price,'code':'alice'})
                     self.assertEqual((r.status_code,r.json['code']),(409,'MEMBERSHIP_ALREADY_OWNED'))
             legacy=PurchasesContract.send(self,'POST','/pay/order',{'plan_id':'month','code':'alice'})
@@ -43,11 +43,11 @@ class PolishContract:
     def test_pending_guard_blocks_second_device_before_login_exchange(self):
         order=self.order('month')['order']
         with patch.dict(self.app.config, WECHAT_CODE_EXCHANGER=lambda _: self.fail('must not exchange login')):
-            r=self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'})
+            r=self.send('POST','/pay/order',{'plan_id':'month','code':'alice'})
         self.assertEqual((r.status_code,r.json['code']),(409,'PAYMENT_ORDER_PENDING'))
         self.assertEqual(r.json['order']['id'],order['id'])
         self.sync(order,status=6)
-        self.assertNotEqual(self.order('quarter')['order']['id'],order['id'])
+        self.assertNotEqual(self.order('month')['order']['id'],order['id'])
 
     def test_membership_changed_during_login_is_rechecked_in_transaction(self):
         original=self.app.config['WECHAT_CODE_EXCHANGER']
@@ -66,7 +66,7 @@ class PolishContract:
         self.assertFalse(self.send('GET','/membership').json['purchase_allowed'])
         self.reset_throttle(order);self.sync(order,left_fee=0)
         self.assertTrue(self.send('GET','/membership').json['purchase_allowed'])
-        self.assertEqual(self.order('quarter')['order']['price_cents'],990)
+        self.assertEqual(self.order('month')['order']['price_cents'],290)
 
     def test_retired_promotion_has_no_deadline_and_never_reprices_catalog(self):
         for at in (1798732799, 1798732800, 1798732801):
@@ -76,7 +76,7 @@ class PolishContract:
             self.assertEqual(r['server_time'],at)
             self.assertNotIn('ends_at', r['promotion'])
             self.assertNotIn('description', r['promotion'])
-            self.assertEqual([p['price_cents'] for p in r['plans']],[390,990])
+            self.assertEqual([p['price_cents'] for p in r['plans']],[290])
             self.assertNotIn('ends_text', r['promotion'])
 
 
@@ -109,6 +109,6 @@ class CloudPolish(PolishContract,unittest.TestCase):
                     self.assertEqual(r.status_code,201,r.json);winner.append(r.json['order']['id'])
             return original(key,commit)
         with patch.object(self.db,'finish_transaction',side_effect=commit):
-            result=self.send('POST','/pay/order',{'plan_id':'quarter','code':'alice'})
+            result=self.send('POST','/pay/order',{'plan_id':'month','code':'alice'})
         self.assertEqual(result.status_code,409)
         self.assertEqual([r['id'] for r in self.send('GET','/pay/orders').json['orders']],winner)

@@ -54,3 +54,8 @@
 @media(max-width:350px){.member-hero-copy{padding-right:0}.member-hero .member-subtitle,.member-hero .member-hero-meta{margin-right:90px}.member-cat{width:91px;height:120px}.member-hero .title{font-size:21px}.member-announcement-body{padding-left:17px;padding-right:17px}}
 
 /* Fold the message into a letter, then return it to its measured title icon. */
+
+/* One monthly offer; free tools have their own section. */
+.membership-page .member-plan{min-height:100px;display:flex;align-items:center;justify-content:center;gap:12px;padding:16px}.member-plan .member-price{margin-top:0;font-size:36px;flex-wrap:nowrap}.member-plan .muted{margin-top:0}.member-free-heading{margin-top:20px}.member-free-badge{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:9px;background:#EAF3EB;color:#527158;font-size:10px;font-weight:400;vertical-align:middle}
+
+.membership-page .member-announcement-body>view:last-child{white-space:pre-line}

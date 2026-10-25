@@ -30,3 +30,5 @@
   </block><canvas type="2d" id="report-canvas" class="report-canvas" aria-hidden="true"/>
 </view>
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

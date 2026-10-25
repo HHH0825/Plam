@@ -1,0 +1,1 @@
+<view wx:if="{{blocked}}" class="connection-mask" catchtouchmove="noop"><view class="connection-card"><text class="connection-paw">ฅ</text><view class="connection-title">{{busy ? '正在连接你的手账…' : '连接失败，点击重试'}}</view><view wx:if="{{message}}" class="connection-copy">{{message}}</view><button wx:if="{{!busy}}" disabled="{{busy}}" bindtap="retry">重新连接</button></view></view>

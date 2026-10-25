@@ -12,7 +12,6 @@
     "pages/record/index",
     "pages/trash/index",
     "pages/disposed/index",
-    "pages/profile/index",
     "pages/wishlist/index"
   ],
   "window": {
@@ -118,12 +117,20 @@
       "root": "pages/login",
       "name": "login",
       "pages": [
-        "index"
+        "index",
+        "about"
       ]
     },
     {
       "root": "pages/member-benefits",
       "name": "member-benefits",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/profile",
+      "name": "profile",
       "pages": [
         "index"
       ]

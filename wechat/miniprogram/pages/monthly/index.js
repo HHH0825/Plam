@@ -4,7 +4,7 @@ const { readMonthly, presentMonthly, reportPageStyle, REPORT_DESIGN_VERSION } = 
 const { reportImage, shareCoverImage, discardImage } = require('../../utils/report-image')
 const { nativeCall } = require('../../utils/photo-edit')
 const { navigate, resetNavigation } = require('../../utils/navigation')
-const LOGIN_PATH = '/pages/login/index'
+const LOGIN_PATH = '/pages/items/index'
 async function imageExists(path) {
   if (!path) return false
   return new Promise(resolve => {

@@ -98,9 +98,8 @@ Page(require('../../utils/member').wrap({
     if(!getApp().requireSession())return
     const mode=event.currentTarget.dataset.mode
     if(!memberCard.tools.some(tool=>tool.mode===mode))return
-    if(this.data.memberCard.kind==='unsupported'){wx.showToast({title:'会员工具暂未开放',icon:'none'});return}
-    // Read-only previews are available to everyone. Paid actions still require
-    // the existing server entitlement checks inside the destination pages.
+    if(this.data.memberCard.kind==='unsupported'){wx.showToast({title:'整理工具暂未开放',icon:'none'});return}
+    // The destination verifies the free-tools capability of the current server.
     navigate(this,'/pages/member-tools/index?mode='+mode)
   },
   amountInfo() {
@@ -114,14 +113,5 @@ Page(require('../../utils/member').wrap({
   profile() { navigate(this, '/pages/profile/index') },
   disposedArchive() { navigate(this, '/pages/disposed/index') },
   trash() { navigate(this, '/pages/trash/index') },
-  async logout() {
-    if (this._loggingOut) return
-    this._loggingOut = true
-    const token = getApp().globalData.token
-    try { await api.request('/auth/logout', { method: 'POST' }) } catch (_) { /* local sign-out still applies */ }
-    finally { this._loggingOut = false }
-    if (getApp().globalData.token !== token) return
-    getApp().clearSession()
-    require('../../utils/session-navigation').go(getApp(),'login')
-  }
+  about(){navigate(this,'/pages/login/about')}
 }))

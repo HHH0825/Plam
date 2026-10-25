@@ -129,14 +129,14 @@ function profileHarness() {
   require('../miniprogram/utils/api').clearPhotos()
   delete require.cache[require.resolve('../miniprogram/app')]
   require('../miniprogram/app')
-  const app = { ...appDefinition, globalData: { token: 'alice-session',
+  const app = { ...appDefinition, globalData: { token: 'alice-session', accessToken:'alice-session',
     expiresAt: Math.floor(Date.now() / 1000) + 3600, user: { id: 1, username: '原昵称', avatar_key: 'sprout' } } }
   global.getApp = () => app
   global.getCurrentPages = () => [{ route: 'pages/me/index' }, { route: 'pages/profile/index' }]
   function page(name = 'profile') {
     let definition
     global.Page = value => { definition = value }
-    const path = `../miniprogram/pages/${name}/index`
+    const path = name==='about'?'../miniprogram/pages/login/about':`../miniprogram/pages/${name}/index`
     delete require.cache[require.resolve(path)]
     require(path)
     const instance = { ...definition, data: structuredClone(definition.data),
@@ -160,29 +160,9 @@ function profileHarness() {
   return { app, page, loaded, respond, requests, storage, navigation, appDefinition }
 }
 
-test('login paper button rejects duplicate taps, recovers from failure and keeps logo fallback local', async () => {
-  const h = profileHarness()
-  let resolveLogin, rejectLogin, calls = 0
-  h.app.login = () => { calls += 1; return new Promise((resolve, reject) => { resolveLogin = resolve; rejectLogin = reject }) }
-  const page = h.page('login')
-  h.navigation.length = 0
-  const pending = page.login()
-  assert.equal(page.data.busy, true)
-  await page.login()
-  assert.equal(calls, 1)
-  rejectLogin(new Error('连接失败，请检查网络和后端地址'))
-  await pending
-  assert.equal(page.data.busy, false)
-  assert.match(page.data.error, /连接失败/)
-  assert.equal(h.app.globalData.token, 'alice-session')
-  assert.deepEqual(h.navigation, [])
-  page.logoError()
-  assert.equal(page.data.logoFailed, true)
-  const retry = page.login()
-  resolveLogin()
-  await retry
-  assert.equal(page.data.busy, false)
-  assert.deepEqual(h.navigation, [['switchTab', '/pages/items/index']])
+test('about paper keeps artwork fallbacks and opens items without invoking login',()=>{
+ const h=profileHarness(),p=h.page('about');let calls=0;h.app.login=()=>calls++;
+ assert.deepEqual(h.navigation,[]);p.logoError();assert.equal(p.data.logoFailed,true);p.login();assert.equal(calls,0);assert.deepEqual(h.navigation,[['switchTab','/pages/items/index']])
 })
 
 test('save ticket preserves validation, duplicate protection and partial photo success', async () => {
@@ -301,7 +281,7 @@ test('profile saves once, keeps credentials and persists updated user across res
   h.respond(1, { user })
   await pending
   assert.equal(page.data.busy, false)
-  assert.deepEqual(h.app.globalData, { token: 'alice-session', expiresAt, user })
+  assert.deepEqual(h.app.globalData, { token: 'alice-session', accessToken:'alice-session', expiresAt, user })
   assert.deepEqual(h.storage.get('palmSession:local:http://127.0.0.1:5001'), h.app.globalData)
   assert.deepEqual(h.navigation, [['navigateBack', 1]])
   const restarted = { ...h.appDefinition, globalData: { token: '', expiresAt: 0, user: null } }
@@ -428,7 +408,7 @@ test('profile reports partial success when storage fails and refuses expired ses
   assert.equal(h.app.globalData.user.username, '已保存到服务器')
 })
 
-test('Me enters profile, reloads current user and protects a new account during logout', async () => {
+test('Me enters profile, reloads current user and exposes about instead of logout', async () => {
   const h = profileHarness()
   const page = await h.loaded('me')
   page.profile()
@@ -442,12 +422,9 @@ test('Me enters profile, reloads current user and protects a new account during 
   assert.equal(page.data.user.username, '返回后的昵称')
   assert.equal(page.data.avatarSymbol, '✦')
   assert.equal(page.data.avatarPath, '/assets/paper/avatar-star.png')
-  const logout = page.logout()
-  h.app.globalData.token = 'bob-session'
-  h.respond(2, undefined, 204)
-  await logout
-  assert.equal(h.app.globalData.token, 'bob-session')
-  assert.equal(h.navigation.length, 1)
+  page._navigation=null;page.about()
+  assert.deepEqual(h.navigation[1],['navigateTo','/pages/login/about'])
+  assert.equal(typeof page.logout,'undefined')
 })
 
 test('welcome sizing handles short, tall and wide windows without oversized artwork', () => {
@@ -477,8 +454,8 @@ test('welcome page reflows on window resize without triggering login', () => {
   global.Page = page => { definition = page }
   global.getApp = () => ({ hasSession: () => false })
   global.wx = { getWindowInfo: () => ({ windowWidth: 390, windowHeight: 753 }) }
-  delete require.cache[require.resolve('../miniprogram/pages/login/index')]
-  require('../miniprogram/pages/login/index')
+  delete require.cache[require.resolve('../miniprogram/pages/login/about')]
+  require('../miniprogram/pages/login/about')
   const page = { ...definition, data: { ...definition.data }, setData(value) { Object.assign(this.data, value) } }
   page.onLoad()
   assert.equal(page.data.heroStyle, 'height:231px;')
@@ -594,7 +571,7 @@ test('login selects the correct credential and preserves session on failure', as
         assert.equal(path, '/auth/login')
         assert.equal(options.anonymous, true)
         submitted = options.data.code
-        return { token: 'test-token', expires_at: 123456, user: { id: 1 } }
+        return { token: 'test-token', expires_at: 4102444800, user: { id: 1 } }
       }
       await app.login()
       assert.equal(submitted, devLogin ? `dev:${config.DEV_ACCOUNT}` : 'real-wechat-code')

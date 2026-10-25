@@ -55,15 +55,15 @@ class OrderContract:
         for invalid in [[], ['default'], ['default', 'default'], ['default', 'foreign'], [1, a['id']], 'default']:
             self.assertEqual(self.save_order(invalid, rev).status_code, 400)
             self.assertEqual(self.order(), (ids, rev))
-        self.assertEqual(self.save_order(ids, rev, token=self.bob).status_code, 403)
+        self.assertEqual(self.save_order(ids, rev, token=self.bob).status_code, 409)
         self.send('PUT', '/member/books/' + a['id'], {**a, 'archived': True}, revision=0)
         self.assertEqual(self.save_order(ids, self.order()[1]).status_code, 400)
 
-    def test_free_and_expired_cannot_reorder_or_modify_default(self):
-        self.assertEqual(self.save_order(['default'], 0).status_code, 403)
+    def test_free_and_expired_can_reorder_without_paid_membership(self):
+        self.assertEqual(self.save_order(['default'], 0).status_code, 200)
         self.grant(); a = self.create_book('A'); ids, rev = self.order(); self.grant('expired')
-        self.assertEqual(self.save_order(ids[::-1], rev).status_code, 403)
-        self.assertEqual(self.order()[0], ids)
+        self.assertEqual(self.save_order(ids[::-1], rev).status_code, 200)
+        self.assertEqual(self.order()[0], ids[::-1])
 
     def test_create_failure_rolls_back_both_book_and_order(self):
         self.grant(); original = self.order()

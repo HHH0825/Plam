@@ -1,11 +1,12 @@
 // Read acknowledgements are local preferences, never authentication or membership data.
 const dismissed=new Set()
-function identity(app){
+function identity(app,announcementId){
+ const version=typeof announcementId==='string'&&/^[A-Za-z0-9._-]{1,64}$/.test(announcementId)?announcementId:'legacy'
  const id=app.globalData.user?.id
- return id!==undefined&&id!==null&&id!==''?'palmMemberAnnouncement:v1:'+require('../../../utils/cloud-transport').serviceScope()+':'+id:''
+ return id!==undefined&&id!==null&&id!==''?'palmMemberAnnouncement:v1:'+require('../../../utils/cloud-transport').serviceScope()+':'+id+':'+version:''
 }
 function prepare(page,app=getApp()){
- const key=identity(app),token=app.globalData.token
+ const key=identity(app,page.data.announcementId),token=app.globalData.token
  if(page._announcementKey!==key||page._announcementToken!==token){
   page._announcementKey=key;page._announcementToken=token
   page.setData({announcementOpen:false})
@@ -27,7 +28,7 @@ function open(page,app=getApp()){
  if(!page.data.loading&&!page.data.error&&ready(page))page.setData({announcementOpen:true})
 }
 function close(page,app=getApp(),storage=wx){
- const valid=page._announcementToken===app.globalData.token&&page._announcementKey===identity(app)
+ const valid=page._announcementToken===app.globalData.token&&page._announcementKey===identity(app,page.data.announcementId)
  if(!valid){prepare(page,app);return}
  if(!page.data.announcementOpen)return
  const key=page._announcementKey

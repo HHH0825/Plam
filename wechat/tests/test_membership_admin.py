@@ -49,7 +49,7 @@ class GiftContract:
         self.assertEqual(self.send('GET','/pay/orders').json['orders'],[])
         self.revoke(ident)
         self.assertTrue(self.send('GET','/membership').json['purchase_allowed'])
-        self.assertEqual(self.order('month')['order']['price_cents'],390)
+        self.assertEqual(self.order('month')['order']['price_cents'],290)
 
     def test_gift_after_payment_refund_only_removes_paid_months(self):
         order=self.order('month')['order'];self.sync(order)
@@ -126,8 +126,8 @@ class GiftContract:
     def test_ios_catalog_protocol_and_price_preconditions(self):
         self.app.config.update(PAY_IOS_ENABLED=True,PAY_IOS_PRODUCTS={'month':'ios_month','quarter':'ios_quarter','year':'ios_year'})
         ios=self.send('GET','/membership?platform=ios').json
-        self.assertEqual([x['price_cents'] for x in ios['plans']],[450,1150])
-        for plan,price in [('month',450),('quarter',1150)]:
+        self.assertEqual([x['price_cents'] for x in ios['plans']],[290])
+        for plan,price in [('month',290)]:
             response=self.send('POST','/pay/order',{'plan_id':plan,'code':'alice','platform':'ios','expected_price_cents':price})
             self.assertEqual(response.status_code,201,response.json)
             signed=json.loads(response.json['payData']['signData'])

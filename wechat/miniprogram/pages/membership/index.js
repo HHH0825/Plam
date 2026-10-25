@@ -3,7 +3,7 @@ const {navigate,resetNavigation}=require('../../utils/navigation')
 const payment=require('./lib/virtual-payment'),announcement=require('./lib/member-announcement')
 const noticeMotion=require('../../utils/member-announcement-motion')
 Page(member.wrap({
- data:{loading:true,error:'',buying:false,paymentNote:'',selected:'month',selectedPlan:null,plans:[],membership:null,expiry:'',feedbackMessage:'',announcementOpen:false,announcementBusy:false,announcementClosing:false,announcementFlightStyle:'',announcementPulse:false,features:[
+ data:{loading:true,error:'',buying:false,paymentNote:'',selected:'month',selectedPlan:null,plans:[],membership:null,expiry:'',feedbackMessage:'',announcementId:'',announcementTitle:'',announcementOpen:false,announcementBusy:false,announcementClosing:false,announcementFlightStyle:'',announcementPulse:false,features:[
   {mode:'books',icon:'/assets/membership/books.png',title:'多账本 · 流水整理',note:'旅行、家庭独立账本，整理不同账本的流水'},
   {mode:'budgets',icon:'/assets/membership/budget.png',title:'月度预算 · 分类预算',note:'查看剩余预算与使用进度，花销心中有数'}]},
  openAnnouncement(){announcement.open(this)},
@@ -13,8 +13,8 @@ Page(member.wrap({
  onShow(){this._visible=true;announcement.prepare(this);const account=getApp().globalData.token;if(this._letterAccount!==account){noticeMotion.cancel(this);this._letterAccount=account;this.setData({announcementOpen:false,feedbackMessage:'',membership:null,expiry:'',plans:[],selectedPlan:null})}resetNavigation(this);if(getApp().requireSession())this.load()},onHide(){this._visible=false;noticeMotion.cancel(this);this.setData({announcementOpen:false})},onUnload(){noticeMotion.cancel(this)},
  presentMembership(r){
   if(!r?.supported){this.setData({membership:r,plans:[],selectedPlan:null,feedbackMessage:'',expiry:'',announcementOpen:false});return}
-  const plans=r.plans.filter(p=>['month','quarter'].includes(p.id)).map(p=>({...p,price:(p.price_cents/100).toFixed(2).replace(/0$/,''),unit:p.months===1?'月':'季'})),selectedPlan=plans.find(p=>p.id===this.data.selected)||plans[0]||null
-  this.setData({membership:r,plans,selected:selectedPlan?.id||'',selectedPlan,expiry:r.expires_at?new Date(r.expires_at*1000+8*3600000).toISOString().slice(0,10):'',feedbackMessage:r.promotion?.feedback_message||''});announcement.present(this)
+  const plans=r.plans.filter(p=>p.id==='month'&&p.months===1).map(p=>({...p,price:(p.price_cents/100).toFixed(2).replace(/0$/,''),unit:p.months===1?'月':'季'})),selectedPlan=plans.find(p=>p.id===this.data.selected)||plans[0]||null
+  this.setData({membership:r,plans,selected:selectedPlan?.id||'',selectedPlan,expiry:r.expires_at?new Date(r.expires_at*1000+8*3600000).toISOString().slice(0,10):'',feedbackMessage:r.free_entitlements?.includes('books')&&r.free_entitlements?.includes('budgets')?r.promotion?.feedback_message||'':'',announcementId:r.promotion?.announcement_id||'',announcementTitle:r.promotion?.announcement_title||''});announcement.present(this)
  },
  onMembershipStateChange(r){this.presentMembership(r)},
  onMembershipRefreshSuccess(r){this.presentMembership(r)},

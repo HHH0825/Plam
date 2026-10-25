@@ -1,5 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm')
 function harness(response){
+ if(response.free_entitlements===undefined)response.free_entitlements=['books','budgets']
  let definition;const calls=[],modals=[],app={globalData:{token:'alice',user:{id:1}},requireSession:()=>true},member={wrap:d=>d,load:async()=>structuredClone(response),promotion:r=>r.promotion?.active?r.promotion:null,reset(){}}
  const context={setTimeout,clearTimeout,require:n=>n.endsWith('/cloud-transport')?{serviceScope:()=> 'isolated'}:require(n),module:{exports:{}},getApp:()=>app,wx:{getStorageSync(){},setStorageSync(){}}};vm.runInNewContext('(function(){'+fs.readFileSync(require.resolve('../miniprogram/pages/membership/lib/member-announcement'),'utf8')+'\n})()',context);
  const announcement=context.module.exports;context.module={exports:{}};vm.runInNewContext('(function(){'+fs.readFileSync(require.resolve('../miniprogram/utils/member-announcement-motion'),'utf8')+'\n})()',context);const motion=context.module.exports;
@@ -10,20 +11,20 @@ function harness(response){
  const page={...definition,data:structuredClone(definition.data),_visible:true,setData(p){Object.assign(this.data,p)}}
  return {page,calls,modals,app,member}
 }
-const plans=[{id:'month',name:'月会员',months:1,price_cents:390},{id:'quarter',name:'季会员',months:3,price_cents:990}]
+const plans=[{id:'month',name:'月会员',months:1,price_cents:290}]
 
-test('iOS current catalog and historical year order retain their distinct real prices',async()=>{
- const h=harness({supported:true,payment_open:true,ios_payment_open:true,plans:plans.map((p,i)=>({...p,price_cents:[450,1150][i]})),
+test('iOS monthly price is 2.9 while historical annual order keeps its real price',async()=>{
+ const h=harness({supported:true,payment_open:true,ios_payment_open:true,plans,
   orders:[{id:'IOS-ORDER',platform:'ios',plan_id:'year',price_cents:3390,status:'fulfilled'}]})
- await h.page.load();assert.equal(h.page.data.selectedPlan.price,'4.5')
- const info=require('../miniprogram/pages/member-benefits/lib/member-benefits').service(h.page.data.membership);assert.match(info.catalog,/11\.50/);assert.doesNotMatch(info.catalog,/年会员/)
+ await h.page.load();assert.equal(h.page.data.selectedPlan.price,'2.9')
+ const info=require('../miniprogram/pages/member-benefits/lib/member-benefits').service(h.page.data.membership);assert.match(info.catalog,/2\.90/);assert.doesNotMatch(info.catalog,/年会员/)
  await h.page.orders();assert.match(h.modals[0].content,/苹果.*33\.90/);assert.match(h.modals[0].content,/App Store购买记录/)
 })
-test('normal plans keep original amounts and selected footer follows the actual selection',async()=>{
+test('monthly plan uses 2.9 and retired selections do not change checkout',async()=>{
  const h=harness({supported:true,payment_open:true,plans});await h.page.load()
- assert.equal(h.page.data.selectedPlan.id,'month');assert.equal(h.page.data.selectedPlan.price,'3.9')
- h.page.select({currentTarget:{dataset:{id:'quarter'}}});assert.equal(h.page.data.selectedPlan.price,'9.9')
- await h.page.buy();assert.deepEqual(h.calls[0],['quarter',undefined,990])
+ assert.equal(h.page.data.selectedPlan.id,'month');assert.equal(h.page.data.selectedPlan.price,'2.9')
+ h.page.select({currentTarget:{dataset:{id:'quarter'}}});assert.equal(h.page.data.selectedPlan.price,'2.9')
+ await h.page.buy();assert.deepEqual(h.calls[0],['month',undefined,290])
 })
 test('small real payment shows 0.01, selects the only plan, and sends the displayed amount to checkout',async()=>{
  const h=harness({supported:true,payment_open:true,payment_test:true,payment_test_mode:true,plans:[{...plans[0],name:'月会员测试',price_cents:1}]})
@@ -60,8 +61,13 @@ test('announcement opens on first successful read, closes, and can be reopened w
  let finish;h.member.load=()=>new Promise(r=>finish=r);h.app.globalData.token='bob';h.app.globalData.user={id:2};h.page.onShow();assert.equal(h.page.data.announcementOpen,false);assert.equal(h.page.data.feedbackMessage,'');finish({supported:false});await new Promise(r=>setImmediate(r));assert.equal(h.page.data.announcementOpen,false)
 })
 test('retired promotion keeps only feedback, unsupported state clears notice and cached expiry',async()=>{
- const h=harness({supported:true,plans,promotion:{active:false,feedback_message:'继续完善'}});await h.page.load();assert.equal(h.page.data.promotion,undefined);assert.equal(h.page.data.feedbackMessage,'继续完善');assert.equal(h.page.data.selectedPlan.price,'3.9');h.page.presentMembership({supported:false});assert.equal(h.page.data.feedbackMessage,'');assert.equal(h.page.data.announcementOpen,false)
+ const h=harness({supported:true,plans,promotion:{active:false,feedback_message:'继续完善'}});await h.page.load();assert.equal(h.page.data.promotion,undefined);assert.equal(h.page.data.feedbackMessage,'继续完善');assert.equal(h.page.data.selectedPlan.price,'2.9');h.page.presentMembership({supported:false});assert.equal(h.page.data.feedbackMessage,'');assert.equal(h.page.data.announcementOpen,false)
 })
 test('new page ignores a stale annual catalog entry',async()=>{
- const h=harness({supported:true,plans:[...plans,{id:'year',months:12,price_cents:2990}]});await h.page.load();assert.deepEqual(Array.from(h.page.data.plans,p=>p.id),['month','quarter']);h.page.select({currentTarget:{dataset:{id:'year'}}});assert.equal(h.page.data.selected,'month')
+ const h=harness({supported:true,plans:[...plans,{id:'year',months:12,price_cents:2990}]});await h.page.load();assert.deepEqual(Array.from(h.page.data.plans,p=>p.id),['month']);h.page.select({currentTarget:{dataset:{id:'year'}}});assert.equal(h.page.data.selected,'month')
+})
+
+
+test('old backend cannot claim tools are already free in the membership announcement',async()=>{
+ const h=harness({supported:true,free_entitlements:[],plans,promotion:{feedback_message:'旧公告'}});await h.page.load();assert.equal(h.page.data.feedbackMessage,'');assert.equal(h.page.data.announcementOpen,false)
 })

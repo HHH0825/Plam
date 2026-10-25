@@ -9,13 +9,13 @@ Component({
   methods: {
     owner() { const pages = getCurrentPages(); return pages[pages.length - 1] },
     sync(route) {
-      if(!getApp().globalData.token){this.setData({hidden:true,menuOpen:false});return}
+      if(!getApp().globalData.token||getApp().hasSession&&!getApp().hasSession()||getApp()._sessionPhase==='connecting'){this.setData({hidden:true,menuOpen:false});return}
       this._switching = false
       this.cancelMenu()
       const page = this.owner()
       const index = tabs.indexOf(route || (page && page.route))
       const motion=require('../utils/motion'),motionReduced=motion.reduced(),pulse=index>=0&&motion.tab(tabs[index])
-      this.setData({ memberThemeStyle:require('../utils/member').style(),motionReduced,...(pulse?{tabMotionRoute:motionReduced?'':tabs[index]}:{}), hidden: !!(page && page.data && (page.data.filterOpen || page.data.amountDialog || page.data.announcementOpen)), ...(index >= 0 ? { selected:index, selectedRoute:tabs[index] } : {}) })
+      this.setData({ memberThemeStyle:require('../utils/member').style(),motionReduced,...(pulse?{tabMotionRoute:motionReduced?'':tabs[index]}:{}), hidden: !!(page && page.data && (page.data.sessionBlocked || page.data.filterOpen || page.data.amountDialog || page.data.announcementOpen)), ...(index >= 0 ? { selected:index, selectedRoute:tabs[index] } : {}) })
     },
     switchTab(event) {
       const route = event.currentTarget.dataset.route
@@ -45,7 +45,7 @@ Component({
         // Use the held list's existing protected scroll-anchor handler.
         if(page.route===ITEMS_ROUTE && typeof page.add==='function')page.add()
         else navigate(page,'/pages/editor/index')
-      }else navigate(page,'/pages/ledger-record/index'+(page.data?.memberActive&&page._memberBookId&&page._memberBookId!=='all'?'?book_id='+page._memberBookId:''))
+      }else navigate(page,'/pages/ledger-record/index'+(page.data?.freeToolsSupported&&page._memberBookId&&page._memberBookId!=='all'?'?book_id='+page._memberBookId:''))
     },
     chooseEntry(e) {
       const action=e.currentTarget.dataset.action

@@ -1,1 +1,10 @@
-{"navigationBarTitleText":"添加物品","navigationBarBackgroundColor":"#FFFFFF","usingComponents":{"paper-label":"./components/paper-label/index","cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}
+{
+  "navigationBarTitleText": "添加物品",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "paper-label": "./components/paper-label/index",
+    "cat-loading": "/components/cat-loading/index",
+    "cat-feedback": "/components/cat-feedback/index",
+    "session-status": "/components/session-status/index"
+  }
+}

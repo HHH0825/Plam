@@ -1,1 +1,9 @@
-{"navigationBarTitleText":"物品详情","navigationBarBackgroundColor":"#FFFFFF","usingComponents":{"cat-loading":"/components/cat-loading/index","cat-feedback":"/components/cat-feedback/index"}}
+{
+  "navigationBarTitleText": "物品详情",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "cat-loading": "/components/cat-loading/index",
+    "cat-feedback": "/components/cat-feedback/index",
+    "session-status": "/components/session-status/index"
+  }
+}

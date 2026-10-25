@@ -4,3 +4,5 @@
 @import "../../styles/announcement.wxss";
 
 .startup-entry{min-height:65vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#8b7d60;font-size:14px}.startup-entry button{font-size:14px;padding:0 20px;line-height:44px;background:#fff4b8;border-radius:22px;color:#665b40}
+
+.startup-entry{align-items:stretch;justify-content:flex-start;padding:28px 18px;gap:18px;background:linear-gradient(#fff9e8,#fff);box-sizing:border-box;min-height:100vh}.startup-title{font-size:30px;font-weight:700;color:#30302e}.startup-paper{padding:24px 18px;background:#fff6ce;border-radius:18px}.startup-line{height:16px;width:70%;background:#eee6ca;border-radius:8px}.startup-short{width:40%;margin-top:14px}.startup-card{height:110px;background:#f5f4f0;border-radius:18px}.startup-error{font-size:12px;color:#9c7959;line-height:1.6}

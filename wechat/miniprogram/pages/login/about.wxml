@@ -1,0 +1,54 @@
+<view class="member-themed {{memberThemeClass}} page welcome {{compact ? 'welcome-compact' : ''}}" style="{{memberThemeStyle}}{{pageStyle}}">
+  <view class="brand">
+    <view class="brand-mark" aria-hidden="true">
+      <image wx:if="{{!logoFailed}}" class="brand-logo" src="/pages/login/assets/notebook.png" mode="aspectFit" binderror="logoError" />
+      <text wx:else class="brand-fallback">猫</text>
+    </view>
+    <text class="brand-name">猫爪物帐</text>
+  </view>
+  <view class="intro">
+    <view class="title" role="heading" aria-label="收好每件小物，记清每笔收支。">
+      <image wx:if="{{!titleFailed}}" class="title-art" src="/pages/login/assets/title.png" mode="aspectFit" data-asset="title" binderror="assetError" aria-hidden="true" />
+      <view wx:else class="title-fallback">收好每件小物，<view>记清每笔收支。</view></view>
+    </view>
+    <view class="subtitle">记录物品的陪伴，也记下生活的收支。</view>
+  </view>
+  <view class="welcome-art" style="{{heroStyle}}" aria-hidden="true">
+    <image wx:if="{{!heroFailed}}" class="welcome-cat" src="/pages/login/assets/hero.png" mode="aspectFit" data-asset="hero" binderror="assetError" />
+    <view wx:else class="hero-fallback"><text class="fallback-cat">ฅ^•ﻌ•^ฅ</text><text>慢慢用，好好记</text></view>
+  </view>
+  <view class="sample-card">
+    <view class="sketch-frame" aria-hidden="true"><view class="corner-tl"></view><view class="corner-tr"></view><view class="corner-bl"></view><view class="corner-br"></view><view class="edge-top"></view><view class="edge-bottom"></view><view class="edge-left"></view><view class="edge-right"></view></view>
+    <view class="sample-head">
+      <view class="sample-label">生活里的两种小记录<image wx:if="{{!decorFailed}}" class="sample-strokes" src="/pages/login/assets/strokes.png" mode="aspectFit" data-asset="decor" binderror="assetError" aria-hidden="true" /></view>
+      <text class="sample-disclaimer">示例数据</text>
+    </view>
+    <view class="sample-rows">
+      <view class="sample-ledger-row">
+        <view class="sample-meal-art" aria-hidden="true"><image wx:if="{{!foodFailed}}" src="/pages/login/assets/food.png" mode="aspectFit" data-asset="food" binderror="assetError"/><text wx:else>餐</text></view>
+        <view class="sample-ledger-copy"><text class="sample-ledger-caption">今日记一笔</text><text class="sample-ledger-name">午餐</text><text class="sample-ledger-meta">餐饮 · 日常记账</text></view>
+        <view class="sample-ledger-value"><text class="sample-ledger-money">−¥18.00</text><text class="sample-ledger-meta">支出</text></view>
+      </view>
+      <view class="sample-item-row">
+        <view class="sample-photo" aria-hidden="true"><image wx:if="{{!cameraFailed}}" class="sample-camera" src="/pages/login/assets/camera.png" mode="aspectFit" data-asset="camera" binderror="assetError"/><text wx:else class="camera-fallback">相机</text></view>
+        <view class="sample-details"><view class="sample-top"><text class="sample-name">一起去旅行的相机</text><text class="sample-status">使用中</text></view><view class="sample-metrics-inline"><text>相伴365天</text><text class="sample-metrics-dot">·</text><text>日均净成本 ¥1.28/天</text></view></view>
+      </view>
+    </view>
+  </view>
+  <view class="feature-hints">
+    <view class="feature"><image wx:if="{{!featureFailed}}" src="/pages/login/assets/box.png" mode="aspectFit" data-asset="feature" binderror="assetError" aria-hidden="true" /><text>物品档案</text></view>
+    <view class="feature"><image wx:if="{{!featureFailed}}" src="/pages/login/assets/notebook.png" mode="aspectFit" data-asset="feature" binderror="assetError" aria-hidden="true" /><text>日常记账</text></view>
+    <view class="feature"><image wx:if="{{!featureFailed}}" src="/pages/login/assets/statistics.png" mode="aspectFit" data-asset="feature" binderror="assetError" aria-hidden="true" /><text>收支统计</text></view>
+  </view>
+  <view class="welcome-footer">
+    <view class="login-control">
+      <image wx:if="{{!decorFailed}}" class="peek-paw" src="/pages/login/assets/peek-paw.png" mode="aspectFit" data-asset="decor" binderror="assetError" aria-hidden="true" />
+      <button class="button login-button cat-loading-button" hover-class="button-hover" disabled="{{busy}}" bindtap="login" aria-label="{{busy ? '正在打开' : '开始记录'}}"><cat-loading wx:if="{{busy}}" paw label=""/>
+        <image wx:if="{{!busy && !decorFailed}}" class="login-paw" src="/pages/login/assets/paw.png" mode="aspectFit" data-asset="decor" binderror="assetError" aria-hidden="true" />
+        <text>{{busy ? '正在打开…' : '开始记录'}}</text>
+      </button>
+    </view>
+    <view wx:if="{{error}}" class="error login-error" role="alert">{{error}}</view>
+    <view class="welcome-note">每一件小物，每一笔收支，都有自己的故事。</view>
+  </view>
+</view>

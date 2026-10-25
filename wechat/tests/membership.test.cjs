@@ -5,7 +5,7 @@ function memberHarness(){
  let token='alice',terminal='',response=()=>Promise.resolve(status()),clock=1000000,definition,timers=[]
  const notices=[],navigations=[],calls=[],module={exports:{}}
  function Clock(...args){return new Date(...args)}Clock.now=()=>clock
- const app={globalData:{get token(){return token}}}
+ const app={globalData:{get token(){return token}},requireSession:()=>true}
  const file=require.resolve('../miniprogram/utils/member')
  vm.runInNewContext(fs.readFileSync(file,'utf8'),{module,require:n=>n==='./api'?{request:p=>{calls.push(p);return response(p)}}:n==='./payment-platform'?{platform:()=>terminal}:n==='./navigation'?{navigate:(_p,url)=>navigations.push(url)}:createRequire(file)(n),getApp:()=>app,wx:{showToast:x=>notices.push(x)},Date:Clock,setTimeout:fn=>{timers.push(fn);return timers.length},clearTimeout(){},console})
  function status(extra={}){return {active:true,status:'active',expires_at:2000,server_time:clock/1000,entitlements:['books'],plans:[],appearance:{effective:{theme:'sage',template:'journal',sticker:'cat'}},...extra}}
@@ -49,7 +49,7 @@ function toolsHarness(){
  const app={globalData:{token:'alice'},requireSession:()=>true},calls=[],modals=[],books=[{id:'default',name:'日常账本',revision:0}],api={request:async(path,options={})=>{calls.push({path,options});if(path==='/member/books')return {books};if(path.startsWith('/member/entries?'))return {entries:[],next_offset:null};return {}}}
  let definition,ensure=async()=>true
  const file=require.resolve('../miniprogram/pages/member-tools/index'),local=createRequire(file)
- vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:n=>n.endsWith('/api')?api:n.endsWith('/member')?{...realMember,wrap:d=>d,load:async()=>({active:true,supported:true}),ensure:()=>ensure()}:n.endsWith('/navigation')?{navigate(){},resetNavigation(){}}:local(n),Page:d=>definition=d,getApp:()=>app,wx:{showModal:o=>modals.push(o),showToast(){},setNavigationBarTitle(){}},setTimeout,clearTimeout,console})
+ vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:n=>n.endsWith('/api')?api:n.endsWith('/member')?{...realMember,wrap:d=>d,load:async()=>({active:true,supported:true,free_entitlements:['books','budgets']}),ensureFreeTool:()=>ensure()}:n.endsWith('/navigation')?{navigate(){},resetNavigation(){}}:local(n),Page:d=>definition=d,getApp:()=>app,wx:{showModal:o=>modals.push(o),showToast(){},setNavigationBarTitle(){}},setTimeout,clearTimeout,console})
  const page={...definition,data:structuredClone(definition.data),_seq:1,_visible:true,setData(p){for(const[k,v]of Object.entries(p)){const names=k.split('.');let r=this.data;while(names.length>1){const a=names.shift();r=r[a]||(r[a]={})}r[names[0]]=v}}};page.data.member={active:true};page.data.books=books
  return {page,app,calls,modals,api,ensure:fn=>ensure=fn}
 }
@@ -124,7 +124,7 @@ test('late previous-budget response cannot replace another account draft',async(
 test('declining draft dismissal keeps the budget editor open without a write',async()=>{
  const h=toolsHarness();h.page.data.budgetSheetOpen=true;h.page.data.budgetDraftDirty=true;const close=h.page.closeBudgetSheet();h.modals[0].success({confirm:false});await close;assert.equal(h.page.data.budgetSheetOpen,true);assert.equal(h.calls.length,0)
 })
-test('free user cannot open an editable budget or save a new book',async()=>{
+test('unsupported free-tool backend cannot open an editable budget or save a new book',async()=>{
  const h=toolsHarness();h.ensure(async()=>false);h.page.data.budget=budgetRecord();await h.page.openBudget();await h.page.newBook();await h.page.saveBook();assert.equal(h.page.data.budgetSheetOpen,false);assert.equal(h.page.data.bookSheetOpen,false);assert.equal(h.calls.length,0)
 })
 test('retired calendar deep link never loads calendar or book data',()=>{
@@ -161,4 +161,21 @@ test('budget refresh keeps failures distinct from unset and rejects an old book 
  const h=memberHarness(),p=h.page();p.route='pages/ledger/index';p._memberVisible=true;p.data.month='2026-10';let finish,fail=false
  h.respond(async path=>{if(path.startsWith('/membership'))return h.status();if(path==='/member/books')return {books:[{id:'trip',name:'旅行'}]};if(fail)throw Error('offline budget');return new Promise(r=>finish=r)})
  const old=p.memberRefresh(true);await tick();assert.equal(p.data.budgetCard.kind,'loading');p.data.memberBookId='trip';finish({total:{limit_cents:10000,used_cents:5000,remaining_cents:5000,percent:50}});await old;assert.equal(p.data.budgetCard.kind,'loading');fail=true;await p.memberRefresh(true);assert.equal(p.data.budgetCard.kind,'error');assert.equal(p.data.memberBudget,null);assert.equal(p.data.memberError,'')
+})
+
+
+test('free and expired users can use tools only when current backend declares the free capability',async()=>{
+ const h=memberHarness(),p=h.page();p._memberVisible=true;
+ for(const status of ['free','expired']){
+  h.respond(async()=>h.status({active:false,status,free_entitlements:['books','budgets']}));
+  assert.equal(await h.member.ensureFreeTool(p,'books'),true);assert.equal(await h.member.ensureFreeTool(p,'budgets'),true);
+ }
+ h.respond(async()=>h.status({active:true}));assert.equal(await h.member.ensureFreeTool(p,'books'),false);assert.match(h.notices.at(-1).title,/更新服务端/);assert.equal(h.navigations.length,0);
+ let finish;h.respond(()=>new Promise(r=>finish=r));const pending=h.member.ensureFreeTool(p,'books');h.token('bob');finish(h.status({free_entitlements:['books','budgets']}));assert.equal(await pending,false)
+})
+
+
+test('foreground after reconnect does not reload over an unsaved budget editor',()=>{
+ const h=toolsHarness();h.page._toolsAccount='alice';h.page.setData({mode:'budgets',budgetSheetOpen:true,budgetDraftDirty:true,budgetTotal:'123.45'});let reads=0;h.page.load=()=>reads++;
+ h.page.onShow();assert.equal(reads,0);assert.equal(h.page.data.budgetTotal,'123.45');assert.equal(h.page.data.budgetSheetOpen,true);h.page.onHide()
 })

@@ -91,3 +91,25 @@ test('old backend retains source-only operation; refunds and account changes blo
 test('ledger recheck failure retains the last known entry and offers retry without falsifying its state',async()=>{
  const h=harness('ledger-detail');try{h.page.onLoad({id:'a'.repeat(32)});h.page._visible=true;const row={id:'a'.repeat(32),source:'installment',state:'void',deletable:false,editable:false};h.page.setData({row});api.request=async()=>{throw Error('offline')};await h.page.load();assert.equal(h.page.data.row.state,'void');assert.equal(h.page.data.loading,false);assert.equal(h.page.data.error,'offline')}finally{h.restore()}
 })
+
+
+test('free and expired accounts preserve selected book when saving a new entry',async()=>{
+ const member=require('../miniprogram/utils/member');
+ for(const status of ['free','expired']){
+  const h=harness('ledger-record');member.reset();
+  try{
+   const original=api.request;api.request=(url,options={})=>url.startsWith('/membership')?Promise.resolve({active:false,status,entitlements:[],free_entitlements:['books','budgets'],plans:[],appearance:{effective:{theme:'default',template:'default'}}}):original(url,options);
+   h.page.onLoad({book_id:'travel'});await tick();h.page.change({currentTarget:{dataset:{key:'amount'}},detail:{value:'28'}});await h.page.save();
+   assert.equal(h.calls.find(c=>c.options.method==='POST').options.data.book_id,'travel');assert.equal(h.page._newBook,'travel')
+  }finally{member.reset();h.restore()}
+ }
+})
+
+test('legacy backend does not silently move a selected-book draft to default',async()=>{
+ const member=require('../miniprogram/utils/member'),h=harness('ledger-record');member.reset();
+ try{
+  const original=api.request;api.request=(url,options={})=>url.startsWith('/membership')?Promise.resolve({active:false,entitlements:[],plans:[],appearance:{effective:{theme:'default',template:'default'}}}):original(url,options);
+  h.page.onLoad({book_id:'travel'});await tick();h.page.change({currentTarget:{dataset:{key:'amount'}},detail:{value:'28'}});await h.page.save();
+  assert.match(h.page.data.error,/更新服务端/);assert.equal(h.page._newBook,'travel');assert.equal(h.page.data.form.amount,'28');assert.equal(h.calls.filter(c=>c.options.method==='POST').length,0)
+ }finally{member.reset();h.restore()}
+})

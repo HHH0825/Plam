@@ -1,6 +1,6 @@
 const api=require('../../utils/api'),ledger=require('../../utils/ledger'),analytics=require('../../utils/ledger-analytics')
 const image=require('../../utils/ledger-report-image'),{discardImage}=require('../../utils/report-image'),{nativeCall}=require('../../utils/photo-edit')
-const LOGIN='/pages/login/index'
+const LOGIN='/pages/items/index'
 async function exists(path){if(!path)return false;return new Promise(resolve=>{try{wx.getFileSystemManager().access({path,success:()=>resolve(true),fail:()=>resolve(false)})}catch(_){resolve(false)}})}
 Page(require('../../utils/member').wrap({
  data:{month:'',maxMonth:ledger.today().slice(0,7),loading:true,error:'',cashAnalysis:null,cashAnalysisError:'',reportPreview:true,reportLayout:null,showAmounts:true,imageBusy:false,imagePath:'',coverPath:'',shareFallback:false,imageError:''},

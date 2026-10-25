@@ -183,7 +183,7 @@ def require_no_pending_order():
 
 def create_order(plan_id, code, platform, expected_price_cents):
     """Persist before returning payData. SessionKey and signatures are never stored."""
-    if plan_id == 'year':
+    if plan_id in ('quarter', 'year'):
         abort(410, description='该套餐已停售，请更新后重新选择')
     require_purchase_available()
     if not payment_open(platform):
@@ -494,7 +494,7 @@ def reconcile_due(limit=1):
 @bp.post('/api/mp/pay/order')
 def order_route():
     data = body()
-    if data.get('plan_id') == 'year':
+    if data.get('plan_id') in ('quarter', 'year'):
         return jsonify(error='该套餐已停售，请更新后重新选择', code='PLAN_RETIRED'), 410
     require_purchase_available()
     if not current_app.config.get('PAY_ENABLED'):

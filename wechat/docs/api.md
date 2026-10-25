@@ -173,7 +173,7 @@ CloudBase 物品及回收站响应增加非负整数 `revision`，旧记录缺�
 
 ## 会员工具精简（2026-10-16）
 
-有效会员的 `entitlements` 为 `ad_free`、`books`、`budgets`。`ad_free` 是未来广告接入后的免广告权益，当前程序没有投放广告。
+历史版本的会员权益如下；当前免费工具及套餐口径以文末“整理工具免费开放（2026-10-25）”为准。`ad_free` 是未来广告接入后的免广告权益，当前程序没有投放广告。
 
 已移除 `GET /api/mp/member/bills`、`POST /api/mp/member/bills/<id>/confirm` 及日历专用的 `GET/PUT /api/mp/member/plans/<id>/book`，均返回404。免费 `/fixed-expenses` 及单笔 `/fixed-expenses/<id>/payments` 不变；历史付款和已保存的账本归属保留。不新增集合、字段迁移或公开管理接口。
 
@@ -183,7 +183,7 @@ CloudBase 物品及回收站响应增加非负整数 `revision`，旧记录缺�
 ### 账本整组排序（2026-10-17）
 
 - `GET /api/mp/member/books` 保留 `books`，增加 `order_revision`（初始为0）。正在使用的账本按账户保存的顺序返回，归档账本在后；默认账本可以在任何位置。
-- `PUT /api/mp/member/books/order` 接收 `{ "book_ids": ["default", "<账本ID>"] }`，必须包含当前账户全部正在使用账本，且不重复、不包含归档账本。要求有效会员、现有 `Idempotency-Key` 和 `If-Match: "<order_revision>"`。
+- `PUT /api/mp/member/books/order` 接收 `{ "book_ids": ["default", "<账本ID>"] }`，必须包含当前账户全部正在使用账本，且不重复、不包含归档账本。要求登录、现有 `Idempotency-Key` 和 `If-Match: "<order_revision>"`；2026-10-25起不要求有效会员。
 - 返回 `{ "book_ids": [...], "order_revision": <新版本> }`。列表已变化返回409；缺失版本返回428；账本集合不完整或无效返回400。响应丢失时先读取列表核对，再复用同一请求标识重试。
 - 在现有 `palm_member_documents` 保存账户的 `kind=book_order`、`id=current` 文档。排序在单一事务中写入，新建、归档、恢复、删除账本同步更新版本；新增与恢复默认追加到末尾。
 - 旧账户读取时不写入迁移记录；首次修改沿用已有顺序。旧账本 `order`、`sticker` 字段保留兼容，新客户端不再编辑或展示这两个字段。小报外观的贴纸字段不变。
@@ -245,3 +245,14 @@ capacity 包含 base、extra、used、free_limit、limit、unlimited、can_add�
 `DELETE /ledger/entries/:id` 现在支持订阅与分期自动账目。响应的 `deletable: true` 是删除入口能力，`editable` 仍控制修改入口。删除需账目 `If-Match` 和现有幂等键，在同一事务中逻辑作废对应付款与账目、更新计划版本及费用／本金进度。退款阻拦、账号归属与并发版本检查保持生效；计划、其他付款和手填服务有效期保留。订阅页作废付款共用同一个处理函数。
 
 不新增接口路径、集合、索引或环境变量。旧后端仍支持仅保存计划；不返回能力标记时前端禁用首笔选项，不返回 `deletable` 时不提供自动账目删除。
+
+
+## 整理工具免费开放（2026-10-25）
+
+`GET /api/mp/membership` 新增 `free_entitlements: ["books", "budgets"]`，所有已登录账户均返回此字段。有效会员的 `entitlements` 仅为 `ad_free`、`unlimited_items`；免费／已到期账户仍为 `active=false`，付费权益为空。状态、到期时间和容量语义不变。
+
+正式 `plans` 仅为 `[{"id":"month","name":"月会员","price_cents":290,"months":1}]`，安卓和苹果同价；独立小额支付测试仍按既有测试目录返回。`promotion` 保留 `active=false`、`feedback_message`，新增 `announcement_id`、`announcement_title`，新公告版本为 `free-tools-month-290-v1`。公告更新不表示促销或自动续费。
+
+现有 `/member/books`、账本修改／删除／排序、`/member/entries/move`、`/member/budget` 写入不再检查付费会员；登录、账户所有权、归档限制、事务、版本和幂等检查保留。非默认账本记账及保留的订阅付款路由也免费。客户端必须读取当前服务声明的免费能力；缺失字段提示更新服务，不伪造付费状态。
+
+`POST /api/mp/pay/order` 对 `quarter`、`year` 返回410及`code=PLAN_RETIRED`；旧月价客户端提交390／450分与新目录不符时返回409，要求重新核对价格，不静默扣款。旧订单继续以不可变快照中的商品、价格和自然月时长查单／发放／退款。仅月商品映射是新购必需配置，无新增数据库迁移或路由。

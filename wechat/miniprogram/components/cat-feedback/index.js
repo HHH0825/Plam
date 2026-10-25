@@ -32,7 +32,7 @@ Component({
   schedule(delay){clearTimeout(this._probe);this._probe=setTimeout(()=>this.probeGreeting(),delay)},
   safe(){
    const page=this.page(),app=getApp()
-   if(!this._visible||!page||!ROOTS.includes(page.route)||!app.globalData.token||app._foreground===false||app._keyboardHeight)return false
+   if(app.hasSession&&!app.hasSession()||app._sessionPhase==='connecting'||!this._visible||!page||!ROOTS.includes(page.route)||!app.globalData.token||app._foreground===false||app._keyboardHeight)return false
    if(this.data.greetingOpen||this.data.capacityOpen)return false
    if(Object.entries(page.data||{}).some(([k,v])=>v&&(/(?:Open|Dialog|Sheet|Focus)$/.test(k)||['loading','busy','buying','saving','focusField','draftPrompt'].includes(k))))return false
    const bar=page.getTabBar?.();if(bar?.data?.menuOpen)return false

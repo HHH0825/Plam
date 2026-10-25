@@ -3,3 +3,5 @@
 <view wx:if="{{!rows.length && !loading && !error}}" class="ledger-empty">需要核对的记录已经整理好了。</view><button wx:if="{{nextOffset !== null}}" class="ledger-secondary" bindtap="more" disabled="{{loading || busy || pending}}">加载更多</button><view class="ledger-help">分期只导入实际付款，不再计入完整购置价。历史核对可分批完成；未选择的记录保持原样。</view><view class="ledger-form-bottom"><button class="ledger-primary" disabled="{{busy || loading || !selectedCount}}" bindtap="submit">{{busy ? '正在导入…' : pending ? '按原选择重试导入' : '导入已确认的 ' + selectedCount + ' 笔'}}</button><button class="ledger-text-button" bindtap="back" disabled="{{busy}}">暂时跳过，以后再核对</button></view></view>
 
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

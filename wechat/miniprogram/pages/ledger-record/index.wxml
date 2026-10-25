@@ -5,3 +5,5 @@
 <view class="ledger-help">{{refund ? '按实际退款日期冲减原分类支出，不自动修改物品价格或分期进度。' : '只记录已经发生的收付；关联物品不重复计入物品成本。'}}</view><view wx:if="{{draftNote}}" class="ledger-help">{{draftNote}}</view><view wx:if="{{pending}}" class="ledger-error">保存结果尚未确认，当前内容已保留。请核对结果或按原内容重试。<button class="ledger-text-button" bindtap="verify" disabled="{{busy}}">核对保存结果</button></view><view class="ledger-form-bottom"><button wx:if="{{conflict}}" class="ledger-secondary" bindtap="review" disabled="{{busy}}">核对最新版本</button><button class="ledger-primary" bindtap="save" disabled="{{busy || conflict}}"><image class="ledger-bottom-paw" src="/assets/white-doodle/paw-button.png" mode="aspectFit"/>{{busy ? '正在保存…' : pending ? '按原内容重试' : refund ? '保存退款' : '记好了'}}</button></view></block></view>
 
 <cat-feedback id="cat-feedback"/>
+
+<include src="../../templates/session-status.wxml"/>

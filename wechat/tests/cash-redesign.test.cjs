@@ -63,7 +63,7 @@ test('report native preview preserves snapshot; ordinary hide and refresh discar
  }finally{h.restore()}
 })
 test('share fallback is a second explicit card tap and uses generic entry and masked cover',async()=>{
- const h=harness(true);try{await h.p.load();h.p.toggleAmounts({detail:{value:false}});wx.canIUse=()=>false;await h.p.shareImage();assert.equal(h.p.data.shareFallback,true);assert.ok(h.p.data.coverPath);const card=h.p.onShareAppMessage({from:'button'});assert.equal(card.path,'/pages/login/index');assert.equal(card.imageUrl,h.p.data.coverPath);assert.doesNotMatch(card.title,/3,140/)
+ const h=harness(true);try{await h.p.load();h.p.toggleAmounts({detail:{value:false}});wx.canIUse=()=>false;await h.p.shareImage();assert.equal(h.p.data.shareFallback,true);assert.ok(h.p.data.coverPath);const card=h.p.onShareAppMessage({from:'button'});assert.equal(card.path,'/pages/items/index');assert.equal(card.imageUrl,h.p.data.coverPath);assert.doesNotMatch(card.title,/3,140/)
  }finally{h.restore()}
 })
 test('cancelled sharing is silent, denied saving is recoverable, and double clicks export once',async()=>{

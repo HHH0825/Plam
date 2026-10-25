@@ -1,5 +1,5 @@
 <page-meta page-style="{{announcementOpen ? 'overflow:hidden;' : ''}}"/>
-<view wx:if="{{entryBlocked}}" class="startup-entry"><text>小猫正在打开手账…</text><button bindtap="retryLogin">重新打开登录页</button></view>
+<view wx:if="{{entryBlocked}}" class="startup-entry"><view class="startup-title">我的物品</view><view class="startup-paper"><view class="startup-line"/><view class="startup-line startup-short"/></view><view class="startup-card"/><view class="startup-card"/><text>{{sessionBusy ? '正在打开你的物品…' : '连接失败，点击重试'}}</text><text wx:if="{{sessionError}}" class="startup-error">{{sessionError}}</text><button wx:if="{{!sessionBusy}}" disabled="{{sessionBusy}}" bindtap="retrySession">重新连接</button></view>
 <block wx:else>
 <include src="../../templates/item-list.wxml"/>
 
@@ -17,3 +17,5 @@
 </view>
 
 </block>
+
+<include src="../../templates/session-status.wxml"/>
