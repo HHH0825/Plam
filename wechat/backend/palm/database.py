@@ -3,15 +3,32 @@ import sqlite3
 import tempfile
 from contextlib import closing
 from pathlib import Path
-from flask import current_app, g
+from flask import current_app, g, has_request_context
 from .schema import SCHEMA
+
+
+class RequestConnection(sqlite3.Connection):
+    """Keep legacy route-level commits inside the account migration write gate."""
+    def execute(self, sql, parameters=(), /):
+        if has_request_context() and getattr(g, 'migration_sql_active', False) and sql.strip().upper().startswith('BEGIN'):
+            return super().execute('SELECT 1')
+        return super().execute(sql, parameters)
+
+    def commit(self):
+        if not (has_request_context() and getattr(g, 'migration_sql_active', False)):
+            return super().commit()
+
+    def rollback(self):
+        if has_request_context() and getattr(g, 'migration_sql_active', False):
+            g.migration_sql_aborted = True
+        return super().rollback()
 
 
 def get_db():
     if current_app.config.get('STORAGE_BACKEND') == 'cloudbase':
         raise RuntimeError('SQLite cannot be accessed in cloud mode')
     if "db" not in g:
-        connection = sqlite3.connect(current_app.config["DATABASE"])
+        connection = sqlite3.connect(current_app.config["DATABASE"], factory=RequestConnection)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys = ON")
         g.db = connection

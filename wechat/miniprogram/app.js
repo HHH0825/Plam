@@ -11,11 +11,17 @@ App({
   onLaunch(options = {}) {
     this._foreground=true
     wx.onKeyboardHeightChange?.(event=>{this._keyboardHeight=event.height||0})
+    const saved = wx.getStorageSync(sessionKey)
+    const local = config.LOCAL_BUILD === 'local' || config.LOCAL_BUILD === 'transition' && wx.getStorageSync('catpawCloudMigrationMode') !== true && (wx.getStorageSync('catpawLocalActivated') === true || !(saved && saved.token && saved.user?.id))
+    if(local){
+      this.globalData={token:'local-device',accessToken:'',expiresAt:Number.MAX_SAFE_INTEGER,user:{id:1,username:'本机用户',avatar_key:'sprout'},localMode:true}
+      this.prepareLocal()
+      return
+    }
     if (cloud) {
       if (!wx.cloud || !(config.API_TRANSPORT === 'cloud_http_function' ? wx.cloud.callHTTPFunction : wx.cloud.callFunction)) throw new Error('请升级微信以使用云端服务')
       wx.cloud.init({ env: config.CLOUDBASE_ENV_ID, traceUser: false })
     }
-    const saved = wx.getStorageSync(sessionKey)
     if (saved && typeof saved.token==='string' && saved.token && saved.user?.id) {
       this.globalData = { token: saved.token, accessToken:saved.accessToken||saved.token, expiresAt: saved.expiresAt, user: saved.user }
     } else {
@@ -27,6 +33,7 @@ App({
   onHide() {this._foreground=false;this._keyboardHeight=0;clearTimeout(this._visitTimer)},
   scheduleVisit() {
     clearTimeout(this._visitTimer)
+    if(this._migrationDownloading)return
     const token=this.globalData.token
     const probe=()=>{
       if(!this._foreground||token!==this.globalData.token||!this.hasSession())return
@@ -50,8 +57,14 @@ App({
   },
   subscribeSession(listener){(this._sessionListeners||(this._sessionListeners=new Set())).add(listener);return ()=>this._sessionListeners.delete(listener)},
   notifySession(event){for(const fn of this._sessionListeners||[])try{fn(event)}catch(_){/* A disposed page cannot block credential recovery. */}},
+  prepareLocal(){
+    this._sessionPhase='connecting';this._sessionError='';this.notifySession('connecting')
+    this._localReady=require('./local-core/runtime').open().then(r=>r.business.request('/auth/me')).then(r=>{this.globalData.user=r.user;this._sessionPhase='ready';this._localError=null;this.notifySession('ready');return r.user}).catch(error=>{this._localError=error;this._sessionPhase='error';this._sessionError=error.message||error.errMsg||'本机资料无法读取，请进入资料恢复';this.notifySession('error');throw error})
+    this._localReady.catch(()=>{});return this._localReady
+  },
   failSession(error){this.globalData.expiresAt=0;this._sessionPhase='error';this._sessionError=error.message||'连接失败，点击重试';this.notifySession('error')},
   ensureSession(options={}) {
+    if(this.globalData.localMode)return options.retry&&this._sessionPhase==='error'?this.prepareLocal():this._localReady||Promise.resolve(this.globalData.user)
     if(this._loginAttempt)return this._loginAttempt.promise
     if(this._sessionPhase==='connecting'&&this._reconnect)return this._reconnect
     if(!options.force&&this.hasSession())return Promise.resolve(this.globalData.user)
@@ -68,6 +81,7 @@ App({
     return this.ensureSession({force:true})
   },
   reconnect(){
+    if(this.globalData.localMode)return require('./local-core/runtime').request('/auth/me').then(r=>r.user)
     if(this._reconnect)return this._reconnect
     const owner=this.globalData.token
     this._reconnect=(async()=>{this._sessionPhase='connecting';this.notifySession('connecting');try{await require('./utils/api').request('/auth/logout',{method:'POST'})}catch(_){}
@@ -107,7 +121,22 @@ App({
     require('./utils/api').clearPhotos()
     wx.removeStorageSync(sessionKey)
   },
-  saveSession(){wx.setStorageSync(sessionKey,{...this.globalData,token:this.globalData.accessToken||this.globalData.token})},
+  saveSession(){if(this.globalData.localMode)return;wx.setStorageSync(sessionKey,{...this.globalData,token:this.globalData.accessToken||this.globalData.token})},
+  finishLocalMigration(){clearTimeout(this._visitTimer);this._loginAttempt=null;this._reconnect=null;this._invitation='';wx.removeStorageSync(sessionKey);wx.removeStorageSync('catpawCloudMigrationMode')},
+  connectCloudForMigration(){
+    if(config.LOCAL_BUILD!=='transition')return Promise.reject(Error('请使用具有迁移能力的过渡版'))
+    if(this._cloudMigrationLogin)return this._cloudMigrationLogin
+    const previous={...this.globalData},phase=this._sessionPhase
+    this._cloudMigrationLogin=(async()=>{
+      wx.setStorageSync('catpawCloudMigrationMode',true)
+      try{
+        if(cloud){if(!wx.cloud||(config.API_TRANSPORT==='cloud_http_function'?!wx.cloud.callHTTPFunction:!wx.cloud.callFunction))throw Error('请升级微信以连接旧云端资料');wx.cloud.init({env:config.CLOUDBASE_ENV_ID,traceUser:false})}
+        clearTimeout(this._visitTimer);this.globalData={token:'',accessToken:'',expiresAt:0,user:null};this._sessionPhase='idle';this._sessionGeneration=(this._sessionGeneration||0)+1;this.notifySession('changed')
+        return await this.ensureSession({retry:true})
+      }catch(error){this.globalData=previous;this._sessionPhase=phase;this._sessionError='';this._localReady=Promise.resolve(previous.user);wx.removeStorageSync('catpawCloudMigrationMode');this.notifySession('changed');this.notifySession('ready');throw error}
+    })().finally(()=>{this._cloudMigrationLogin=null})
+    return this._cloudMigrationLogin
+  },
   updateUser(user, token) {
     if (!this.hasSession() || this.globalData.token !== token) return false
     this.globalData = { ...this.globalData, user }

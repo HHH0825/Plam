@@ -73,6 +73,7 @@ def build(python_only=False):
             fields = metadata.read_text(encoding='utf-8').splitlines()
             packages[next(v[6:] for v in fields if v.startswith('Name: '))] = next(v[9:] for v in fields if v.startswith('Version: '))
         entries = [(p, 'palm/' + p.name) for p in (BACKEND / 'palm').glob('*.py')]
+        entries.append((BACKEND / 'palm/local_data_fields.json', 'palm/local_data_fields.json'))
         # Only the shared HTTP transport is needed; no probe routes or test runner are deployed.
         entries += [(BACKEND / 'cloudbase_probe' / name, 'cloudbase_probe/' + name) for name in ('__init__.py', 'client.py')]
         entries += [(ROOT / 'api' / name, name) for name in ('app.py', 'scf_bootstrap', 'requirements.txt')]

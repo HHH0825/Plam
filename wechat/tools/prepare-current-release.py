@@ -112,6 +112,7 @@ def main():
                  'prepare-rewards-art.cjs', 'prepare-invitation-art.cjs'):
         editable['tools/' + name] = (WECHAT / 'tools' / name).read_bytes()
     api_sources = [(p, 'palm/' + p.name) for p in sorted((WECHAT / 'backend/palm').glob('*.py'))]
+    api_sources.append((WECHAT / 'backend/palm/local_data_fields.json', 'palm/local_data_fields.json'))
     api_sources += [(WECHAT / 'backend/cloudbase_probe' / n, 'cloudbase_probe/' + n) for n in ('__init__.py', 'client.py')]
     api_sources += [(DEPLOY / 'api' / n, n) for n in ('app.py', 'scf_bootstrap', 'requirements.txt')]
     for p, name in api_sources:

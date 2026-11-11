@@ -1,1 +1,2 @@
 <session-status blocked="{{sessionBlocked && !(sessionHome && entryBlocked)}}" busy="{{sessionBusy}}" message="{{sessionError}}" bindretry="retrySession"/>
+<button wx:if="{{sessionLocal && sessionError && !sessionBusy}}" class="button light" bindtap="recoverLocalData">打开本机资料恢复</button>

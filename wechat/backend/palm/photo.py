@@ -78,6 +78,10 @@ def ensure_thumbnail(photo_key):
     return target
 
 def remove_photo_file(photo_key):
+    from flask import g
+    if getattr(g, 'migration_sql_active', False):
+        g.migration_sql_photos.append(photo_key)
+        return
     from .cloud_runtime import enabled
     if enabled():
         # Metadata swap queued durable GC in the same transaction.

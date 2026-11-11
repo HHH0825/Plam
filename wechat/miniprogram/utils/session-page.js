@@ -3,7 +3,7 @@ const copy=v=>JSON.parse(JSON.stringify(v||{}))
 function wrap(base){
  if(base.sessionPublic||typeof getApp!=='function'||typeof getApp()?.ensureSession!=='function')return base
  const initial=copy(base.data)
- const ready=p=>typeof getApp().ensureSession!=='function'||getApp().hasSession()&&getApp()._sessionPhase!=='connecting'
+ const ready=p=>typeof getApp().ensureSession!=='function'||getApp().hasSession()&&getApp()._sessionPhase!=='connecting'&&getApp()._sessionPhase!=='error'
  function resume(p){
   if(p._sessionAlive===false||!p._sessionVisible||!ready(p)||(p._sessionGeneration||0)!==(getApp()._sessionGeneration||0))return
   p.setData({sessionBlocked:false,sessionBusy:false,sessionError:'',entryBlocked:false})
@@ -19,7 +19,7 @@ function wrap(base){
  }
  return {...base,data:{...base.data,sessionBlocked:true,sessionBusy:true,sessionError:'',entryBlocked:true,sessionHome:false},
   onLoad(...args){
-   this._sessionAlive=true;this._sessionGeneration=getApp()._sessionGeneration||0;this.setData({sessionHome:this.route==='pages/items/index'});this._sessionLoadArgs=args;this._sessionLoaded=false
+   this._sessionAlive=true;this._sessionGeneration=getApp()._sessionGeneration||0;this.setData({sessionHome:this.route==='pages/items/index',sessionLocal:!!getApp().globalData.localMode});this._sessionLoadArgs=args;this._sessionLoaded=false
    const app=getApp();this._sessionUnsubscribe=app.subscribeSession?.(event=>{
     if(!this._sessionAlive)return
     if(event==='connecting'){this.store?.();this.captureSessionDraft?.();this.setData({sessionBlocked:true,sessionBusy:true,sessionError:''});this.getTabBar?.()?.setData?.({hidden:true,menuOpen:false})}
@@ -35,7 +35,8 @@ function wrap(base){
   onRouteDone(...args){if(this._sessionLoaded)return base.onRouteDone?.apply(this,args);this._sessionPendingonRouteDone=true},
   onHide(...args){this._sessionVisible=false;if(this._sessionLoaded)return base.onHide?.apply(this,args)},
   onUnload(...args){this._sessionAlive=false;this._sessionJob=null;this._sessionUnsubscribe?.();if(this._sessionLoaded)return base.onUnload?.apply(this,args)},
-  retrySession(){if(!this.data.sessionBusy)connect(this,true)}
+  retrySession(){if(!this.data.sessionBusy)connect(this,true)},
+  recoverLocalData(){if(getApp().globalData.localMode)wx.navigateTo({url:'/pages/local-data/index'})}
  }
 }
 module.exports={wrap}

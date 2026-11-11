@@ -5,7 +5,7 @@ const { AVATAR_KEYS, AVATAR_LABELS, avatarState, avatarError, isCurrent } = requ
 Page(require('../../utils/member').wrap({
   data: { user: null, accountId: '', name: '', avatarSymbol: '芽', avatarLabels: AVATAR_LABELS,
     avatarIndex: 0, avatarPath: '', avatarFailed: false, loading: true, loaded: false, busy: false, reconnecting:false, focused: false, error: '' },
-  onLoad() { this._sequence = 0 },
+  onLoad() { this._sequence = 0;this.setData({localMode:!!getApp().globalData.localMode}) },
   onShow() {
     this._visible = true
     if (getApp().requireSession()) this.load()

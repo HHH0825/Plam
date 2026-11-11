@@ -7,7 +7,7 @@ function emit(type,data){for(const fn of listeners)try{fn(type,data)}catch(_){}}
 function subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)}
 function accept(value,account){
  if(account!==token())throw Error('登录账户已切换')
- if(!value||!Number.isSafeInteger(value.balance)||!value.capacity||!value.checkin||!value.shop||typeof value.date!=='string')throw Error('签到资料暂不可用，请重试')
+ if(!value||!Number.isSafeInteger(value.balance)||!value.capacity||!value.local&&!value.checkin||!value.shop||typeof value.date!=='string')throw Error('资料暂不可用，请重试')
  cached=value;owner=account;return value
 }
 function load(){

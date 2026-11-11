@@ -36,6 +36,11 @@ project.private.config.json
 *.zip.sha256
 *.zip.building
 
+# Generated local-version delivery packages, copied evidence and private receipts
+/deploy/local-direct-*/
+/deploy/local-first-*/
+/deploy/local/
+
 # Historical deployment output stays local. Retain runtime entry sources,
 # lockfiles, configuration examples, and the fixture script required by tests.
 /deploy/cloudbase/*

@@ -1,0 +1,21 @@
+'use strict'
+// Pure business rules. All persisted amounts are integer cents; dates are Beijing civil dates.
+const {sha256}=require('./integrity')
+const fail=(message,status=400,code='INVALID_REQUEST')=>{throw Object.assign(Error(message),{status,code,notSubmitted:true})}
+const today=(now=Date.now())=>new Date(now+8*3600000).toISOString().slice(0,10)
+function date(value,label='日期',past=true,now=Date.now()){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)||value<'0001-01-01'||!Number.isFinite(Date.parse(value+'T00:00:00Z'))||new Date(value+'T00:00:00Z').toISOString().slice(0,10)!==value||(past&&value>today(now)))fail(label+'无效或晚于今天');return value}
+function cents(v,label='金额',positive=false){if(typeof v!=='string'||!/^\d+(\.\d{1,2})?$/.test(v))fail(label+'请填写最多两位小数');const [a,b='']=v.split('.'),n=Number(a)*100+Number(b.padEnd(2,'0'));if(!Number.isSafeInteger(n)||n>99999999900||n<(positive?1:0))fail(label+'超出范围');return n}
+function text(v,label='名称',max=120,required=true){if(typeof v!=='string'||v.trim().length>max||required&&!v.trim())fail(label+'无效');return v.trim()}
+function integer(n,min=1,max=600){if(!Number.isSafeInteger(n)||n<min||n>max)fail('数量无效');return n}
+const money=n=>{if(!Number.isSafeInteger(n))fail('金额数据损坏',500,'RECOVERY_REQUIRED');return (n<0?'-':'')+Math.floor(Math.abs(n)/100)+'.'+String(Math.abs(n)%100).padStart(2,'0')}
+const days=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000)
+function cycleDate(p,index){const [y,m,d]=p.anchor_on.split('-').map(Number);if(p.cycle==='days')return new Date(Date.parse(p.anchor_on+'T00:00:00Z')+p.cycle_days*index*86400000).toISOString().slice(0,10);const total=y*12+m-1+({month:1,quarter:3,year:12}[p.cycle])*index,year=Math.floor(total/12),month=total%12;if(year>9999)fail('付款日期超出范围');const last=new Date(Date.UTC(year,month+1,0)).getUTCDate();return `${year.toString().padStart(4,'0')}-${String(month+1).padStart(2,'0')}-${String(Math.min(d,last)).padStart(2,'0')}`}
+function progress(p,payments,now=Date.now()){const paid=payments.filter(r=>r.expense_id===p.id&&!r.voided),occupied=new Set(paid.filter(r=>r.schedule_version===p.schedule_version).map(r=>r.cycle_index));let index=0;while(occupied.has(index))index++;const principal=paid.reduce((n,r)=>n+r.principal_cents,0),remaining=Math.max(0,p.principal_total_cents-principal),complete=p.kind==='installment'&&!remaining,part=p.kind==='installment'?Math.min(remaining,index<p.periods-1?Math.floor(p.principal_total_cents/p.periods):remaining):0,due=complete?null:cycleDate(p,index);return {...p,amount:money(p.amount_cents),principal_total:money(p.principal_total_cents),paid_principal:money(principal),remaining_principal:money(remaining),suggested_principal:money(part),paid_periods:paid.length,next_cycle_index:index,planned_payment:money(complete?0:part+p.amount_cents),next_due_on:due,due_days:due?days(today(now),due):null,remaining_days:p.service_until?days(today(now),p.service_until):null,completed:complete,paid_cost:money(paid.reduce((n,r)=>n+r.cost_cents,0))}}
+const EXPENSE={food:'餐饮',transport:'交通',shopping:'购物',home:'居家',fun:'娱乐',health:'健康',study:'学习',other:'其他'}
+const INCOME={salary:'工资',parttime:'兼职',gift:'红包礼金',investment:'投资收益',bonus:'奖金补贴',business:'经营收入',reimbursement:'报销回款',other:'其他'}
+const AUTO={purchase:'物品购置',maintenance:'维修',subscription:'订阅',installment:'分期',disposal:'处置回收'}
+const SOURCES={manual:'手动记账',refund:'关联退款',purchase:'物品购置',maintenance:'维修支出',subscription:'订阅付款',installment:'分期付款',disposal:'处置回收'}
+function totals(rows){const sum=kind=>rows.filter(r=>r.kind===kind).reduce((n,r)=>n+r.amount_cents,0),income=sum('income'),gross=sum('expense'),refund=sum('refund'),expense=gross-refund,net=income-expense;return {income:money(income),gross_expense:money(gross),refund:money(refund),expense:money(Math.abs(expense)),expense_label:expense>=0?'本月支出':'本月退款结余',net:money(Math.abs(net)),net_label:net>0?'本月净收入':net<0?'本月净支出':'本月收支持平',count:rows.length}}
+function revision(row,expected){if(!Number.isSafeInteger(expected)||expected!==row.revision)fail('资料已更新，请刷新核对后重试',409,'ITEM_VERSION_CONFLICT')}
+const key=(source,id)=>sha256(source+':'+id).slice(0,32)
+module.exports={fail,today,date,cents,text,integer,money,days,cycleDate,progress,EXPENSE,INCOME,AUTO,SOURCES,totals,revision,key}

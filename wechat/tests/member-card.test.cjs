@@ -15,16 +15,17 @@ test('card distinguishes free, active, expired, unknown and unsupported states',
 })
 function harness(){
  const storage=new Map();const app={globalData:{token:'alice'},requireSession:()=>true},navigation=[],notices=[],timers=[]
- let clock=1000000,respond=async()=>status(),definition
+ let clock=1000000,respond=async()=>status(),definition,readBackups=async()=>[]
+ const localState={folder:"device-A",store:{head:{generation:4},retired:false},control:{table:()=>readBackups()}}
  function Clock(...args){return new Date(...args)}Clock.now=()=>clock
  function status(extra={}){return {active:true,status:'active',expires_at:2000,server_time:clock/1000,entitlements:['books'],plans:[],appearance:{effective:{theme:'default'}},...extra}}
  const api={request:path=>respond(path)},nav={navigate:(_page,url)=>navigation.push(url),resetNavigation(){}}
  const memberModule={exports:{}}
  vm.runInNewContext(fs.readFileSync(require.resolve('../miniprogram/utils/member'),'utf8'),{module:memberModule,require:n=>n==='./api'?api:n==='./payment-platform'?{platform:()=>''}:n==='./navigation'?nav:createRequire(require.resolve('../miniprogram/utils/member'))(n),getApp:()=>app,wx:{showToast:o=>notices.push(o)},Date:Clock,setTimeout:fn=>{timers.push(fn);return timers.length},clearTimeout(){}})
  const file=require.resolve('../miniprogram/pages/me/index'),local=createRequire(file)
- vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:n=>n.endsWith('/member')?memberModule.exports:n.endsWith('/api')?api:n.endsWith('/navigation')?nav:n.endsWith('/me-cash')?{empty:()=>({}),methods:{}}:local(n),Page:d=>definition=d,getApp:()=>app,wx:{showToast:o=>notices.push(o),getStorageSync:k=>storage.get(k),setStorageSync:(k,v)=>storage.set(k,v)}})
+ vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:n=>n.endsWith('/member')?memberModule.exports:n.endsWith('/api')?api:n.endsWith('/navigation')?nav:n.endsWith('/me-cash')?{empty:()=>({}),methods:{}}:n.endsWith('/local-core/runtime')?{open:async()=>localState}:local(n),Page:d=>definition=d,getApp:()=>app,wx:{showToast:o=>notices.push(o),getStorageSync:k=>storage.get(k),setStorageSync:(k,v)=>storage.set(k,v)}})
  const page={...definition,data:structuredClone(definition.data),route:'pages/me/index',_visible:true,_memberVisible:true,setData(p){Object.assign(this.data,p)}}
- return {page,app,navigation,notices,timers,status,respond:fn=>respond=fn,time:n=>clock=n}
+ return {page,app,navigation,notices,timers,status,localState,readBackups:fn=>readBackups=fn,respond:fn=>respond=fn,time:n=>clock=n}
 }
 test('every successful refresh resolves the card even when membership is unchanged',async()=>{
  const h=harness();await h.page.memberRefresh(true);assert.equal(h.page.data.memberCard.kind,'active')
@@ -65,10 +66,15 @@ test('unsupported backend offers a notice instead of an empty tool page; card st
  assert.match(h.notices.at(-1).title,/暂未开放/);h.page.memberOpen();assert.equal(h.navigation.at(-1),'/pages/membership/index')
 })
 
-test('tools collapse by default and expansion preference belongs to one account',()=>{
- const h=harness();assert.equal(h.page.data.memberToolsExpanded,false);h.page.restoreMemberTools({id:1});h.page.toggleMemberTools();assert.equal(h.page.data.memberToolsExpanded,true)
- h.app.globalData.token='bob';h.page.toggleMemberTools();assert.equal(h.page.data.memberToolsExpanded,false);h.page.restoreMemberTools({id:2});assert.equal(h.page.data.memberToolsExpanded,false)
- h.app.globalData.token='alice';h.page.restoreMemberTools({id:1});assert.equal(h.page.data.memberToolsExpanded,true)
+test('backup status counts only externally saved copies of this dataset and detects newer local records',async()=>{
+ const h=harness();h.app.globalData.localMode=true;h.readBackups(async()=>[{external:false,folder:'device-A',generation:4},{external:true,folder:'other-device',generation:4}]);await h.page.loadBackupStatus();assert.equal(h.page.data.backupStatusText,'尚未外部备份')
+ const record={external:true,folder:'device-A',generation:4,savedAt:Date.UTC(2026,10,5,17)};h.readBackups(async()=>[record]);await h.page.loadBackupStatus();assert.equal(h.page.data.backupStatusText,'已备份 2026/11/06');assert.equal(h.page.data.backupStatusTone,'ready');h.localState.store.head.generation=5;await h.page.loadBackupStatus();assert.equal(h.page.data.backupStatusTone,'warning');assert.match(h.page.data.backupStatusText,/有新资料/);assert.equal(record.external,true)
+ h.readBackups(async()=>{throw Error('read failed')});await h.page.loadBackupStatus();assert.equal(h.page.data.backupStatusTone,'error');assert.notEqual(h.page.data.backupStatusText,'尚未外部备份');h.page.localData();assert.equal(h.navigation.at(-1),'/pages/local-data/index')
+})
+
+test('late backup status cannot replace a newer result or reveal a previous account status',async()=>{
+ const h=harness();h.app.globalData.localMode=true;let finish;h.readBackups(()=>new Promise(resolve=>finish=resolve));const old=h.page.loadBackupStatus();await tick();h.readBackups(async()=>[]);await h.page.loadBackupStatus();const status=h.page.data.backupStatusText;finish([{external:true,folder:'device-A',generation:4,savedAt:Date.UTC(2026,10,6)}]);await old;assert.equal(h.page.data.backupStatusText,status)
+ h.readBackups(()=>new Promise(resolve=>finish=resolve));const other=h.page.loadBackupStatus();await tick();h.app.globalData.token='bob';finish([{external:true,folder:'device-A',generation:4,savedAt:Date.UTC(2026,10,6)}]);await other;assert.equal(h.page.data.backupStatusText,status)
 })
 
 test('compact identity distinguishes membership states without changing avatar or checkout behavior',()=>{

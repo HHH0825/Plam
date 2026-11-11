@@ -1,0 +1,14 @@
+{
+  "items": "id revision created_at created_on name category icon_type purchase_date warranty_expires_on purchase_cents notes status is_pinned deleted_at storage_location_id cover_mode cover_icon_key photo_key thumb_key payment_info",
+  "maintenance_records": "id revision created_at created_on item_id maintained_on cost_cents description",
+  "disposal_records": "id revision created_at created_on item_id disposed_on proceeds_cents method notes",
+  "usage_records": "id item_id used_on notes",
+  "wishlist": "id revision created_at created_on name category expected_cents reason review_on status item_id item_removed",
+  "fixed_expenses": "id revision created_at created_on kind name amount_cents principal_total_cents periods anchor_on cycle cycle_days status service_from service_until notes item_id item_name item_removed schedule_version book_id",
+  "expense_payments": "id revision created_at created_on expense_id cycle_index schedule_version due_on cycle cycle_days kind expense_name planned_amount service_until voided paid_on cost_cents principal_cents notes item_id item_name item_removed",
+  "storage_locations": "id revision created_at created_on name deleted",
+  "ledger_entries": "id revision created_at created_on kind source source_id parent_id amount_cents principal_cents cost_cents occurred_on category name notes item_id item_name state expense_id settlement_mode manual_entry_id linked_entry_id book_id member_revision changes",
+  "books": "id revision created_at created_on name cover sticker order archived",
+  "budgets": "id revision created_at created_on total_cents category_cents",
+  "settings": "id user created_at ledger_enabled enabled_at appearance checkins visits greetings sequences book_order_revision default_book_order"
+}

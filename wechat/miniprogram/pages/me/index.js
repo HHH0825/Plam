@@ -13,14 +13,20 @@ const amountReset = {heldAmount:'—',heldAmountDisplay:'—',heldAmountCompact:
 const overviewReset = { heldItems: '—', ...amountReset, accountDays: '—', statsLoading: true, statsRefreshing:false, statsError: '', statsCompatible: true, ageCompatible: true }
 
 Page(require('../../utils/member').wrap({
-  data: { meSeeds:null, user: null, avatarSymbol: '芽', avatarPath: '', avatarFailed: false, loading: true, error: '', memberCard:memberCard.card(),memberTools:memberCard.tools,memberToolsExpanded:false,amountSizes:[20,18,16], ...overviewReset,...cash.empty() },
+  data: { meSeeds:null, user: null, avatarSymbol: '芽', avatarPath: '', avatarFailed: false, loading: true, error: '', memberCard:memberCard.card(),memberTools:memberCard.tools,backupStatusText:'读取备份状态…',backupStatusTone:'loading',amountSizes:[20,18,16], ...overviewReset,...cash.empty() },
   ...cash.methods,
-  rewards(){navigate(this,'/pages/rewards/index')},
+  localData(){navigate(this,'/pages/local-data/index')},
+  async loadBackupStatus(){
+    if(!getApp().globalData.localMode)return
+    const seq=this._backupSequence=(this._backupSequence||0)+1,owner=getApp().globalData.token,current=()=>this._visible&&seq===this._backupSequence&&owner===getApp().globalData.token
+    try{const r=await require('../../local-core/runtime').open(),saved=(await r.control.table('backups')).filter(b=>b.external&&b.folder===r.folder).sort((a,b)=>b.savedAt-a.savedAt)[0];if(!current()||r.store.retired)return;const changed=saved&&saved.generation<r.store.head.generation;this.setData({backupStatusText:!saved?'尚未外部备份':changed?'有新资料，待备份':'已备份 '+new Date(saved.savedAt+288e5).toISOString().slice(0,10).replace(/-/g,'/'),backupStatusTone:!saved||changed?'warning':'ready'})}catch(_){if(current())this.setData({backupStatusText:'状态未读取，点此管理',backupStatusTone:'error'})}
+  },
   onLoad() { this._sequence = 0; this._statsSequence = 0 },
   onShow() {
+    this.setData({localMode:!!getApp().globalData.localMode})
     syncTabBar(this)
     this._visible = true
-    this.restoreMemberTools(getApp().globalData.user)
+    this.loadBackupStatus()
     const changed=this._displayOwner!==getApp().globalData.token
     if(changed){this._displayOwner=getApp().globalData.token;this.setData({user:null,memberCard:memberCard.card(),meSeeds:null,...overviewReset,...cash.empty()})}
     this._cashNavigation=false
@@ -33,12 +39,13 @@ Page(require('../../utils/member').wrap({
     if(this.data.amountDialog)setTabBarHidden(this,false)
     this._visible = false
     cash.invalidate(this);cash.stopClock(this)
+    this._backupSequence=(this._backupSequence||0)+1
     this._sequence += 1
     this._statsSequence += 1
     this.closeAmount()
     if(this._displayOwner!==getApp().globalData.token)this.setData({ user: null, avatarSymbol: '芽', avatarPath: '', avatarFailed: false, loading: true, error: '', ...overviewReset,...cash.empty() })
   },
-  onUnload() { this._visible = false; this._sequence += 1; this._statsSequence += 1;cash.invalidate(this);cash.stopClock(this) },
+  onUnload() { this._visible = false;this._backupSequence=(this._backupSequence||0)+1; this._sequence += 1; this._statsSequence += 1;cash.invalidate(this);cash.stopClock(this) },
   onResize() { measureSummary(this,'overview');cash.measure(this) },
   async load(reuse = false) {
     const sequence = ++this._sequence
@@ -48,7 +55,6 @@ Page(require('../../utils/member').wrap({
       const result = await (reuse===true?require('../../utils/display-cache').read('/auth/me'):api.request('/auth/me'))
       if (!isCurrent(this, sequence, token)) return
       require('../../utils/display-cache').present(this,{ user: result.user, ...avatarState(result.user), accountDays: readAccountAge(result), ageCompatible: Object.prototype.hasOwnProperty.call(result, 'account_age_days'), loading: false },()=>measureSummary(this,'overview'))
-      this.restoreMemberTools(result.user)
       cash.load(this,result,reuse===true)
     } catch (error) {
       if (isCurrent(this, sequence, token)) this.setData({ loading: false, error: view.errorMessage(error) })
@@ -78,22 +84,8 @@ Page(require('../../utils/member').wrap({
   onMembershipRefreshSuccess(status) { this._memberCardOwner=getApp().globalData.token;this.setData({memberCard:memberCard.card(status)}) },
   onMembershipStateChange(status) { if(status.status==='expired')this.onMembershipRefreshSuccess(status) },
   onMembershipRefreshError() { this.setData({memberCard:memberCard.card(null,true)}) },
-  restoreMemberTools(user) {
-    const id=user?.id,token=getApp().globalData.token
-    if(!id){this._toolsPreferenceKey='';this.setData({memberToolsExpanded:false});return}
-    const key='palmMemberTools:'+require('../../utils/cloud-transport').serviceScope()+':'+id
-    if(this._toolsPreferenceKey===key&&this._toolsPreferenceToken===token)return
-    this._toolsPreferenceKey=key;this._toolsPreferenceToken=token
-    let expanded=false;try{expanded=wx.getStorageSync(key)===true}catch(_){}
-    this.setData({memberToolsExpanded:expanded})
-  },
-  toggleMemberTools() {
-    if(this._toolsPreferenceToken!==getApp().globalData.token||!this._toolsPreferenceKey){this.setData({memberToolsExpanded:false});return}
-    const expanded=require('../../utils/motion').fold(this,'memberToolsExpanded','#member-tools-inner')
-    try{wx.setStorageSync(this._toolsPreferenceKey,expanded)}catch(_){}
-  },
   retryMembership() { return this.memberRefresh(true) },
-  onPullDownRefresh(){require('../../utils/display-cache').clear();return Promise.allSettled([this.load(),this.loadStats(),this.memberRefresh(true)]).finally(()=>wx.stopPullDownRefresh?.())},
+  onPullDownRefresh(){require('../../utils/display-cache').clear();return Promise.allSettled([this.load(),this.loadStats(),this.loadBackupStatus(),this.memberRefresh(true)]).finally(()=>wx.stopPullDownRefresh?.())},
   openMemberTool(event) {
     if(!getApp().requireSession())return
     const mode=event.currentTarget.dataset.mode

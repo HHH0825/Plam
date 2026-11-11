@@ -8,7 +8,7 @@ const photoUploads = new Set()
 let localRequestCounter = 0
 function workflowHeaders(path, options) {
   const header = {}
-  if (!(/^\/(rewards|member|ledger|maintenance|disposal|wishlist|fixed-expenses|storage-locations)(\/|$)/.test(path) || /^\/items(?:\/\d+)?$/.test(path) && options.data && ['payment_info','cover_mode','cover_icon_key'].some(k=>k in options.data) || /^\/items\/\d+\/(maintenance|disposal)$/.test(path)) || !options.method || options.method === 'GET') return header
+  if (!(/^\/(local-migration|rewards|member|ledger|maintenance|disposal|wishlist|fixed-expenses|storage-locations)(\/|$)/.test(path) || /^\/items(?:\/\d+)?$/.test(path) && options.data && ['payment_info','cover_mode','cover_icon_key'].some(k=>k in options.data) || /^\/items\/\d+\/(maintenance|disposal)$/.test(path)) || !options.method || options.method === 'GET') return header
   const user = getApp().globalData.user
   const key = `palmLocalRequests:${transport.serviceScope()}:${user?.id}`
   const fingerprint = JSON.stringify([options.method, path, options.data, options.revision])
@@ -22,7 +22,7 @@ function workflowHeaders(path, options) {
   return header
 }
 function acknowledgeWorkflow(path, options) {
-  if (!(/^\/(rewards|member|ledger|maintenance|disposal|wishlist|fixed-expenses|storage-locations)(\/|$)/.test(path) || /^\/items(?:\/\d+)?$/.test(path) && options.data && ['payment_info','cover_mode','cover_icon_key'].some(k=>k in options.data) || /^\/items\/\d+\/(maintenance|disposal)$/.test(path)) || !options.method || options.method === 'GET') return
+  if (!(/^\/(local-migration|rewards|member|ledger|maintenance|disposal|wishlist|fixed-expenses|storage-locations)(\/|$)/.test(path) || /^\/items(?:\/\d+)?$/.test(path) && options.data && ['payment_info','cover_mode','cover_icon_key'].some(k=>k in options.data) || /^\/items\/\d+\/(maintenance|disposal)$/.test(path)) || !options.method || options.method === 'GET') return
   try {
     const key = `palmLocalRequests:${transport.serviceScope()}:${getApp().globalData.user?.id}`
     const rows = wx.getStorageSync(key) || {}
@@ -71,6 +71,7 @@ function errorFrom(body, status) {
 }
 
 function request(path, options = {}, attempt = 0) {
+  if(getApp().globalData.localMode||config.LOCAL_BUILD==='local')return require('../local-core/runtime').request(path,options)
   const app=getApp()
   if(!options.anonymous&&path!=='/auth/logout'&&app._sessionPhase==='error')return Promise.reject(Object.assign(Error(app._sessionError||'连接失败，请重新连接'),{notSubmitted:true}))
   if(!options.anonymous&&path!=='/auth/logout'&&app._sessionPhase==='connecting'){
@@ -181,7 +182,8 @@ function uploadCloudPhoto(itemId, filePath, options = {}) {
   return promise
 }
 
-function uploadPhoto(itemId, filePath, options) {
+function uploadPhoto(itemId, filePath, options={}) {
+  if(getApp().globalData.localMode||config.LOCAL_BUILD==='local')return require('../local-core/runtime').uploadPhoto(itemId,filePath,options).then(item=>{photos?.invalidate(itemId);return item})
   if (cloud) return uploadCloudPhoto(itemId, filePath, options)
   const token = getApp().globalData.token,credential=getApp().globalData.accessToken||token
   return new Promise((resolve, reject) => {
@@ -227,6 +229,7 @@ function startCloudPhotoDownload(spec) {
 }
 
 function startPhotoDownload(spec) {
+  if(getApp().globalData.localMode||config.LOCAL_BUILD==='local')return require('../local-core/runtime').photoDownload(spec)
   if (cloud) return startCloudPhotoDownload(spec)
   const token = getApp().globalData.token,credential=getApp().globalData.accessToken||token
   let task
@@ -253,6 +256,6 @@ function downloadPhoto(itemId, options = {}) {
   return photoCache().load({ id: itemId, photo_version: options.version }, options.owner || 'legacy-reader', options.size || 'full', options.priority || 0)
 }
 
-function photosAvailable() { return !cloud || config.CLOUD_PHOTOS_ENABLED === true }
+function photosAvailable() { return getApp().globalData.localMode||config.LOCAL_BUILD==='local'||!cloud || config.CLOUD_PHOTOS_ENABLED === true }
 
 module.exports = { request, uploadPhoto, downloadPhoto, photoCache, clearPhotos, photosAvailable }

@@ -29,6 +29,7 @@ function load(force=false){
  pending=task;return task
 }
 async function ensure(page){
+ if(getApp().globalData.localMode)return true
  const token=current();try{const r=await load(true);if(token!==current()||!page._memberVisible||!r)return false;if(!r.supported){wx.showToast({title:'会员功能暂未开放',icon:'none'});return false}if(r.active)return true;navigate(page,'/pages/membership/index');return false}
  catch(e){if(page._memberVisible)wx.showToast({title:e.message||'会员状态读取失败，请重试',icon:'none'});return false}
 }

@@ -3,8 +3,9 @@
  <view class="cat-dialog greeting-dialog" role="dialog" aria-modal="true" aria-label="每日问候">
   <button class="cat-dialog-button cat-dialog-close" bindtap="closeGreeting" aria-label="关闭每日问候">×</button><view class="greeting-art"><view wx:if="{{sunny}}" class="greeting-sun" aria-hidden="true"/><image class="greeting-image" src="{{greetingArt}}" mode="aspectFit" aria-hidden="true"/></view>
   <view class="cat-dialog-title">{{model.greeting.title}}</view><view class="cat-dialog-copy">{{model.greeting.message}}</view>
-  <view class="greeting-reward"><view class="seed-icon" aria-hidden="true"/><text class="cat-dialog-text">{{model.checkin.today_claimed ? '今日已签到，小小收获已放好' : '今日签到可领' + model.checkin.today_reward + '喵粒'}}</text></view>
-  <button class="cat-dialog-button cat-dialog-primary" bindtap="goCheckin">{{model.checkin.today_claimed ? '去喵铺看看' : '去签到领喵粒'}}</button>
+  <view wx:if="{{!model.local}}" class="greeting-reward"><view class="seed-icon" aria-hidden="true"/><text class="cat-dialog-text">{{model.checkin.today_claimed ? '今日已签到，小小收获已放好' : '今日签到可领' + model.checkin.today_reward + '喵粒'}}</text></view>
+  <button wx:if="{{!model.local}}" class="cat-dialog-button cat-dialog-primary" bindtap="goCheckin">{{model.checkin.today_claimed ? '去喵铺看看' : '去签到领喵粒'}}</button>
+  <button wx:if="{{model.local}}" class="cat-dialog-button cat-dialog-primary" bindtap="closeGreeting">开始记录</button>
  </view>
 </view>
 <view wx:if="{{capacityOpen}}" class="cat-dialog-mask" catchtouchmove="keepOpen">

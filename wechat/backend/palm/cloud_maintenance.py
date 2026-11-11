@@ -25,8 +25,17 @@ def run(now=None, max_operations=40):
         begin()
         try:
             row = repo.get('items', candidate['id'])
+            from .local_migration import retain_cloud
+            if row and retain_cloud(row['user_id']):
+                client.finish_transaction(g.cloud_tx)
+                g.cloud_tx = None
+                continue
             if row and row['deleted_at'] and repo.expiry(row['deleted_at']) <= instant and not row.get('purging'):
                 g.user_id = row['user_id']
+                from .local_migration import gate
+                from .membership import put
+                state = gate()
+                put('local_migration_gate', 'current', {**state, 'version': state['version'] + 1})
                 repo.touch(row, {'purging': True})
                 if not repo.get('trash_expired', row['id']):
                     repo.put('trash_expired', row['id'], {'user_id': row['user_id'], 'expired_at': repo.expiry(row['deleted_at']).isoformat()})

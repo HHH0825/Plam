@@ -134,7 +134,7 @@ def login():
 @bp.get("/api/mp/auth/me")
 def me():
     user = user_by_id(g.user_id)
-    return jsonify(user=public_user(user), account_age_days=account_age_days(user), capabilities={'item_cover_icons': True, 'item_cover_icons_version': ICON_CATALOGUE_VERSION, 'cash_ledger': 1, 'fixed_expense_quick_add': 1})
+    return jsonify(user=public_user(user), account_age_days=account_age_days(user), capabilities={'item_cover_icons': True, 'item_cover_icons_version': ICON_CATALOGUE_VERSION, 'cash_ledger': 1, 'fixed_expense_quick_add': 1, 'local_migration': 1})
 
 
 @bp.post("/api/mp/auth/logout")

@@ -50,7 +50,7 @@ function toolsHarness(){
  let definition,ensure=async()=>true
  const file=require.resolve('../miniprogram/pages/member-tools/index'),local=createRequire(file)
  vm.runInNewContext(fs.readFileSync(file,'utf8'),{require:n=>n.endsWith('/api')?api:n.endsWith('/member')?{...realMember,wrap:d=>d,load:async()=>({active:true,supported:true,free_entitlements:['books','budgets']}),ensureFreeTool:()=>ensure()}:n.endsWith('/navigation')?{navigate(){},resetNavigation(){}}:local(n),Page:d=>definition=d,getApp:()=>app,wx:{showModal:o=>modals.push(o),showToast(){},setNavigationBarTitle(){}},setTimeout,clearTimeout,console})
- const page={...definition,data:structuredClone(definition.data),_seq:1,_visible:true,setData(p){for(const[k,v]of Object.entries(p)){const names=k.split('.');let r=this.data;while(names.length>1){const a=names.shift();r=r[a]||(r[a]={})}r[names[0]]=v}}};page.data.member={active:true};page.data.books=books
+ const page={...definition,data:structuredClone(definition.data),_seq:1,_visible:true,setData(p){for(const[k,v]of Object.entries(p)){const names=k.split('.');let r=this.data;while(names.length>1){const a=names.shift();r=r[a]||(r[a]={})}r[names[0]]=v}}};page.data.member={active:true};page.data.toolsAvailable=true;page.data.books=books
  return {page,app,calls,modals,api,ensure:fn=>ensure=fn}
 }
 test('book comic draft previews name and cover without writing or touching legacy sticker data',async()=>{
@@ -60,6 +60,7 @@ test('book comic draft previews name and cover without writing or touching legac
  const b={id:'trip',name:'春游',cover:'home',sticker:'cat',order:2,revision:1};h.page.data.books.push(b);h.page.editBook({currentTarget:{dataset:{id:'trip'}}});assert.match(h.page.data.bookPreview.coverPath,/book-covers\/home/);h.page.bookInput(event('name','改名草稿'));assert.equal(b.name,'春游');assert.equal(b.sticker,'cat');assert.equal(h.page.data.bookForm.sticker,undefined);assert.equal(h.page.data.bookForm.order,undefined);assert.equal(h.calls.length,0);
  h.page.coverChange({detail:{value:'99'}});assert.equal(h.page.data.bookPreview.name,'改名草稿')
 })
+test('free tools permit editing an existing book while unsupported tools remain read only',()=>{const h=toolsHarness(),b={id:'free-book',name:'免费账本',cover:'home',revision:0};h.page.data.books.push(b);h.page.data.member={active:false};h.page.data.toolsAvailable=true;h.page.editBook({currentTarget:{dataset:{id:b.id}}});assert.equal(h.page.data.editingBook.id,b.id);h.page.cancelBook();h.page.data.toolsAvailable=false;h.page.editBook({currentTarget:{dataset:{id:b.id}}});assert.equal(h.page.data.bookSheetOpen,false)})
 test('book keyboard avoidance lifts once and clears when hidden, closed or switched to another account',async()=>{
  const h=toolsHarness();h.page.bookWindowHeight=()=>700;await h.page.newBook();h.page.bookFocus({currentTarget:{dataset:{field:'name'}},detail:{}});h.page.bookKeyboardChange({detail:{height:300}});assert.equal(h.page.data.bookKeyboardInset,300);assert.equal(h.page.data.bookScrollHeight,210);assert.equal(h.page.data.bookScrollTarget,'book-field-name');
  h.page.bookWindowHeight=()=>400;h.page.onResize();assert.equal(h.page.data.bookKeyboardInset,0);assert.equal(h.page.data.bookScrollHeight,210);

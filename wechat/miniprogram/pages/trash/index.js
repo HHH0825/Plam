@@ -2,7 +2,7 @@ const api = require('../../utils/api')
 const view = require('../../utils/view')
 Page(require('../../utils/member').wrap({
   data: { items: [], loading: true, error: '' },
-  onShow() { if (getApp().requireSession()) this.load() },
+  onShow() { this.setData({localMode:!!getApp().globalData.localMode});if (getApp().requireSession()) this.load() },
   async load() {
     const token = getApp().globalData.token
     this._token = token
@@ -12,7 +12,7 @@ Page(require('../../utils/member').wrap({
       const items = await api.request('/trash')
       if (token !== getApp().globalData.token) return
       this.setData({ items: items.map(item => ({ ...view.decorate(item),
-        deletedDay: item.deleted_at.slice(0, 10), expiresDay: item.expires_at.slice(0, 10) })) })
+        deletedDay: item.deleted_at.slice(0, 10), expiresDay: item.expires_at?.slice(0, 10)||'' })) })
     } catch (error) { if (token === getApp().globalData.token) this.setData({ error: view.errorMessage(error) }) }
     finally { this.setData({ loading: false }) }
   },

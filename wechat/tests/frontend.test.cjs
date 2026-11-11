@@ -593,7 +593,7 @@ test('custom navigation registers four real tabs and keeps editor as an action',
   const config=JSON.parse(fs.readFileSync(path.join(root,'app.json')))
   assert.equal(config.tabBar.custom,true)
   assert.deepEqual(config.tabBar.list.map(row=>row.pagePath),['pages/ledger/index','pages/items/index','pages/statistics/index','pages/me/index'])
-  assert.ok(config.pages.includes('pages/insights/index'))
+  assert.ok([...config.pages,...config.subPackages.flatMap(p=>p.pages.map(n=>p.root+'/'+n))].includes('pages/insights/index'))
   for(const row of config.tabBar.list){
     const png=fs.readFileSync(path.join(root,row.iconPath))
     assert.ok(png.readUInt32BE(16)>=26);assert.ok(png.readUInt32BE(20)>=26)

@@ -4,6 +4,7 @@ const http = require('./cloud-http')
 const pending = new Map(), retries = new Map()
 let counter = 0
 function serviceScope() {
+  if(typeof getApp==='function'&&getApp()?.globalData?.localMode)return 'local-device-v1:'+require('../local-core/runtime').scope()
   if (config.API_TRANSPORT === 'cloud_http_function') return `cloud_http_function:${config.CLOUDBASE_ENV_ID}:palm-api`
   return config.API_TRANSPORT === 'cloud_function'
     ? `cloudbase:${config.CLOUDBASE_ENV_ID}:${config.CLOUD_FUNCTION}` : config.API_BASE

@@ -1,0 +1,8 @@
+# Keep mini-program source and text assets stable across Git checkouts.
+# Asset manifests and package budgets use their exact byte sizes.
+*.js text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.wxml text eol=lf
+*.wxss text eol=lf
+*.svg text eol=lf

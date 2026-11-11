@@ -3,7 +3,7 @@ const sizes=require('../tools/package-sizes.cjs'),root=path.resolve(__dirname,'.
 test('subpackage split preserves all existing page URLs, keeping launch and tab pages in main',()=>{
  const old=['items','ledger','ledger-record','ledger-detail','ledger-history','ledger-report','statistics','insights','me','login','item','editor','record','trash','disposed','profile','wishlist','fixed-expenses','monthly','storage-locations','membership','member-tools','member-benefits','rewards'].map(p=>'pages/'+p+'/index')
  const subs=sizes.packages(app),all=[...app.pages,...subs.flatMap(p=>p.pages.map(n=>p.root+'/'+n))]
- assert.deepEqual([...all].sort(),[...old,'pages/login/about'].sort());assert.equal(new Set(all).size,25)
+ assert.deepEqual([...all].sort(),[...old,'pages/login/about','pages/local-data/index'].sort());assert.equal(new Set(all).size,26)
  assert.equal(app.pages[0],'pages/items/index');assert.ok(subs.some(p=>p.root==='pages/login'&&!p.independent))
  for(const tab of app.tabBar.list)assert.ok(app.pages.includes(tab.pagePath),tab.pagePath)
  for(const route of all)for(const ext of ['.js','.json','.wxml','.wxss'])assert.ok(fs.existsSync(path.join(root,route+ext)),route+ext)

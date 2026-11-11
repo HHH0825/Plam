@@ -64,6 +64,8 @@ def create_app(test_config=None):
     app.teardown_appcontext(close_db)
     app.before_request(protect_api)
     app.before_request(start_mutation)
+    from .local_migration import install as install_local_migration
+    install_local_migration(app)
     app.after_request(no_store)
     app.register_error_handler(CapacityError, capacity_error)
     app.register_error_handler(InputError, lambda error: (jsonify(error=str(error)), 400))

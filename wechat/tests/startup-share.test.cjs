@@ -10,7 +10,7 @@ function runtime(transport='local_http'){
   else vm.runInNewContext(fs.readFileSync(file,'utf8'),{...context,module:m,exports:m.exports,require:n=>load(path.resolve(path.dirname(file),n))},{filename:file})
   return m.exports
  }
- const config=load('config');Object.assign(config,{API_TRANSPORT:transport,API_BASE:'http://127.0.0.1:9',DEV_LOGIN:true})
+ const config=load('config');Object.assign(config,{LOCAL_BUILD:'cloud',API_TRANSPORT:transport,API_BASE:'http://127.0.0.1:9',DEV_LOGIN:true})
  load('app');app.onLaunch();app.onShow()
  return {load,app,wx,routes,requests,storage,writes,timers,cache,page(name){definition=null;load(name==='about'?'pages/login/about':'pages/'+name+'/index');page={...definition,route:'pages/'+name+'/index',data:structuredClone(definition.data),setData(p,done){for(const[k,v]of Object.entries(p)){const bits=k.split('.');let target=this.data;while(bits.length>1){const n=bits.shift();target=target[n]||(target[n]={})}target[bits[0]]=v}done?.()}};return page},setPage:p=>page=p}
 }
@@ -85,12 +85,12 @@ test('late anonymous login cannot replace a switched account or persist its cred
  const h=runtime(),old=h.app.login();await Promise.resolve();await Promise.resolve();h.app.clearSession();h.app.globalData={token:'isolated-B',expiresAt:4102444800,user:{id:2}}
  h.requests[0].success({statusCode:200,data:{token:'isolated-A',expires_at:4102444800,user:{id:1}}});await assert.rejects(old,/切换/);assert.equal(h.app.globalData.user.id,2);assert.equal(h.writes.filter(k=>k.startsWith('palmSession')).length,0)
 })
-test('all 25 pages share explicit public cards; private report menu does not expose its cover',()=>{
+test('all 26 pages share explicit public cards; private report menu does not expose its cover',()=>{
  const app=JSON.parse(fs.readFileSync(path.join(root,'app.json'),'utf8')),all=[...app.pages,...app.subPackages.flatMap(p=>p.pages.map(n=>p.root+'/'+n))]
  for(const route of all){const h=runtime(),p=h.page(route==='pages/login/about'?'about':route.split('/')[1]);p.data.report={private:true};p.data.cashAnalysis={private:true};p.data.coverPath='/private/cover.png';p._token=h.app.globalData.token
   const card=p.onShareAppMessage({from:'menu'});assert.equal(card.path,'/pages/items/index',route);assert.equal(card.imageUrl,'/assets/white-doodle/share-fallback.png',route);assert.ok(card.title.includes('猫爪物账'))
  }
- assert.equal(all.length,25)
+ assert.equal(all.length,26)
 })
 test('invitation uses the current owner only, preserves opaque code and falls back while not ready',()=>{
  const h=runtime(),p=h.page('rewards'),code='a'.repeat(40);h.app.globalData.token='isolated-A';p._owner='isolated-A';p.data.inviteCode=code

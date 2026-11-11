@@ -1,0 +1,21 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm')
+function harness({previous=false}={}){
+ const calls=[],files=[],state={manifest:{account:{id:7,username:'样例'}},folder:'candidate',phase:'downloading',previousFolder:previous?'previous':null},app={globalData:{token:'account-7',user:{id:7}}};let definition,confirmed=false,shareFails=false,leave=false,serial=0
+ const client={async begin(){calls.push('begin');if(leave)definition._migrationVisible=false;return state},async download(){calls.push('download');state.phase='prepared';return state},async status(){return {state,remote:{mode:'cloud'}}},async backup(){calls.push('backup');const file={id:'cloud-'+(++serial),folder:'candidate',name:'migration.zip'};state.backupId=file.id;files.push(file);return file},async backupPrevious(){const file={id:'previous-backup',folder:'previous',name:'previous.zip'};state.previousBackupId=file.id;files.push(file);return file},async confirm(){calls.push('confirm');return true},cancel(){calls.push('cancel')}}
+ const manager={async share(){calls.push('share');if(shareFails)throw Error('分享已取消')},async confirmExternal(id){calls.push('saved:'+id)}}
+ vm.runInNewContext(fs.readFileSync(require.resolve('../miniprogram/pages/local-data/index.js'),'utf8'),{Page:d=>{definition={...d,data:structuredClone(d.data),setData(v){Object.assign(this.data,v)}}},require:n=>n==='./lib/data-manager'?manager:n==='../../local-core/runtime'?{async openControl(){return {control:{async table(){return files}}}},isLocal:()=>false}:n==='../../config'?{LOCAL_BUILD:'transition'}:n==='./lib/cloud-migration'?{client:()=>client}:{wrap:d=>d},getApp:()=>app,wx:{showModal:o=>o.success({confirm:typeof confirmed==='function'?confirmed():confirmed}),reLaunch:()=>calls.push('relaunch')}})
+ return {page:definition,calls,state,files,app,confirm:v=>confirmed=v,shareFails:v=>shareFails=v,leave:v=>leave=v}
+}
+test('one migration action creates the snapshot and downloads; a hidden page never starts another operation',async()=>{
+ const h=harness();await h.page.startMigration();assert.deepEqual(h.calls,['begin','download']);assert.equal(h.page.data.migration.phase,'prepared');await h.page.startMigration();assert.equal(h.calls.filter(x=>x==='begin').length,1)
+ const hidden=harness();hidden.leave(true);await hidden.page.startMigration();assert.deepEqual(hidden.calls,['begin'])
+})
+test('generating and sharing a backup does not claim external save or confirm migration, including cancelled sharing',async()=>{
+ const h=harness();await h.page.startMigration();h.shareFails(true);await h.page.backupMigration();assert.equal(h.page.data.backup.id,h.state.backupId);assert.match(h.page.data.error,/取消/);assert.ok(!h.calls.some(x=>x.startsWith('saved:')||x==='confirm'));h.shareFails(false);await h.page.backupMigration();assert.equal(h.page.data.error,'');assert.equal(h.calls.filter(x=>x==='share').length,2)
+})
+test('one explicit confirmation records the external backup then switches, while cancel changes nothing',async()=>{
+ const h=harness();await h.page.startMigration();await h.page.backupMigration();await h.page.confirmMigration();assert.ok(!h.calls.includes('confirm'));assert.ok(!h.calls.some(x=>x.startsWith('saved:')));h.confirm(true);await h.page.confirmMigration();assert.deepEqual(h.calls.slice(-3),['saved:'+h.state.backupId,'confirm','relaunch']);const changed=harness();await changed.page.startMigration();await changed.page.backupMigration();changed.confirm(()=>{changed.app.globalData.token='other';return true});await changed.page.confirmMigration();assert.match(changed.page.data.error,/账户已切换/);assert.ok(!changed.calls.includes('confirm'));assert.ok(!changed.calls.some(x=>x.startsWith('saved:')))
+})
+test('existing local data still requires its own backup before the combined confirmation',async()=>{
+ const h=harness({previous:true});await h.page.startMigration();await h.page.backupMigration();h.confirm(true);await h.page.confirmMigration();assert.match(h.page.data.error,/本机原有/);assert.ok(!h.calls.includes('confirm'));await h.page.backupPrevious();await h.page.confirmMigration();assert.deepEqual(h.calls.slice(-4),['saved:'+h.state.backupId,'saved:previous-backup','confirm','relaunch'])
+})

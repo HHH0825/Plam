@@ -15,7 +15,7 @@ function current(page,identity,token){return page._visible&&identity&&identity==
 function hide(page){page.setData({announcementOpen:false});setTabBarHidden(page,false)}
 function wrap(base){return {...base,
  data:{...base.data,updateNotice:null,updateNoticeUnread:false,announcementOpen:false,announcementBusy:false,announcementClosing:false,announcementFading:false,announcementFlightStyle:'',announcementPulse:false},
- onShow(...args){this._visible=true;prepare(this);const result=base.onShow?.apply(this,args);if(!getApp().globalData.token)prepare(this);return result},
+ onShow(...args){this._visible=true;prepare(this);const result=base.onShow?.apply(this,args);if(!getApp().globalData.token)prepare(this);Promise.resolve().then(()=>{if(content.autoOpen&&this._visible&&this.data.updateNoticeUnread)this.openUpdateNotice()});return result},
  onHide(...args){this._visible=false;motion.cancel(this);hide(this);return base.onHide?.apply(this,args)},
  onUnload(...args){this._visible=false;motion.cancel(this);hide(this);return base.onUnload?.apply(this,args)},
  openFilters(...args){if(!this.data.announcementOpen)return base.openFilters?.apply(this,args)},

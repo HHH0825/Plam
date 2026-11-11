@@ -23,6 +23,8 @@ def purge_expired(now=None):
             "SELECT id, user_id, photo_key, deleted_at FROM items "
             "WHERE deleted_at IS NOT NULL AND deleted_at <= ?", (cutoff,)
         ).fetchall()
+        from .local_migration import retain_cloud
+        rows = [row for row in rows if not retain_cloud(row['user_id'])]
         for row in rows:
             from .purchases import detach_device
             detach_device(row['id'], row['user_id'])

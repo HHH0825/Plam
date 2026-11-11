@@ -2,17 +2,8 @@
   "pages": [
     "pages/items/index",
     "pages/ledger/index",
-    "pages/ledger-record/index",
-    "pages/ledger-detail/index",
-    "pages/ledger-history/index",
-    "pages/ledger-report/index",
     "pages/statistics/index",
-    "pages/insights/index",
-    "pages/me/index",
-    "pages/record/index",
-    "pages/trash/index",
-    "pages/disposed/index",
-    "pages/wishlist/index"
+    "pages/me/index"
   ],
   "window": {
     "navigationBarTitleText": "猫爪物帐",
@@ -57,6 +48,11 @@
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "subPackages": [
+    {
+      "root": "pages/ledger-record",
+      "name": "ledger-record",
+      "pages": ["index"]
+    },
     {
       "root": "pages/member-tools",
       "name": "member-tools",
@@ -131,6 +127,69 @@
     {
       "root": "pages/profile",
       "name": "profile",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/local-data",
+      "name": "local-data",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/ledger-history",
+      "name": "ledger-history",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/ledger-report",
+      "name": "ledger-report",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/wishlist",
+      "name": "wishlist",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/insights",
+      "name": "insights",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/trash",
+      "name": "trash",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/disposed",
+      "name": "disposed",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/record",
+      "name": "record",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/ledger-detail",
+      "name": "ledger-detail",
       "pages": [
         "index"
       ]

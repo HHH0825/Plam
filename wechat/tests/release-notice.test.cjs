@@ -34,3 +34,11 @@ test('update notice and filters, greetings, capacity prompts or focused input ne
  h.feedback({});h.p.data.searchFocus=true;h.p.openUpdateNotice();assert.equal(h.p.data.announcementOpen,false);h.p.data.searchFocus=false;h.p.openUpdateNotice();h.p.openFilters();assert.equal(h.p.data.filterOpen,false);assert.equal(h.p.data.announcementOpen,true)
  h.p.onHide();assert.equal(h.p.data.announcementOpen,false);assert.equal(h.tabs.at(-1),false)
 })
+
+test('direct local apology notice opens once on entry, remains readable, and never acknowledges a hidden page',async()=>{
+ const content={...require('../miniprogram/utils/release-notice-content')},h=harness(new Map(),content);h.app.globalData.localMode=true
+ h.show();assert.equal(h.p.data.announcementOpen,false);await Promise.resolve();assert.equal(h.p.data.announcementOpen,true);assert.equal(h.p.data.updateNoticeUnread,false)
+ h.p.closeUpdateNotice();h.p.onHide();h.show();await Promise.resolve();assert.equal(h.p.data.announcementOpen,false);h.p.openUpdateNotice();assert.equal(h.p.data.announcementOpen,true)
+ const hidden=harness(new Map(),{...content,id:'shutdown-hidden'});hidden.show();hidden.p.onHide();await Promise.resolve();assert.equal(hidden.writes.length,0)
+ const text=content.paragraphs.join('');assert.match(text,/朋友还不多/);assert.match(text,/这次切换不迁移原云端资料/);assert.match(text,/真诚道歉/);assert.match(text,/完全免费/);assert.doesNotMatch(text,/确认迁移|关停日期会另行通知|已经删除|已销毁/);assert.match(text,/只保存在你当前手机/);assert.match(text,/小程序之外/)
+})

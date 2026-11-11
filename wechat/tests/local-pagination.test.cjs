@@ -1,0 +1,15 @@
+const {test}=require('node:test'),assert=require('node:assert/strict')
+const {Store}=require('../miniprogram/local-core/store'),{Business}=require('../miniprogram/local-core/business'),{scan}=require('../miniprogram/local-core/scan'),collection=require('../miniprogram/utils/collection')
+function memory(){const files=new Map(),reads=[];return {files,reads,async read(n){reads.push(n);return files.get(n)?.slice()||null},async write(n,b){files.set(n,b.slice())},async rename(a,b){files.set(b,files.get(a));files.delete(a)},async remove(n){files.delete(n)},async list(){return [...files.keys()]}}}
+async function fixture(){const io=memory(),store=await new Store(io).open(),items=Array.from({length:1601},(_,n)=>({id:n+1,name:'相机 '+n,category:n%2?'摄影':'数码',icon_type:'digital',notes:n%3?'':'旅行',purchase_date:'2026-01-01',purchase_cents:n*100,status:'active',revision:0,is_pinned:n===6,photo_key:null,storage_location_id:null}));await store.transaction(tx=>{tx.set('items',items);tx.set('maintenance_records',[{id:1,item_id:1,maintained_on:'2026-01-01',cost_cents:15000}])});const reopened=await new Store(io).open();return {io,store:reopened,api:new Business(reopened,{clock:()=>Date.parse('2026-11-06T12:00:00Z')})}}
+test('large local item list reads bounded shards and then pages a disposable index',async()=>{
+ const {io,store,api}=await fixture();let largest=0;await scan(store,'items',rows=>largest=Math.max(largest,rows.length));assert.ok(largest<=500)
+ const first=await api.request('/items/page?limit=60&sort=2');assert.equal(first.items.length,60);assert.equal(first.scope_total,1601);assert.equal(first.items[0].id,7);assert.equal(first.next_offset,60);assert.equal(store.cache.has('items'),false,'page route never fills full-table cache')
+ io.reads.length=0;const second=await api.request('/items/page?offset=60&limit=60&sort=2');assert.equal(second.items.length,60);assert.equal(io.reads.filter(n=>n.startsWith('table-')).length,0,'warm paging reads only index shards');assert.equal(new Set([...first.items,...second.items].map(i=>i.id)).size,120)
+ const full=await api.request('/items'),expected=collection.select(full,'旅行','','摄影',4),filtered=await api.request('/items/page?q='+encodeURIComponent('旅行')+'&category='+encodeURIComponent('摄影')+'&sort=4&limit=60');assert.deepEqual(filtered.items.map(i=>i.id),expected.slice(0,60).map(i=>i.id));assert.equal(filtered.total,expected.length)
+})
+test('cache corruption and full storage fall back to authoritative data; cancellation never publishes a page',async()=>{
+ const {io,api}=await fixture();await api.request('/items/page');const key=[...io.files.keys()].find(n=>n.startsWith('query-part-'));io.files.set(key,new Uint8Array([0]));assert.equal((await api.request('/items/page')).items.length,60)
+ const write=io.write;io.write=async(n,b)=>{if(n.startsWith('query-'))throw Error('no space');return write(n,b)};await io.remove('query-index.json');assert.equal((await api.request('/items/page')).scope_total,1601);io.write=write
+ const read=api.request('/items/page');read.cancel();await assert.rejects(read,/取消/)
+})

@@ -69,6 +69,7 @@ function createItemListPage(scope = 'held') {
    this._observer = null; this._nearObserver = null
   },
   async load(reuse = false) {
+   if(getApp().globalData.localMode)return require('./local-item-list').load(this,scope)
    const seq = ++this._sequence, token = getApp().globalData.token
    this._validatedPhotos = new Set(); this.disconnectPhotos(); this._photos.release(this._photoOwner)
    this.setData({ loading: !this.data.items.length, error: '', photoStates: Object.fromEntries(Object.entries(this.data.photoStates).filter(([, state]) => state !== 'loading')) })
@@ -89,6 +90,7 @@ function createItemListPage(scope = 'held') {
    } catch (error) { if (this.current(seq, token)) this.setData({ loading: false, error: view.errorMessage(error) }) }
   },
   apply(restore = false) {
+   if(getApp().globalData.localMode&&!restore)return this.load()
    const seq = this._sequence, token = getApp().globalData.token
    this.disconnectPhotos()
    require('./display-cache').present(this,{ filterCount: Number(!isArchive && !!this.data.status) + Number(!!this.data.category), shown: collection.select(collection.inScope(this.data.items, scope), this.data.query, isArchive ? '' : this.data.status, this.data.category, this.data.sortIndex) }, () => {
@@ -214,6 +216,8 @@ function createItemListPage(scope = 'held') {
   locations() { this.rememberPosition(() => navigate(this, '/pages/storage-locations/index')) },
   add() { this.rememberPosition(() => navigate(this, '/pages/editor/index')) },
   onPullDownRefresh() { require('./display-cache').clear();return this.load().finally(() => wx.stopPullDownRefresh()) }
+  ,loadMore(){if(getApp().globalData.localMode)return require('./local-item-list').load(this,scope,true)},
+  onReachBottom(){return this.loadMore()}
  }
 }
 module.exports = { createItemListPage }
