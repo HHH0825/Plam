@@ -1,5 +1,7 @@
 # 小程序历史开发与验收记录
 
+> 历史资料。当前小程序是纯本地版，旧后端与部署代码仅在历史提交中查阅。
+
 [返回当前介绍](../README.md)
 
 > 本文由此前 README 归档。功能、部署状态和测试数字均反映记录当时情况，不代表当前线上状态；以当前 README 和对应更新说明为准。未提交的历史构建物仅保留路径记录。
@@ -303,7 +305,7 @@ node tools/photo-benchmark.cjs .venv/Scripts/python.exe
 
 ## 许可证
 
-源码采用 [PolyForm Noncommercial 1.0.0](../LICENSE)；超出许可范围的商业使用须另行取得书面授权，可通过 [GitHub Issues](https://github.com/HHH0825/Personal-Asset-Lifecycle-Manager-PALM/issues) 联系作者。历史 MIT 授权见 [NOTICE](../NOTICE)，第三方材料仍遵循原许可。
+源码采用 [PolyForm Noncommercial 1.0.0](../LICENSE)；超出许可范围的商业使用须另行取得书面授权，可通过 [GitHub Issues](https://github.com/HHH0825/Plam/issues) 联系作者。历史 MIT 授权见 [NOTICE](../NOTICE)，第三方材料仍遵循原许可。
 # 私有云端照片补齐
 
 受限 COS 子账号创建、三个新增环境变量、上传/下载域名、费用核对、验证脚本和启用步骤见 [照片部署说明](cloud-photos-cos.md)。当前照片默认关闭，已有云端业务继续可用。

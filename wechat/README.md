@@ -11,7 +11,7 @@
   <a href="#功能一览">功能一览</a> ·
   <a href="#本地数据与备份">备份与恢复</a> ·
   <a href="#开发与测试">源码开发</a> ·
-  <a href="https://github.com/HHH0825/Personal-Asset-Lifecycle-Manager-PALM/issues">反馈与建议</a> ·
+  <a href="https://github.com/HHH0825/Plam/issues">反馈与建议</a> ·
   <a href="../README.md">了解 PALM 网页版</a>
 </p>
 
@@ -68,7 +68,7 @@
 
 ## 关于这个小玩具
 
-猫爪物账从第一版到现在，全程用 **Vibe Coding** 开发。我和 AI 一边写、一边在手机上试，慢慢把物品整理和记账做进同一个小玩具。欢迎体验，也欢迎分享你用起来顺手或别扭的地方。 [GitHub Issues](https://github.com/HHH0825/Personal-Asset-Lifecycle-Manager-PALM/issues)
+猫爪物账从第一版到现在，全程用 **Vibe Coding** 开发。我和 AI 一边写、一边在手机上试，慢慢把物品整理和记账做进同一个小玩具。欢迎体验，也欢迎分享你用起来顺手或别扭的地方。 [GitHub Issues](https://github.com/HHH0825/Plam/issues)
 
 反馈时带上小程序版本、设备和复现步骤。截图请遮挡个人资料和账目，**完整备份请留在自己的设备或聊天里**。
 
@@ -76,7 +76,7 @@
 
 猫爪物账与上一级 PALM／物物记本地网页版共享项目理念，但**资料库和照片独立，不会自动同步**。小程序不依赖本地网页版，也不需要运行 Python 后端。
 
-本仓库仍保留旧 Flask／CloudBase 实现和取消前的迁移测试，用于历史查阅、业务规则对照；它们不属于 2.0.0 的运行依赖。
+旧小程序服务端、云部署目录和相关测试已从当前版本移除，需要回顾时可以查 Git 历史。旧版发布工具只对应当时的源码。前端源码里的旧页面兼容逻辑仍由纯本地构建裁剪。
 
 ## 源码更新与发布状态
 
@@ -96,7 +96,6 @@
 | `tools/local-template/` | 最终纯本地启动与业务入口模板 |
 | `tests/`、`tools/` | 回归测试、纯本地构建与验收工具 |
 | `docs/`、`branding/` | 使用文档、宣传素材、插画源文件与素材清单 |
-| `backend/`、`deploy/cloudbase/` | 历史服务端源码、规则对照和部署工具；当前版本无需部署 |
 
 建议使用 Node.js 18+、微信开发者工具。构建所需 Terser 可从已安装的开发者工具提取，需 Python 3（仅用于工具，不是运行小程序的前提）。在仓库根目录运行：
 
@@ -113,21 +112,15 @@ node --test wechat/tests/*.test.cjs
 
 当前版本无需配置云环境、AppSecret、数据库或支付密钥。生成目录、日志、数据库、个人设置与交付 ZIP 不提交到 Git；源代码、测试和运行素材完整保留。
 
-历史后端规则回归是可选的维护检查，需 Python 3.10+ 和 `wechat/requirements-lock.txt` 依赖：
-
-```powershell
-python -m unittest discover -s wechat/tests -p 'test_*.py'
-```
-
 ## 构建与更多文档
 
 - [本地版使用与备份](docs/local-first-usage.md) · [2.0.0 发布与构建说明](docs/local-first-release.md)
 - [本地数据与恢复实现](local-core/README.md) · [测试记录与限制](docs/local-first-implementation.md) · [本地隐私说明](docs/local-first-privacy.txt)
 - [GitHub 源码同步](docs/github-upload.md) · [云服务关闭指引](docs/local-first-cloud-shutdown.md) · [宣传素材来源](docs/promo/README.md)
-- 历史资料：[后端接口](docs/api.md) · [云端部署](docs/deployment.md) · [订阅／分期更新](docs/subscriptions-20261021.md) · [开发历史](docs/development-history.md)
+- 历史资料：[订阅／分期更新](docs/subscriptions-20261021.md) · [开发历史](docs/development-history.md)
 
 `tools/package-local-first.py` 用于复刻本机 2026-11-06 交付档案，需要当日验收证据；它不是干净克隆后开发的前置条件。日常构建使用上面的 Node 命令即可。GitHub 更新不会自动上传微信、提交审核或创建云资源。
 
 ## 许可证
 
-小程序使用免费，源码采用 [PolyForm Noncommercial 1.0.0](LICENSE)；超出许可范围的商业使用须另行取得书面授权，可通过 [GitHub Issues](https://github.com/HHH0825/Personal-Asset-Lifecycle-Manager-PALM/issues) 联系作者。历史 MIT 授权见 [NOTICE](NOTICE)，第三方材料仍遵循原许可。
+小程序使用免费，源码采用 [PolyForm Noncommercial 1.0.0](LICENSE)；超出许可范围的商业使用须另行取得书面授权，可通过 [GitHub Issues](https://github.com/HHH0825/Plam/issues) 联系作者。历史 MIT 授权见 [NOTICE](NOTICE)，第三方材料仍遵循原许可。

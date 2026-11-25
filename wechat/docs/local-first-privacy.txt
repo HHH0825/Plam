@@ -18,5 +18,5 @@
 项目停止提供原云端存储，本次取消过渡方案，不做原云端资料自动迁移。旧版物品、账目和照片不会在新版显示，也不会自动下载到手机。新版无需连接原账户或部署迁移后端，保留用户自行导入本应用完整备份的能力。云资源实际释放与费用结算以控制台结果为准，不能用前端或仓库更新代替完成凭据。对此给旧用户带来的不便，我们真诚道歉。
 
 六、反馈
-GitHub Issues：https://github.com/HHH0825/Personal-Asset-Lifecycle-Manager-PALM/issues
+GitHub Issues：https://github.com/HHH0825/Plam/issues
 请提供版本、设备和操作步骤，遮挡个人资料及账目。不要在公开Issue上传个人完整备份。

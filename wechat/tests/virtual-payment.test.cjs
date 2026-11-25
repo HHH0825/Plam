@@ -1,5 +1,4 @@
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),crypto=require('node:crypto')
-const {createHandler}=require('../deploy/cloudbase/pay-notify')
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm')
 const id='P'+'a'.repeat(30),other='P'+'b'.repeat(30)
 function harness(){
  const app={globalData:{token:'alice',user:{id:1}}},storage=new Map(),calls=[],payCalls=[],loginCalls=[],module={exports:{}}
@@ -113,42 +112,10 @@ test('unknown pending order blocks new purchase and malformed signed parameters 
  const broken=harness();broken.payData.signData=JSON.stringify({outTradeNo:other,env:1,goodsPrice:1})
  await assert.rejects(broken.payment.buy('quarter',true,990),/参数异常/);assert.equal(broken.payCalls.length,0)
 })
-const env={PALM_PAY_RELAY_URL:'https://cloud1-test-123.ap-shanghai.app.tcloudbase.com/palm/payments/wechat/notify',PALM_PAY_RELAY_HOST:'cloud1-test-123.ap-shanghai.app.tcloudbase.com',PALM_PAY_NOTIFY_SECRET:'n'.repeat(48)}
-
 test('iOS checkout submits its terminal and exact displayed server price',async()=>{
  const h=harness();h.payData.signData=JSON.stringify({...JSON.parse(h.payData.signData),goodsPrice:1150,productId:'ios_quarter'})
  h.respond(path=>path==='/pay/orders'?{orders:[]}:path==='/pay/order'?{order:{id,price_cents:1150,platform:'ios'},payData:h.payData}:{order:{id,status:'fulfilled'}})
  await h.payment.buy('quarter',true,1150)
  const data=h.calls.find(r=>r.path==='/pay/order').options.data
  assert.equal(data.platform,'ios');assert.equal(data.expected_price_cents,1150)
-})
-
-test('relay total deadline aborts a connection that never produces a response',async()=>{
- const {EventEmitter}=require('node:events');let expiry,delay,destroyed=false
- const req=new EventEmitter();req.end=()=>{};req.destroy=error=>{destroyed=true;req.emit('error',error)}
- const exports={}
- vm.runInNewContext(fs.readFileSync(require.resolve('../deploy/cloudbase/pay-notify'),'utf8'),{exports,require:n=>n==='node:https'?{request:()=>req}:crypto,process:{env},URL,Buffer,Date,console:{warn(){}},setTimeout:(fn,ms)=>{expiry=fn;delay=ms;return 1},clearTimeout(){}})
- const promise=exports.main({Type:'Timer',TriggerName:'palm-pay-reconcile'});assert.equal(delay,2500);expiry()
- assert.equal((await promise).ErrCode,1);assert.equal(destroyed,true)
-})
-test('cloud event relay signs exact raw JSON and acknowledges only backend confirmation',async()=>{
- let sent
- const receive=createHandler(env,async(url,raw,headers)=>{sent={url,raw,headers};return {ErrCode:0}},()=>1800000000)
- const event={Event:'xpay_goods_deliver_notify',OpenId:'owner',OutTradeNo:id,Env:0}
- assert.equal((await receive(event)).ErrCode,0)
- assert.equal(sent.headers['X-Palm-Pay-Signature'],crypto.createHmac('sha256',env.PALM_PAY_NOTIFY_SECRET).update('1800000000\n'+sent.raw).digest('hex'))
- const failed=createHandler(env,async()=>({ErrCode:1}));assert.equal((await failed(event)).ErrCode,1)
- const timeout=createHandler(env,async()=>{throw Error('secret error')});assert.equal((await timeout(event)).ErrMsg,'payment_unconfirmed')
-})
-test('relay rejects unsupported currency, subscription, malformed events and arbitrary destinations',async()=>{
- let calls=0;const receive=createHandler(env,async()=>{calls++;return {ErrCode:0}})
- for(const Event of ['xpay_coin_pay_notify','xpay_subscribe_signing_result_notify','anything'])assert.equal((await receive({Event,Env:0,OutTradeNo:id,OpenId:'owner'})).ErrCode,1)
- assert.equal((await receive({Event:'xpay_goods_deliver_notify',Env:1,OutTradeNo:id,OpenId:'owner'})).ErrCode,1);assert.equal(calls,0)
- assert.equal((await createHandler({...env,PALM_PAY_RELAY_URL:'https://evil.test/'})( {Type:'Timer',TriggerName:'palm-pay-reconcile'})).ErrCode,1)
-})
-test('timer forwards only reconciliation action and refund callback uses same verification relay',async()=>{
- const bodies=[],receive=createHandler(env,async(_url,raw)=>{bodies.push(JSON.parse(raw));return {ErrCode:0}})
- assert.equal((await receive({Type:'Timer',TriggerName:'palm-pay-reconcile'})).ErrCode,0)
- assert.deepEqual(bodies[0],{action:'reconcile'})
- assert.equal((await receive({Event:'xpay_refund_notify',Env:0,OpenId:'owner',OutTradeNo:id})).ErrCode,0)
 })

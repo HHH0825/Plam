@@ -85,20 +85,18 @@ def source_backup():
     for row in manifest['inputs']:
         if not row['name'].startswith('@template/'):
             add(WECHAT / 'miniprogram' / row['name'])
-    for directory in ('backend/palm', 'backend/cloudbase_probe', 'tests', 'tools', 'local-core'):
-        for path in (WECHAT / directory).rglob('*'):
-            if '__pycache__' not in path.parts and path.suffix in ('.py', '.js', '.cjs', '.json', '.md'):
-                add(path)
-    for path in (WECHAT / 'tools/local-template').rglob('*'):
-        add(path)
-    tracked = subprocess.check_output(['git', 'ls-files', '-z', 'wechat/docs', 'wechat/deploy/cloudbase'], cwd=ROOT).decode().split('\0')
+    tracked = subprocess.check_output(
+        ['git', 'ls-files', '-z', 'wechat/tests', 'wechat/tools', 'wechat/local-core', 'wechat/docs'],
+        cwd=ROOT,
+    ).decode().split('\0')
     for name in filter(None, tracked):
         path = ROOT / name
+        if name.startswith(('wechat/tests/', 'wechat/tools/', 'wechat/local-core/')):
+            if path.suffix not in ('.py', '.js', '.cjs', '.json', '.md'):
+                continue
         if path.suffix not in ('.zip', '.sha256', '.log'):
             add(path)
-    for path in (WECHAT / 'docs').glob('local-first-*'):
-        add(path)
-    for name in ('README.md', 'LICENSE', 'NOTICE', '.gitignore', 'requirements-lock.txt', 'backend/dev.py'):
+    for name in ('README.md', 'LICENSE', 'NOTICE', '.gitignore', '.gitattributes'):
         add(WECHAT / name)
     return bundle('catpaw-local-first-source.zip', entries)
 

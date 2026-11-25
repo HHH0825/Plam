@@ -36,23 +36,15 @@ project.private.config.json
 *.zip.sha256
 *.zip.building
 
-# Generated local-version delivery packages, copied evidence and private receipts
-/deploy/local-direct-*/
-/deploy/local-first-*/
-/deploy/local/
-
-# Historical deployment output stays local. Retain runtime entry sources,
-# lockfiles, configuration examples, and the fixture script required by tests.
-/deploy/cloudbase/*
-!/deploy/cloudbase/.gitignore
-!/deploy/cloudbase/api/
-!/deploy/cloudbase/bridge/
-!/deploy/cloudbase/pay-notify/
-!/deploy/cloudbase/build.py
-!/deploy/cloudbase/resources.json
-!/deploy/cloudbase/cos-photo-policy.json
-!/deploy/cloudbase/miniprogram.config.example.js
-!/deploy/cloudbase/qa-controlled-load.js
+# Historical backend snapshots and generated delivery packages stay local.
+/backend/
+/deploy/
+/requirements-lock.txt
+/tools/member_admin/
+/tests/test_*.py
+/tests/acceptance-load.test.cjs
+/tests/cloud-bridge.test.cjs
+/tests/local-parity-runner.cjs
 
 # Generated visual matrices, browser previews and historical design mockups.
 # Already tracked images remain tracked; this does not delete local files.

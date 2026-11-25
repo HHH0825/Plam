@@ -1,5 +1,7 @@
 # 猫爪物账2.0.0：纯本地发布与构建说明
 
+2026-11-25：仓库当前版本已移除旧小程序后端、云部署和相关回归。下方 2026-11 的上传与交付记录对应当时的源码，历史后端可通过 Git 提交查阅。
+
 2026-11-11更新：作者已于2026-11-08确认纯本地版2.0.0正式上线，本次同步GitHub源码与说明。当前版本全部免费、免登录，在手机本地保存，不需要更新或部署palm-api。不做旧云端数据自动迁移，此前过渡开发版已停用。日常使用见[本地使用与备份](local-first-usage.md)。
 
 2026-11-06上传的2.0.0开发版微信实际主包为1,392,606字节，这是当时平台处理后的上传记录，不作为本次重新构建的体积。当前发布状态依据作者上线确认；历史上传回执留在本机，不上传GitHub。
@@ -31,7 +33,7 @@ node --test wechat/tests/*.test.cjs
 
 可选排版检查为`node wechat/tools/verify-local-layout.cjs`及`node wechat/tools/verify-local-me-layout.cjs`，依赖Playwright与脚本所指定的本机浏览器路径。`package-local-first.py`复刻2026-11-06交付档案，需要当日测试记录，不是日常开发的前置步骤。
 
-构建默认仅生成local和local-source。过渡构建被明确禁用。首次构建参考tools/extract-wechat-terser.py，提取已安装微信工具的Terser。4项生成项目回归依赖先构建。本轮无需后端更新；源码中保留的旧云端代码与回归仅作历史维护，发布包通过依赖裁剪移除它们。
+构建仅生成 local 和 local-source。首次构建通过 tools/extract-wechat-terser.py 提取已安装微信开发者工具的 Terser。先构建再跑前端测试。发布包会裁剪前端里旧版的云接口兼容逻辑。
 
 ## 通知与旧资料
 

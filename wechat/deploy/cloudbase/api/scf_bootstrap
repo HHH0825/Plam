@@ -1,6 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-cd /var/user
-export PYTHONPATH="/var/user/third_party:/var/user${PYTHONPATH:+:$PYTHONPATH}"
-export TZ=Asia/Shanghai
-exec python3 -m gunicorn --bind 0.0.0.0:9000 --workers 1 --threads 4 --timeout 60 --error-logfile - app:app
