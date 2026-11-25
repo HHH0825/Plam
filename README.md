@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="wechat/docs/promo/hero.png" width="1000" alt="PALM／物物记与猫爪物账：管理喜欢的物品，记录生活的花费">
-</p>
-
 <h1 align="center">PALM／物物记 · 猫爪物账</h1>
 <p align="center"><strong>管理喜欢的物品，记录生活的花费。</strong></p>
 <p align="center">一个全程用 <strong>Vibe Coding</strong> 做出来的个人小玩具。欢迎拿来随手试试。</p>
