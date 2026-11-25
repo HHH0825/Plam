@@ -1,4 +1,5 @@
 """Bounded photo release tools. Keep environment values and signed URLs off disk/output."""
+import os
 import argparse
 import hashlib
 import json
@@ -12,7 +13,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'deploy/cloudbase/photo-compression-20261009'
 ENV = 'cloud1-example'
-CLI = 'wechat-devtools/wechatide.cmd'
+CLI = os.environ.get('PALM_WECHAT_IDE', 'wechatide.cmd')
 
 def native(tool, flags, allow_error=False):
     reply = subprocess.run([CLI, '-c', 'codex', tool, *flags], capture_output=True,
@@ -64,7 +65,7 @@ def metadata():
 def baseline():
     target=OUT/'baseline'
     target.mkdir(parents=True,exist_ok=True)
-    reply=subprocess.run(['wechat-devtools/cli.bat','cloud','functions','download','--project',str(ROOT/'miniprogram'),
+    reply=subprocess.run([os.environ.get('PALM_WECHAT_CLI', 'cli.bat'),'cloud','functions','download','--project',str(ROOT/'miniprogram'),
         '--env',ENV,'--name','palm-api','--path',str(target)],capture_output=True,text=True,encoding='utf8',errors='replace',timeout=90)
     files=[p for p in target.rglob('*') if p.is_file()]
     apps=[p for p in files if p.name=='app.py' and (p.parent/'palm/photo.py').is_file()]
@@ -148,7 +149,7 @@ def deploy():
 
 def verify():
     target=OUT/'readback';target.mkdir(exist_ok=True)
-    reply=subprocess.run(['wechat-devtools/cli.bat','cloud','functions','download','--project',str(ROOT/'miniprogram'),
+    reply=subprocess.run([os.environ.get('PALM_WECHAT_CLI', 'cli.bat'),'cloud','functions','download','--project',str(ROOT/'miniprogram'),
         '--env',ENV,'--name','palm-api','--path',str(target)],capture_output=True,text=True,encoding='utf8',errors='replace',timeout=90)
     artifact=OUT/'palm-api-photo-compression-python310.zip'
     with zipfile.ZipFile(artifact) as archive:

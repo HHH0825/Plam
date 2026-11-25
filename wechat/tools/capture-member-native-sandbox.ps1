@@ -1,9 +1,10 @@
 param([string]$OutputDirectory='./wechat/docs/images/membership-tools-20261015')
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/member-tools-native-project'))
 $checks=[System.Collections.Generic.List[object]]::new()
 function Ide([string]$tool,[string[]]$flags){
- $raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String)
+ $raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String)
  $result=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json
  if(!$result.ok -or !$result.result.success){throw $raw}
  return $result.result

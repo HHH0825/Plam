@@ -1,10 +1,11 @@
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference = 'Stop'
 $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/beauty-icons-native-project'))
 $output = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/code-quality/native'))
 [IO.Directory]::CreateDirectory($output) | Out-Null
 $source = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'quality-native.js')).Replace("`r", '').Replace("`n", ' ')
 $checks = [System.Collections.Generic.List[object]]::new()
-function Ide([string]$tool,[string[]]$flags) { $raw = (& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags | Out-String); if ($raw.IndexOf('{') -lt 0) { throw $raw }; $r = $raw.Substring($raw.IndexOf('{')) | ConvertFrom-Json; if (!$r.ok -or !$r.result.success) { throw $raw }; return $r.result }
+function Ide([string]$tool,[string[]]$flags) { $raw = (& $wechatIde -c Codex $tool --project $project @flags | Out-String); if ($raw.IndexOf('{') -lt 0) { throw $raw }; $r = $raw.Substring($raw.IndexOf('{')) | ConvertFrom-Json; if (!$r.ok -or !$r.result.success) { throw $raw }; return $r.result }
 function Run([string]$action) { $file = Join-Path $output 'args.json'; [IO.File]::WriteAllText($file,(ConvertTo-Json -InputObject @($action) -Compress)); return (Ide automation_evaluate @('--fn-source',$source,'--args-file',$file)).result.result }
 function Check($condition,[string]$name,$state) { if (!$condition) { throw ($name+' '+($state|ConvertTo-Json -Compress -Depth 10)) }; $checks.Add(@{ name=$name; passed=$true; state=$state }) }
 function Shot([string]$name) { Ide simulator_screenshot @('--path',(Join-Path $output ($name+'.png')),'--optimize','false','--wait','1') | Out-Null }

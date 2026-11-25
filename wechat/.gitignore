@@ -30,6 +30,7 @@ env.*.json
 *.credentials.json
 *.secret.json
 project.private.config.json
+project.config.local.json
 
 # Generated delivery archives and checksums
 *.zip

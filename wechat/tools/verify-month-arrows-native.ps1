@@ -1,8 +1,9 @@
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../miniprogram'))
 $output=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/images/month-arrows-20261014'))
 [IO.Directory]::CreateDirectory($output)|Out-Null
-function Ide([string]$tool,[string[]]$flags){$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
+function Ide([string]$tool,[string[]]$flags){$raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
 function Eval([string]$fn){return (Ide automation_evaluate @('--fn-source',$fn)).result.result}
 function Shot([string]$name){Ide simulator_screenshot @('--path',(Join-Path $output ($name+'.png')),'--optimize','false','--wait','1')|Out-Null}
 $results=[System.Collections.Generic.List[object]]::new()

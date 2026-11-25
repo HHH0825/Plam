@@ -1,5 +1,5 @@
 // Original menu icons matching the app's brown line-art system.
-const fs=require('node:fs'),path=require('node:path'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
+const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
 const root=path.resolve(__dirname,'../miniprogram/assets/me')
 const paw='<g fill="#845645" stroke="none"><ellipse cx="12" cy="14" rx="1.5" ry="2"/><ellipse cx="17" cy="12" rx="1.5" ry="2"/><ellipse cx="22" cy="14" rx="1.5" ry="2"/><path d="M11 21c-1-2 2-5 5-5s6 3 5 5c-1 2-3 1-5 1s-4 1-5-1Z"/></g>'
 const drawings={

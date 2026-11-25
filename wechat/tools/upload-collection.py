@@ -1,4 +1,5 @@
 """Upload the approved frontend revision through the official IDE; record safe metadata."""
+import os
 import hashlib
 import json
 from pathlib import Path
@@ -16,7 +17,7 @@ if record.exists():
         raise SystemExit(0)
 version = '2026.10.08'
 description = '首页纸纹背景、物品卡片与筛选更新'
-reply = subprocess.run(['wechat-devtools/wechatide.cmd', '-c', 'codex', 'upload',
+reply = subprocess.run([os.environ.get('PALM_WECHAT_IDE', 'wechatide.cmd'), '-c', 'codex', 'upload',
     '--project', str(project), '--upload-version', version, '--desc', description],
     capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
 try:

@@ -24,12 +24,14 @@
 
 ```powershell
 # 首次准备：替换为自己已安装微信开发者工具的路径
-python wechat/tools/extract-wechat-terser.py "wechat-devtools/resources/app.asar"
+python wechat/tools/extract-wechat-terser.py "$env:PALM_WECHAT_DEVTOOLS/resources/app.asar"
 node wechat/tools/build-local-variants.cjs
 node --test wechat/tests/*.test.cjs
 ```
 
-构建输出为仓库根目录下的`test-results/local-builds/local-source/`（可编辑）和`local/`（压缩），用微信开发者工具导入其中一个目录并替换自己的AppID。首次下载和分包获取由微信提供，业务资料保存在手机。源码保留历史兼容实现，正式发布应使用裁剪后的构建目录。
+构建输出为仓库根目录下的 `test-results/local-builds/local-source/`（可编辑）和 `local/`（压缩）。公开配置使用 `touristappid` 占位。如果微信开发者工具提示 AppID 不存在，可以在工具中申请测试号，并将其填入构建输出的配置。正式上传时，只在忽略的 `test-results/local-builds/local/project.config.json` 中填写自己的正式 AppID。重新构建后需在生成目录重新填写。首次下载和分包获取由微信提供，业务资料保存在手机。源码保留历史兼容实现，正式发布应使用裁剪后的构建目录。
+
+本机可设置 `PALM_WECHAT_DEVTOOLS` 指向微信开发者工具安装目录，设置 `PALM_WECHAT_IDE` 指向 `wechatide.cmd`。
 
 可选排版检查为`node wechat/tools/verify-local-layout.cjs`及`node wechat/tools/verify-local-me-layout.cjs`，依赖Playwright与脚本所指定的本机浏览器路径。`package-local-first.py`复刻2026-11-06交付档案，需要当日测试记录，不是日常开发的前置步骤。
 

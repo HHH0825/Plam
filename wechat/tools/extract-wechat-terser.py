@@ -1,10 +1,11 @@
 """Reuse the installed developer-tool compiler offline. No downloaded dependencies."""
+import os
 from pathlib import Path
 import json
 import struct
 import sys
 
-archive = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('wechat-devtools/resources/app.asar')
+archive = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(os.environ.get('PALM_WECHAT_DEVTOOLS', 'wechat-devtools')) / 'resources' / 'app.asar'
 output = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[2] / 'test-results/wechat-terser.cjs'
 with archive.open('rb') as f:
     raw = f.read(16)

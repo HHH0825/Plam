@@ -1,3 +1,4 @@
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference = 'Stop'
 $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/beauty-icons-native-project'))
 $output = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/upload-fix-native'))
@@ -6,7 +7,7 @@ $checks = [System.Collections.Generic.List[object]]::new()
 foreach ($name in @('member-tools', 'editor', 'rewards', 'item', 'monthly', 'fixed-expenses', 'storage-locations', 'membership')) {
     $argsPath = Join-Path $output 'load-args.json'
     [IO.File]::WriteAllText($argsPath, (ConvertTo-Json -InputObject @($name) -Compress))
-    $raw = (& 'wechat-devtools/wechatide.cmd' -c Codex automation_evaluate --project $project --fn-source $source --args-file $argsPath | Out-String)
+    $raw = (& $wechatIde -c Codex automation_evaluate --project $project --fn-source $source --args-file $argsPath | Out-String)
     if ($raw.IndexOf('{') -lt 0) { throw $raw }
     $result = $raw.Substring($raw.IndexOf('{')) | ConvertFrom-Json
     if (!$result.ok -or !$result.result.success) { throw $raw }

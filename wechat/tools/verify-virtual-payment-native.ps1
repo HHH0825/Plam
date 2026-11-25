@@ -1,11 +1,12 @@
 param([string]$OutputDirectory='./wechat/docs/images/virtual-payment-20261015')
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../miniprogram'))
 $output=[IO.Path]::GetFullPath($OutputDirectory)
 [IO.Directory]::CreateDirectory($output)|Out-Null
 $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'member-native-check.js')).Replace("`r",'').Replace("`n",' ')
 $checks=[System.Collections.Generic.List[string]]::new()
-function Ide([string]$tool,[string[]]$flags){$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
+function Ide([string]$tool,[string[]]$flags){$raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
 function Eval([string]$fn,$argsValue=@()){$argsFile=Join-Path $output 'native-args.json';[IO.File]::WriteAllText($argsFile,(ConvertTo-Json -InputObject $argsValue -Compress -Depth 40));return (Ide automation_evaluate @('--fn-source',$fn,'--args-file',$argsFile)).result.result}
 function Run([string]$action,$value=$null){return Eval $source @($action,$value)}
 function Check($condition,[string]$label){if(!$condition){throw $label};$checks.Add($label)}

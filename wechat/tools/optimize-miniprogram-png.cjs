@@ -1,7 +1,7 @@
 // Lossless packaging pass. Preserve decoded RGBA pixels and all image dimensions.
 // Sources stay in the repository; snapshots and audit metadata live outside the app.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto')
-const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
+const sharp=require('sharp')
 const project=path.resolve(__dirname,'../miniprogram'),output=path.resolve(__dirname,'../branding/package-optimization-20261009')
 const apply=process.argv.includes('--apply')
 const visit=directory=>fs.readdirSync(directory,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?visit(path.join(directory,entry.name)):[path.join(directory,entry.name)])

@@ -1,8 +1,8 @@
 // Export lightweight runtime sprites; original generated artwork stays in docs.
 const fs=require('node:fs'),path=require('node:path')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..'),out=path.join(root,'miniprogram/assets/rewards'),source=path.join(root,'docs/design/rewards-20261017')
-const generated='test-results/local-inputs/generated-images/'
+const generated=path.resolve(__dirname, '../../test-results/local-inputs/generated-images')
 async function main(){
  fs.mkdirSync(out,{recursive:true});fs.mkdirSync(source,{recursive:true});fs.mkdirSync(path.join(root,'miniprogram/pages/rewards/assets'),{recursive:true})
  const sprites=path.join(generated,'exec-0430505c-6a89-4e89-b89b-fbd86ecb3f74.png'),greeting=path.join(generated,'exec-6b4a0bfc-de0f-45d1-be29-6e54ed5e51ac.png')

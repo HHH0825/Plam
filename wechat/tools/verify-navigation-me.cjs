@@ -1,5 +1,5 @@
 // Screenshot actual component markup/styles, with no account or backend access.
-const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright'),sharp=require('sharp')
+const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'../miniprogram'),out=path.resolve(__dirname,'../docs/images/navigation-me-20261015')
 async function main(){
  fs.mkdirSync(out,{recursive:true})
@@ -25,7 +25,7 @@ async function main(){
    checks.push({width,large,state:selected,...result});await page.screenshot({path:path.join(out,`${selected}-${width}${large?'-large':''}-local.png`)})
   }
   // Reference is a low-resolution crop only for review; it is never a runtime asset.
-  const reference='test-results/local-inputs/screenshots/屏幕截图 2026-10-15 134702.png'
+  const reference=path.resolve(__dirname, '../../test-results/local-inputs/screenshots/屏幕截图 2026-10-15 134702.png')
   await sharp(reference).extract({left:642,top:214,width:34,height:25}).png().toFile(path.join(out,'reference-crop.png'))
   const svg=fs.readFileSync(path.resolve(__dirname,'../branding/navigation-me-20261015/my-cat.svg'))
   await sharp(svg).resize(256,256).flatten({background:'#FFFFFF'}).png().toFile(path.join(out,'my-cat-large.png'))

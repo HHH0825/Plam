@@ -1,10 +1,11 @@
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/subscriptions-native-project'))
 $out=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/subscriptions-20261021/native'))
 [IO.Directory]::CreateDirectory($out)|Out-Null
 if([IO.File]::ReadAllText((Join-Path $project 'config.js')) -notmatch '127\.0\.0\.1:9'){throw 'Offline only'}
 function Ide([string]$tool,[string[]]$flags){
- $raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String)
+ $raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String)
  $r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json
  if(!$r.ok -or ($r.result.success -eq $false)){throw $raw};return $r.result
 }

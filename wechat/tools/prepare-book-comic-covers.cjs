@@ -1,6 +1,6 @@
 // Compose the project's original vector icon drawings into small comic book covers.
 const fs=require('node:fs'),path=require('node:path')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..'),source=path.join(root,'branding/book-comic-20261017'),out=path.join(root,'miniprogram/pages/member-tools/assets/book-covers')
 fs.mkdirSync(source,{recursive:true});fs.mkdirSync(out,{recursive:true})
 const themes=[['daily',['notebook','cup','pen'],'#FFF4BF','#FBE2E9'],['travel',['suitcase','camera','umbrella'],'#E6EFF5','#FFF0B8'],['home',['lamp','chair','pan'],'#E3EDDE','#F9E0D3'],['hobby',['book','headphones','gamepad'],'#F9E1E8','#E4EAF8']]

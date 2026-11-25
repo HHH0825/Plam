@@ -1,4 +1,5 @@
-﻿$ErrorActionPreference='Stop'
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
+$ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../miniprogram'))
 $output=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/images/rewards-20261017'))
 [IO.Directory]::CreateDirectory($output)|Out-Null
@@ -8,7 +9,7 @@ $files+=@('components/cat-loading/index.wxml','components/cat-feedback/index.wxm
 foreach($file in $files){
  Start-Sleep -Milliseconds 1800
  $kind=[IO.Path]::GetExtension($file).Substring(1)
- $raw=(& 'wechat-devtools/wechatide.cmd' -c Codex ('compile_'+$kind) --project $project --file-path $file | Out-String)
+ $raw=(& $wechatIde -c Codex ('compile_'+$kind) --project $project --file-path $file | Out-String)
  if($raw.IndexOf('{') -lt 0){throw $raw}
  $r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json
  if(!$r.ok -or !$r.result.success){throw $raw}

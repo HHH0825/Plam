@@ -1,5 +1,5 @@
 // Compose existing vector character artwork; keep editable text and illustration.
-const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
+const fs=require('node:fs'),path=require('node:path'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..'),source=path.join(root,'branding/startup-share-20261020'),out=path.join(root,'miniprogram/pages/rewards/assets')
 async function main(){
  fs.mkdirSync(source,{recursive:true});fs.mkdirSync(out,{recursive:true})

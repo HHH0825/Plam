@@ -1,10 +1,11 @@
-﻿param([switch]$LoginPreviewOnly,[switch]$NavigationOnly)
+param([switch]$LoginPreviewOnly,[switch]$NavigationOnly)
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../miniprogram'))
 $output=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/images/theme-refresh-20261014'))
 $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'theme-refresh-native-check.js')).Replace("`r",'').Replace("`n",' ')
 $checks=[System.Collections.Generic.List[string]]::new()
-function Ide([string]$tool,[string[]]$flags){$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String);if($raw.IndexOf('{') -lt 0){throw $raw};$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
+function Ide([string]$tool,[string[]]$flags){$raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String);if($raw.IndexOf('{') -lt 0){throw $raw};$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
 function Run([string]$action,$value=$null){$argsFile=Join-Path $output 'native-args.json';[IO.File]::WriteAllText($argsFile,(ConvertTo-Json -InputObject @($action,$value) -Compress -Depth 30));return (Ide automation_evaluate @('--fn-source',$source,'--args-file',$argsFile)).result.result}
 function Shot([string]$name){Ide simulator_screenshot @('--path',(Join-Path $output ($name+'-native.png')),'--optimize','false','--wait','1')|Out-Null}
 function Check($ok,[string]$label){if(!$ok){throw $label};$checks.Add($label);if($NavigationOnly){[IO.File]::WriteAllText((Join-Path $output 'navigation-progress.json'),(ConvertTo-Json -InputObject @{complete=$false;checks=$checks;fixtureOnly=$true} -Depth 20))}}

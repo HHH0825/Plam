@@ -10,3 +10,26 @@ test-results/
 dist/
 *.log
 .idea/
+
+# Local configuration, databases, snapshots and signing material
+.env
+.env.*
+!.env.example
+.envrc
+!.envrc.example
+*.local.env
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db
+*.db-*
+*.p12
+*.pfx
+*.pem
+*.key
+*.credentials.json
+*.secret.json
+*.bak
+*.backup
+/backups/

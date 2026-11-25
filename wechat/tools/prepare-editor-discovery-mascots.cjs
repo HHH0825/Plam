@@ -1,5 +1,5 @@
 const fs = require('node:fs'), path = require('node:path')
-const sharp = require(process.env.PALM_SHARP_PATH || 'sharp')
+const sharp = require('sharp')
 const inputs = process.argv.slice(2)
 if (inputs.length !== 2) throw new Error('Pass camera and journal generated PNG paths.')
 const assets = path.resolve(__dirname, '../miniprogram/assets/editor-discovery')

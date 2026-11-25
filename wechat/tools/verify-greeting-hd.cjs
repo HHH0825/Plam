@@ -1,6 +1,6 @@
 // Offline production-template checks; no API requests or account data.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright')
-const helper=require('./verify-member-tools.cjs'),sharp=require('sharp')
+const helper=require('./verify-member-tools.cjs'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'../miniprogram'),out=path.resolve(__dirname,'../docs/images/greeting-hd-20261018'),design=path.resolve(__dirname,'../docs/design/greeting-hd-20261018')
 const read=f=>fs.readFileSync(path.join(root,f),'utf8')
 function css(f){return read(f).replace(/@import\s+["']([^"']+)["'];/g,(_,p)=>css(path.posix.normalize(path.posix.join(path.posix.dirname(f),p))))}

@@ -1,6 +1,6 @@
 // Contact sheets compare untouched reference crops with actual IDE screenshots.
 const fs=require('node:fs'),path=require('node:path')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const out=path.resolve(__dirname,'../docs/images/membership-sketch-20261015')
 async function native(name){const normalized=await sharp(path.join(out,name+'-native.png')).resize({width:390}).png().toBuffer();const m=await sharp(normalized).metadata();return sharp(normalized).extract({left:0,top:44,width:390,height:m.height-44}).png().toBuffer()}
 async function sheet(file,panels){

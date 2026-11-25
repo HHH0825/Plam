@@ -1,6 +1,6 @@
 // Export greeting-only artwork; original images stay outside the mini-program.
 const path=require('node:path'),fs=require('node:fs')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..')
 async function exportGreetings(){
  const out=path.join(root,'miniprogram/assets/rewards')

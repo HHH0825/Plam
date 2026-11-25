@@ -1,4 +1,4 @@
-const fs=require('node:fs'),path=require('node:path'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
+const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
 const inputs=process.argv.slice(2)
 if(inputs.length!==2) throw new Error('Pass generated kitten and wash PNG paths.')
 const root=path.resolve(__dirname,'../miniprogram/assets/me'),originals=path.resolve(__dirname,'../branding/me-refresh')

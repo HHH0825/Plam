@@ -29,7 +29,7 @@ async function main(){
    if(label==='books-sort')assert.equal(await p.locator('.book-drag-handle').count(),4)
    await p.screenshot({path:path.join(out,label+'-'+width+(large?'-large':'')+'.png'),fullPage:true});checks.push({label,width,large,passed:true})
   }
-  const sharp=require('sharp'),assets=[]
+  const sharp=require(process.env.PALM_SHARP_PATH || 'sharp'),assets=[]
   for(const id of ['daily','travel','home','hobby']){const file=path.join(root,'pages/member-tools/assets/book-covers',id+'.png'),meta=await sharp(file).metadata();assert.equal(meta.width,192);assert.equal(meta.height,252);assert.ok(meta.hasAlpha);assert.ok(fs.statSync(file).size<=12*1024);assets.push({id,bytes:fs.statSync(file).size,width:meta.width,height:meta.height})}
   for(const dpr of [2,3]){const dense=await browser.newPage({deviceScaleFactor:dpr,viewport:{width:390,height:150}});await dense.goto(pathToFileURL(entry).href);await dense.setContent('<style>body{margin:20px;display:flex;gap:20px;background:#fffef5}img{width:64px;height:84px}</style>'+assets.map(a=>'<img src="'+pathToFileURL(path.join(root,'pages/member-tools/assets/book-covers',a.id+'.png')).href+'">').join(''));await dense.evaluate(()=>Promise.all([...document.images].map(i=>i.decode())));await dense.screenshot({path:path.join(out,'covers-'+dpr+'x.png')});await dense.close();checks.push({label:'covers-'+dpr+'x',passed:true,sourcePixelsPerDisplayedPixel:3})}
   await sharp({create:{width:4*222,height:292,channels:4,background:'#FFFDF5'}}).composite(assets.map((a,i)=>({input:path.join(root,'pages/member-tools/assets/book-covers',a.id+'.png'),left:15+i*222,top:20}))).png().toFile(path.join(out,'comic-covers.png'))

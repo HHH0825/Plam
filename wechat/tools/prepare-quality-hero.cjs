@@ -1,6 +1,6 @@
 // Lossless re-encoding only: preserve size, alpha and every visible pixel.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto')
-let sharp;try{sharp=require('sharp')}catch(_){sharp=require('sharp')}
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..'),source=path.join(root,'branding/code-quality-20261019/login-hero-master.png'),target=path.join(root,'miniprogram/pages/login/assets/hero.png')
 async function prepare(){
  const input=fs.readFileSync(source),before=await sharp(input).ensureAlpha().raw().toBuffer({resolveWithObject:true})

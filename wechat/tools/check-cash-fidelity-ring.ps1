@@ -1,8 +1,9 @@
-﻿$ErrorActionPreference='Stop'
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
+$ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../miniprogram'))
 $output=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/images/cash-fidelity-20261014'))
 $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'cash-fidelity-native-check.js')).Replace("`r",'').Replace("`n",' ')
-function Ide([string]$tool,[string[]]$flags){$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
+function Ide([string]$tool,[string[]]$flags){$raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String);$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
 function Run([string]$action,$value=$null){$argsFile=Join-Path $output 'native-args.json';[IO.File]::WriteAllText($argsFile,(ConvertTo-Json -InputObject @($action,$value) -Compress -Depth 30));return (Ide automation_evaluate @('--fn-source',$source,'--args-file',$argsFile)).result.result}
 $fixture=(& node (Join-Path $PSScriptRoot 'cash-redesign-native-fixture.cjs')|Out-String)|ConvertFrom-Json
 try{

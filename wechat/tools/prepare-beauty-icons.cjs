@@ -1,5 +1,5 @@
 // Ten distinct cosmetics silhouettes in the existing editable vector family.
-const fs=require('node:fs'),path=require('node:path'),sharp=require('sharp')
+const fs=require('node:fs'),path=require('node:path'),sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(__dirname,'..'),source=path.join(root,'branding/beauty-icons-20261018'),output=path.join(root,'miniprogram/assets/item-covers')
 const P=(d,fill='none')=>`<path d="${d}" fill="${fill}"/>`,R=(x,y,w,h,r=8,fill='#FFFEFA')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}"/>`,C=(x,y,r,fill='#FFFEFA')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`
 const y='#FFE378',pink='#F7C9D9',g='#E9EDF0',white='#FFFEFA',sage='#E5F1EA'

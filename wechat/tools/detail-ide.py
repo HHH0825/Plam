@@ -1,4 +1,5 @@
 """Run the authorized local IDE verifier. Never export page credentials."""
+import os
 import json
 from pathlib import Path
 import subprocess
@@ -7,7 +8,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 root = Path(__file__).resolve().parents[1]
 tool = sys.argv[1]
-cmd = ['wechat-devtools/wechatide.cmd', '-c', 'codex', tool,
+cmd = [os.environ.get('PALM_WECHAT_IDE', 'wechatide.cmd'), '-c', 'codex', tool,
        '--project', str(root / 'miniprogram')]
 if tool == 'automation_evaluate':
     source = Path(sys.argv[2]).read_text(encoding='utf-8').replace('\n', ' ').replace('\r', ' ')

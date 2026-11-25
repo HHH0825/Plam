@@ -1,10 +1,11 @@
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/beauty-icons-native-project'))
 $out=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/tabbar-return/native'))
 [IO.Directory]::CreateDirectory($out)|Out-Null
 if([IO.File]::ReadAllText((Join-Path $project 'config.js')) -notmatch '127\.0\.0\.1:9'){throw 'Offline project required'}
 $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'tabbar-return-native.js')).Replace("`r",'').Replace("`n",' ')
-function Ide([string]$tool,[string[]]$flags){$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex $tool --project $project @flags|Out-String);if($raw.IndexOf('{') -lt 0){throw $raw};$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
+function Ide([string]$tool,[string[]]$flags){$raw=(& $wechatIde -c Codex $tool --project $project @flags|Out-String);if($raw.IndexOf('{') -lt 0){throw $raw};$r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json;if(!$r.ok -or !$r.result.success){throw $raw};return $r.result}
 $checks=@()
 $cases=@(@('ledger','/pages/ledger-history/index'),@('ledger','/pages/member-tools/index?mode=budgets'),@('items','/pages/item/index?id=1'),@('items','/pages/wishlist/index'),@('statistics','/pages/ledger-report/index'),@('statistics','/pages/insights/index'),@('me','/pages/profile/index'),@('me','/pages/membership/index'))
 foreach($case in $cases){

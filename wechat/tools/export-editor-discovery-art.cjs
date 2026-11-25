@@ -1,5 +1,5 @@
 // Original editable paper shapes and UI icons; watercolor mascots are separate PNGs.
-const fs = require('node:fs'), path = require('node:path'), sharp = require(process.env.PALM_SHARP_PATH || 'sharp')
+const fs = require('node:fs'), path = require('node:path'), sharp = require('sharp')
 const directory = path.resolve(__dirname, '../miniprogram/assets/editor-discovery')
 function paper(fill, dashed) {
   const width = 360, height = 148

@@ -1,6 +1,6 @@
 // Export the editable brand artwork without changing historical assets.
 const fs = require('node:fs'), path = require('node:path')
-const sharp = require(process.env.PALM_SHARP_PATH || 'sharp')
+const sharp = require('sharp')
 const directory = path.resolve(__dirname, '../miniprogram/assets/brand')
 async function main() {
   const icon = fs.readFileSync(path.join(directory, 'paw-ledger-icon.svg'))

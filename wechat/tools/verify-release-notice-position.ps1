@@ -1,8 +1,9 @@
-﻿$ErrorActionPreference='Stop'
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
+$ErrorActionPreference='Stop'
 $project=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/release-notice-native-project'))
 $out=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../docs/images/release-notice-20261018'))
 $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'release-notice-position.js')).Replace("`r",'').Replace("`n",' ')
-$raw=(& 'wechat-devtools/wechatide.cmd' -c Codex automation_evaluate --project $project --fn-source $source|Out-String)
+$raw=(& $wechatIde -c Codex automation_evaluate --project $project --fn-source $source|Out-String)
 $r=$raw.Substring($raw.IndexOf('{'))|ConvertFrom-Json
 if(!$r.ok -or !$r.result.success){throw $raw}
 $s=$r.result.result.result

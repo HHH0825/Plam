@@ -33,7 +33,7 @@
 重新构建（从项目根目录执行）：
 
 ```powershell
-Set-Location .
+# 在仓库根目录执行
 Set-Location wechat\deploy\cloudbase\bridge
 npm ci --omit=dev
 Set-Location ..\..\..\..

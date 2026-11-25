@@ -1,6 +1,6 @@
 // Prepare independent transparent hero art; never overwrite historical assets.
 const fs = require('node:fs'), path = require('node:path')
-const sharp = require(process.env.PALM_SHARP_PATH || 'sharp')
+const sharp = require('sharp')
 const inputs = process.argv.slice(2)
 const root = path.resolve(__dirname, '../miniprogram/assets/collection-hero')
 const originals = path.resolve(__dirname, '../branding/collection-hero')

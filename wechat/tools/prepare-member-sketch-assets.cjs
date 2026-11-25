@@ -1,7 +1,7 @@
 // Production packaging: isolate the approved reference's small raster drawings.
 // Keep enclosed white areas (cat faces / book pages); remove only connected paper.
 const fs=require('node:fs'),path=require('node:path')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const reference=process.argv[2]
 if(!reference)throw Error('Pass the original approved sketch PNG')
 const out=path.resolve(__dirname,'../miniprogram/assets/membership'),evidence=path.resolve(__dirname,'../docs/images/membership-sketch-20261015')

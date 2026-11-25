@@ -1,6 +1,6 @@
 // Offline render of the actual WXML/WXSS, with isolated membership states.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{createRequire}=require('node:module'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright')
-const sharp=require('sharp')
+const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
 const root=path.resolve(process.env.PALM_VISUAL_ROOT||path.join(__dirname,'../miniprogram')),out=path.resolve(__dirname,'../docs/images/membership-tools-20261015'),base=pathToFileURL(root).href
 const fixture=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../test-results/member-fixture.json'),'utf8'))
 const member=require('../miniprogram/utils/member'),read=f=>fs.readFileSync(path.join(root,f),'utf8')

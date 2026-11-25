@@ -41,7 +41,7 @@
 新增或重新导出插画后，可先运行引用检查，再运行无损压缩。重新导出可能恢复原来的较大 PNG；应再次查看实际预览/上传包体，保留余量。不要通过开启大包支持掩盖上传限制，也不要删除仍被动态路径引用的素材。
 
 ```powershell
-$env:PALM_SHARP_PATH='sharp'
+# 可选：将 PALM_SHARP_PATH 设为本机 sharp 模块的位置
 node wechat/tools/optimize-miniprogram-png.cjs --apply
 node wechat/tools/verify-miniprogram-package.cjs
 ```

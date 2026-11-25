@@ -1,4 +1,5 @@
 param([switch]$SkipCompile)
+$wechatIde = if ($env:PALM_WECHAT_IDE) { $env:PALM_WECHAT_IDE } else { 'wechatide.cmd' }
 $ErrorActionPreference = 'Stop'
 $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/beauty-icons-native-project'))
 $output = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../test-results/launch-native'))
@@ -11,7 +12,7 @@ foreach ($package in $app.subPackages) { foreach ($page in $package.pages) { $ro
 $checks = [System.Collections.Generic.List[object]]::new()
 if (!$SkipCompile) { foreach ($name in $routes) {
     foreach ($ext in @('wxml', 'wxss')) {
-        $raw = (& 'wechat-devtools/wechatide.cmd' -c Codex ('compile_' + $ext) --project $project --file-path ($name + '.' + $ext) | Out-String)
+        $raw = (& $wechatIde -c Codex ('compile_' + $ext) --project $project --file-path ($name + '.' + $ext) | Out-String)
         if ($raw.IndexOf('{') -lt 0) { throw $raw }
         $result = $raw.Substring($raw.IndexOf('{')) | ConvertFrom-Json
         if (!$result.ok -or !$result.result.success) { throw $raw }

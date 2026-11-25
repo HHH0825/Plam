@@ -45,7 +45,7 @@ COS SecretId 是签名中的身份标识，上传表单必须带它；SecretKey 
 在项目目录 PowerShell 运行下列命令，按提示在终端输入这一对密钥（不是 CloudBase API Key）：
 
 ```powershell
-Set-Location .
+# 在仓库根目录执行
 .\wechat\.venv\Scripts\python.exe .\wechat\deploy\cloudbase\photo_probe.py
 ```
 

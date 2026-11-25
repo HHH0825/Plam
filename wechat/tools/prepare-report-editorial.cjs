@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path')
-const sharp=require(process.env.PALM_SHARP_PATH || 'sharp')
+const sharp=require('sharp')
 const root=path.resolve(__dirname,'..'),out=path.join(root,'miniprogram/assets/report-editorial'),original=path.join(root,'branding/report-editorial')
 fs.mkdirSync(out,{recursive:true});fs.mkdirSync(original,{recursive:true})
 const inputs=process.argv.slice(2)
