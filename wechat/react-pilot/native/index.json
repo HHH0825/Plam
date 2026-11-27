@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "收纳位置",
+  "usingComponents": {
+    "cat-loading": "/components/cat-loading/index",
+    "cat-feedback": "/components/cat-feedback/index",
+    "session-status": "/components/session-status/index",
+    "storage-react": "./react-build/components/storage-locations/index"
+  }
+}

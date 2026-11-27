@@ -1,0 +1,8 @@
+<view class="member-themed {{memberThemeClass}} page storage-page" style="{{memberThemeStyle}}">
+  <storage-react id="storage-react" props="{{storageReactProps}}" />
+  <view wx:if="{{loading}}" class="empty">
+    <cat-loading label="正在找物品的小窝…"/>
+  </view>
+</view>
+<cat-feedback id="cat-feedback"/>
+<include src="../../templates/session-status.wxml"/>

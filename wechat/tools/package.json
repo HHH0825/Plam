@@ -1,0 +1,7 @@
+{
+  "name": "catpaw-wechat-build-tools",
+  "private": true,
+  "dependencies": {
+    "terser": "5.44.1"
+  }
+}

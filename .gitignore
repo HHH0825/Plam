@@ -8,6 +8,7 @@ node_modules/
 playwright-report/
 test-results/
 dist/
+/wechat/react-pilot/.swc/
 *.log
 .idea/
 

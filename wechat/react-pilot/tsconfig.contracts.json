@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "noEmit": false,
+    "rootDir": "./src/contracts",
+    "outDir": "./dist/contracts"
+  },
+  "include": ["src/contracts"]
+}

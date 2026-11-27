@@ -2,16 +2,27 @@ const test = require('node:test'), assert = require('node:assert/strict'), fs = 
 const view = require('../miniprogram/utils/view')
 const tick = () => new Promise(resolve => setImmediate(resolve))
 const event = id => ({currentTarget:{dataset:{id}}})
-function harness() {
-  const app = {globalData:{token:'alice'},requireSession:()=>true}, calls=[], confirmations=[], toasts=[], navigations=[]
+function harness({ localMode = false, options } = {}) {
+  const app = {globalData:{token:'alice',localMode},requireSession:()=>true}, calls=[], confirmations=[], toasts=[], navigations=[]
+  let scope = 'synthetic-storage'
   let responder = async route => route === '/items' ? Array.from({length:52},(_,n)=>({id:n+1,name:'物品'+(n+1),category:'数码',icon_type:'digital',status:'active',revision:n,storage_location_id:n===0?1:null,storage_location_name:n===0?'书桌':null})) : {locations:[{id:1,name:'书桌',revision:0,count:1},{id:2,name:'衣柜',revision:3,count:0}],unassigned_count:51}
   const api={request:(route,options={})=>{calls.push({route,options});return responder(route,options)},photoCache:()=>({release(){},load:async()=>'/thumb'})}
   const wx={showModal:o=>confirmations.push(o),showToast:o=>toasts.push(o),navigateBack:()=>navigations.push('back')}
   let definition
-  vm.runInNewContext(fs.readFileSync(require.resolve('../miniprogram/pages/storage-locations/index.js'),'utf8'),{Page:p=>definition=p,getApp:()=>app,wx,require:name=>name.endsWith('/member')?require('./member-stub.cjs'):name.endsWith('/api')?api:name.endsWith('/view')?view:{navigate:(_p,url)=>navigations.push(url),resetNavigation(){}},console})
+  const context = {Page:p=>definition=p,getApp:()=>app,wx,console}
+  const controller = {exports:{}}
+  vm.runInNewContext(fs.readFileSync(require.resolve('../miniprogram/pages/storage-locations/controller.js'),'utf8'),
+    {...context,module:controller,require:name=>{
+      if(name.endsWith('/api'))return api
+      if(name.endsWith('/view'))return view
+      if(name.endsWith('/runtime'))return {scope:()=>scope}
+      return {navigate:(_p,url)=>navigations.push(url),resetNavigation(){}}
+    }})
+  vm.runInNewContext(fs.readFileSync(require.resolve('../miniprogram/pages/storage-locations/index.js'),'utf8'),
+    {...context,require:name=>name==='./controller'?controller.exports:require('./member-stub.cjs')})
   const page={...definition,data:structuredClone(definition.data),setData(patch){for(const [key,value] of Object.entries(patch)){const parts=key.split('.');let obj=this.data;while(parts.length>1)obj=obj[parts.shift()];obj[parts[0]]=value}}}
-  page.onLoad({});page.onShow()
-  return {page,app,calls,confirmations,toasts,navigations,respond:f=>responder=f}
+  page.onLoad(options);page.onShow()
+  return {page,app,calls,confirmations,toasts,navigations,respond:f=>responder=f,setScope:value=>scope=value}
 }
 test('location selections survive search and stop at 50; already-here items cannot be picked',async()=>{
   const h=harness();await tick();h.page.enter(event(1));h.page.beginAdd();h.page.tapItem(event(1));assert.equal(h.page.data.chosenCount,0)
@@ -50,6 +61,62 @@ test('confirmation cancellation and hiding during confirmation never send a move
   let pending=h.page.addSelected();h.confirmations.pop().success({confirm:false});await pending
   pending=h.page.addSelected();h.page.onHide();h.confirmations.pop().success({confirm:true});await pending
   assert.equal(h.calls.filter(c=>c.route.endsWith('/assign')).length,0)
+})
+test('repeated taps open one confirmation and write once',async()=>{
+  const h=harness();await tick();h.page.enter(event(1));h.page.beginAdd();h.page.tapItem(event(2))
+  const move=h.page.addSelected()
+  await h.page.addSelected()
+  assert.equal(h.confirmations.length,1)
+  h.confirmations.shift().success({confirm:true})
+  await move
+  assert.equal(h.calls.filter(call=>call.route.endsWith('/assign')).length,1)
+})
+test('restoring a different local store invalidates an old confirmation even with the same token',async()=>{
+  const h=harness({localMode:true});await tick()
+  h.page.enter(event(1));h.page.beginAdd();h.page.tapItem(event(2))
+  const move=h.page.addSelected()
+  h.setScope('restored-storage')
+  h.confirmations.shift().success({confirm:true})
+  await move
+  assert.equal(h.calls.filter(call=>call.route.endsWith('/assign')).length,0)
+  await h.page.onShow()
+  assert.equal(h.page.data.chosenCount,0)
+  assert.equal(h.page.data.mode,'locations')
+  assert.equal(h.page.data.ready,true)
+})
+test('a pending write reloads after returning and cannot start a second write',async()=>{
+  const h=harness({localMode:true});await tick()
+  let complete
+  h.respond(route=>route==='/storage-locations/assign'?new Promise(resolve=>complete=resolve):
+    route==='/items'?[]:{locations:[],unassigned_count:0})
+  h.page.enter(event(1));h.page.beginAdd();h.page.tapItem(event(2))
+  const move=h.page.addSelected()
+  h.confirmations.shift().success({confirm:true})
+  await tick()
+  h.page.onHide()
+  const show=h.page.onShow()
+  await h.page.addSelected()
+  assert.equal(h.calls.filter(call=>call.route.endsWith('/assign')).length,1)
+  complete({})
+  await Promise.all([move,show])
+  assert.equal(h.page.data.loading,false)
+  assert.equal(h.page.data.ready,true)
+})
+test('native detail and single-assignment entry parameters keep their behavior',async()=>{
+  const detail=harness({options:{locationId:'1'}})
+  await tick()
+  assert.equal(detail.page.data.mode,'items')
+  assert.equal(detail.page.data.locationId,1)
+
+  const assign=harness({options:{assignItemId:'2'}})
+  await tick()
+  const action=assign.page.enter(event(1))
+  assign.confirmations.shift().success({confirm:true})
+  await action
+  const request=assign.calls.find(call=>call.route.endsWith('/assign'))
+  assert.equal(request.options.data.storage_location_id,1)
+  assert.equal(request.options.data.items[0].id,2)
+  assert.deepEqual(assign.navigations,['back'])
 })
 test('unavailable editor picker preserves the original association and ignores old-account results',async()=>{
   const app={globalData:{token:'alice'}},page={_token:'alice',data:{form:{storage_location_id:7,storage_location_name:'原来的抽屉'},storageLocations:[],locationsReady:false},current(token=this._token){return token===app.globalData.token},setData(p){Object.assign(this.data,p)}}

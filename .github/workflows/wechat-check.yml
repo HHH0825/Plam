@@ -1,0 +1,39 @@
+name: Catpaw mini program checks
+
+on:
+  pull_request:
+    paths:
+      - 'wechat/**'
+      - '.github/workflows/wechat-check.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'wechat/**'
+      - '.github/workflows/wechat-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  wechat-check:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: wechat/react-pilot/.node-version
+          cache: npm
+          cache-dependency-path: |
+            wechat/tools/package-lock.json
+            wechat/react-pilot/package-lock.json
+      - name: Install locked dependencies
+        run: |
+          npm ci --prefix wechat/tools --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm ci --prefix wechat/react-pilot --ignore-scripts
+      - name: Build and check both candidates
+        run: npm run build:weapp --prefix wechat/react-pilot
+      - name: Run mini program regression tests
+        run: node --test 'wechat/tests/*.test.cjs'

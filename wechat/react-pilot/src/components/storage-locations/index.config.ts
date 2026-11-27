@@ -1,0 +1,1 @@
+export default { styleIsolation: 'isolated' }

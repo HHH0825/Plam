@@ -1,8 +1,11 @@
 // Produce reviewable projects only. This command cannot upload or deploy.
-const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto')
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto')
+const {minify}=require('terser')
 const workspace=path.resolve(__dirname,'../..'),root=path.join(workspace,'wechat/miniprogram'),out=path.join(workspace,'test-results/local-builds'),sizes=require('./package-sizes.cjs')
-const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex'),context={}
-vm.runInNewContext(fs.readFileSync(path.join(workspace,'test-results/wechat-terser.cjs'),'utf8'),context)
+const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex')
+async function minifyScript(raw){
+ return Buffer.from((await minify(raw.toString(),{compress:{passes:1},mangle:{toplevel:true},keep_fnames:true,keep_classnames:true,format:{comments:/@license|@preserve/}})).code+'\n')
+}
 const css=s=>s.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').replace(/\s*([{}:;,>])\s*/g,'$1').replace(/;}/g,'}').trim()
 function writeProject(folder,entries){
  if(!folder.startsWith(out+path.sep))throw Error('Unsafe generated project path')
@@ -48,7 +51,7 @@ async function build(variant){
  const app=JSON.parse(entries.get('app.json'));pruneJs(entries,app)
  if(variant==='local')for(const [name,raw]of entries)if(name.endsWith('.js')&&/wx\.(?:cloud|login|request|uploadFile|downloadFile|requestPayment|requestVirtualPayment)\b|Bearer\s|session_token|CLOUDBASE_ENV_ID/.test(raw.toString()))throw Error('Network/auth/payment remains in final local build: '+name)
  const compiled=new Map(),files=[]
- for(const [name,raw]of entries){let built=raw;if(name.endsWith('.js')&&name!=='utils/local-item-list.js'&&!name.startsWith('local-core/')&&!name.startsWith('pages/local-data/lib/'))built=Buffer.from((await context.Terser.minify(raw.toString(),{compress:{passes:1},mangle:{toplevel:true},keep_fnames:true,keep_classnames:true,format:{comments:/@license|@preserve/}})).code+'\n');else if(name.endsWith('.json'))built=Buffer.from(JSON.stringify(JSON.parse(raw))+'\n');else if(name.endsWith('.wxss'))built=Buffer.from(css(raw.toString())+'\n');compiled.set(name,built);files.push({name,sourceBytes:raw.length,bytes:built.length,sourceSha256:sha(raw),sha256:sha(built)})}
+ for(const [name,raw]of entries){let built=raw;if(name.endsWith('.js')&&name!=='utils/local-item-list.js'&&!name.startsWith('local-core/')&&!name.startsWith('pages/local-data/lib/'))built=await minifyScript(raw);else if(name.endsWith('.json'))built=Buffer.from(JSON.stringify(JSON.parse(raw))+'\n');else if(name.endsWith('.wxss'))built=Buffer.from(css(raw.toString())+'\n');compiled.set(name,built);files.push({name,sourceBytes:raw.length,bytes:built.length,sourceSha256:sha(raw),sha256:sha(built)})}
  const sourcePackages=sizes.measure(files,app,'sourceBytes'),builtPackages=sizes.measure(files,app);sizes.check(sourcePackages);sizes.check(builtPackages)
  writeProject(path.join(out,variant+'-source'),entries);writeProject(path.join(out,variant),compiled)
  const manifest={variant,publicationMode:'direct-local',automaticCloudMigration:false,sourceProject:path.join(out,variant+'-source'),project:path.join(out,variant),sourcePackages,builtPackages,pages:app.pages.length+app.subPackages.reduce((n,p)=>n+p.pages.length,0),inputs,files,uploaded:false,deployed:false}
@@ -56,4 +59,4 @@ async function build(variant){
 }
 async function main(){fs.mkdirSync(out,{recursive:true});console.log(JSON.stringify(await build('local')))}
 if(require.main===module)main().catch(e=>{console.error(e);process.exitCode=1})
-module.exports={build,localize,pruneJs}
+module.exports={build,localize,pruneJs,minifyScript,writeProject}

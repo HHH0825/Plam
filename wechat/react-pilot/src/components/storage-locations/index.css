@@ -1,0 +1,130 @@
+.sl {
+  --sl-ink: var(--accent, #292929);
+  --sl-accent: var(--member-accent, #ffe16a);
+  color: var(--sl-ink);
+  line-height: 1.5;
+}
+
+.sl-heading, .sl-detail-heading, .sl-toolbar, .sl-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sl-heading, .sl-detail-heading { justify-content: space-between; }
+.sl-heading { margin: 8px 0 22px; }
+.sl-detail-heading, .sl-actions { flex-wrap: wrap; }
+.sl-detail-heading { margin: 8px 0; }
+.sl-toolbar { flex-wrap: wrap; margin: 14px 0; }
+.sl-title { font-size: 27px; font-weight: 750; }
+.sl-section-title { font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
+.sl-muted { color: #777; font-size: 13px; }
+.sl-mascot { width: 66px; height: 66px; flex: none; }
+
+.sl-search {
+  box-sizing: border-box;
+  flex: 1 1 120px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f7f7f7;
+  font-size: 14px;
+}
+
+.sl-button, .sl-text, .sl-row {
+  box-sizing: border-box;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 12px;
+  color: var(--sl-ink, #292929);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sl .sl-button, .sl .sl-text { width: auto; min-width: 0; max-width: 100%; }
+.sl-button { background: var(--sl-accent, #ffe16a); font-weight: 650; }
+.sl-light { background: #fff; border: 1px solid #e7e4e1; }
+.sl-text { display: inline-flex; align-items: center; background: transparent; color: #826713; }
+.sl-danger { color: #af526b; }
+.sl-button::after, .sl-text::after, .sl-row::after { border: 0; }
+.sl-button:disabled, .sl-text:disabled, .sl-row:disabled { opacity: .55; }
+
+.sl .sl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: none;
+  min-height: 78px;
+  margin: 10px 0;
+  padding: 14px 12px;
+  border: 1px solid #e7e4e1;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 2px 0 #fff7d5;
+  text-align: left;
+}
+
+.sl-row-copy { flex: 1; min-width: 0; }
+.sl-row-title { display: block; font-size: 16px; font-weight: 650; overflow-wrap: anywhere; }
+.sl-count { color: #777; font-size: 13px; white-space: nowrap; }
+.sl-arrow { color: #aaa; flex: none; font-size: 24px; }
+.sl-location-icon, .sl-photo { flex: none; border-radius: 12px; background: #fff7d5; }
+.sl-location-icon { box-sizing: border-box; width: 38px; height: 38px; padding: 5px; }
+.sl-photo { width: 46px; height: 46px; }
+.sl-question { display: flex; align-items: center; justify-content: center; color: #8a6b25; font-size: 21px; }
+.sl-pill { margin-left: 5px; padding: 2px 6px; border-radius: 9px; background: #fff2df; font-size: 12px; }
+.sl-idle { background: #eeeaf4; }
+.sl-selected { border-color: #ad8524; background: #fffaf0; }
+.sl-check {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #c9b47c;
+}
+.sl-checked { background: #ffe16a; color: #423514; }
+.sl-batch { margin-top: 14px; }
+
+.sl-message, .sl-form {
+  padding: 14px;
+  border-radius: 16px;
+  margin: 10px 0;
+  background: #fff7d9;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.sl-form { background: #fffaf0; border: 1px solid #eee2bd; }
+.sl-form .sl-search, .sl-dialog .sl-search { margin: 12px 0; }
+.sl-empty { padding: 16px; text-align: center; color: #777; font-size: 14px; }
+
+.sl-mask {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(31, 25, 17, .34);
+}
+.sl-dialog {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 520px;
+  padding: 16px 18px calc(14px + env(safe-area-inset-bottom));
+  border-radius: 20px 20px 0 0;
+  background: #fff;
+}
+.sl-targets { max-height: 42vh; }
+.sl .sl-target { min-height: 44px; margin: 0 0 6px; overflow-wrap: anywhere; white-space: normal; }
+
+@media (max-width: 350px) {
+  .sl-heading, .sl-toolbar { gap: 6px; }
+  .sl .sl-row { gap: 7px; padding: 12px 8px; }
+  .sl-button, .sl-text { padding-left: 8px; padding-right: 8px; }
+}

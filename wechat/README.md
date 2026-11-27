@@ -94,28 +94,39 @@
 | `miniprogram/pages/local-data/` | 资料管理、完整备份与恢复界面；最终构建裁剪历史迁移代码 |
 | `local-core/` | 早期本地模块的兼容导入入口及说明 |
 | `tools/local-template/` | 最终纯本地启动与业务入口模板 |
+| `react-pilot/` | 收纳位置 React 试点，包含共享契约和原生桥 |
 | `tests/`、`tools/` | 回归测试、纯本地构建与验收工具 |
 | `docs/`、`branding/` | 使用文档、宣传素材、插画源文件与素材清单 |
 
-建议使用 Node.js 18+、微信开发者工具。构建所需 Terser 可从已安装的开发者工具提取，需 Python 3（仅用于工具，不是运行小程序的前提）。在仓库根目录运行：
+使用 Node.js 24.18.0、npm 11.16.0 和微信开发者工具。压缩器随工具锁文件安装。在仓库根目录构建原生纯本地版。
 
 ```powershell
-# 首次准备：按实际安装位置替换 app.asar 路径
-python wechat/tools/extract-wechat-terser.py "wechat-devtools/resources/app.asar"
-
-# 生成纯本地项目，并执行前端回归
+npm ci --prefix wechat/tools --ignore-scripts
 node wechat/tools/build-local-variants.cjs
-node --test wechat/tests/*.test.cjs
 ```
 
 用微信开发者工具导入 `test-results/local-builds/local-source/`（可编辑纯本地项目）或 `test-results/local-builds/local/`（压缩项目），替换为自己的 AppID。**正式编译与上传使用这两个构建目录**，不要把仍含历史兼容实现的 `wechat/miniprogram/` 直接当成最终发布包。构建会检查业务网络／云登录／支付残留及包体预算；过渡构建已禁用。
 
 当前版本无需配置云环境、AppSecret、数据库或支付密钥。生成目录、日志、数据库、个人设置与交付 ZIP 不提交到 Git；源代码、测试和运行素材完整保留。
 
+### React 收纳位置试点
+
+安装试点依赖后，构建命令会同时生成原生版和试点版供对照。完整前端回归在构建后运行。
+
+```powershell
+npm ci --prefix wechat/tools --ignore-scripts
+npm ci --prefix wechat/react-pilot --ignore-scripts
+npm run build:weapp --prefix wechat/react-pilot
+node --test 'wechat/tests/*.test.cjs'
+```
+
+在微信开发者工具导入 `test-results/local-builds/local-react-pilot/` 做隔离预览。AppID 只改本机预览副本，保留原始构建以便按清单核对哈希。组件开发可用 `npm run dev:weapp --prefix wechat/react-pilot` 监听 Taro 输出，再运行完整构建更新可导入项目。要回退到原生收纳页面，使用同次生成的 `local/`，两种构建使用同一资料与备份格式。试点真机状态见[验收结果](docs/react-refactor/results.md)。
+
 ## 构建与更多文档
 
 - [本地版使用与备份](docs/local-first-usage.md) · [2.0.0 发布与构建说明](docs/local-first-release.md)
 - [本地数据与恢复实现](local-core/README.md) · [测试记录与限制](docs/local-first-implementation.md) · [本地隐私说明](docs/local-first-privacy.txt)
+- [工程成熟度评估与 React 收纳位置试点设计](docs/react-refactor/README.md)
 - [GitHub 源码同步](docs/github-upload.md) · [云服务关闭指引](docs/local-first-cloud-shutdown.md) · [宣传素材来源](docs/promo/README.md)
 - 历史资料：[订阅／分期更新](docs/subscriptions-20261021.md) · [开发历史](docs/development-history.md)
 
