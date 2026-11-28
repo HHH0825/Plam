@@ -24,7 +24,7 @@ async function uploadPhoto(itemId,path,options={}){
   const raw=await r.io.read('photos/'+name);if(!raw||raw.length===0||raw.length>5*1024*1024)throw Error('照片不能为空或超过5MB')
   let thumb=name
   if(Math.max(info.width,info.height)>320){const result=await native(r.wx,'compressImage',{src:path,quality:85,compressedWidth:Math.round(info.width*320/Math.max(info.width,info.height)),compressedHeight:Math.round(info.height*320/Math.max(info.width,info.height))});thumb='photo-'+nonce()+'.jpg';await r.io.copyFrom(result.tempFilePath,'photos/'+thumb);if(!await r.io.read('photos/'+thumb))throw Error('缩略图保存失败')}
-  it.photo_key=name;it.thumb_key=thumb;it.revision++;tx.set('items',items)
+  it.photo_key=name;it.thumb_key=thumb;it.cover_mode='photo';it.revision++;tx.set('items',items)
  })
  options.onProgress?.(100);require('../utils/display-cache').clear();return r.business.request('/items/'+itemId)
 }

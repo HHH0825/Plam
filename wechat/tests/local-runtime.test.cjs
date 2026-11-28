@@ -51,3 +51,20 @@ test('a cleanup failure preserves the external-save receipt and can be retried w
   wx.getFileSystemManager=originalFs;r.io.remove=remove;assert.equal((await manager.overview()).cleanupPending,false);await assert.rejects(fs.access(file.path));assert.equal((await manager.overview()).lastBackup.savedAt,saved.savedAt);await r.store.verify()
  }finally{runtime.resetControl();delete global.wx;await removeTemp(root)}
 })
+
+test('a committed photograph becomes the cover, and an icon save releases it',async()=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'catpaw-cover-')),runtime=require('../miniprogram/local-core/runtime');runtime.resetControl();global.wx=mockWx(root);wx.getImageInfo=o=>o.success({type:'jpeg',width:120,height:120})
+ try{
+  const r=await runtime.open(),photo=path.join(root,'prepared.jpg');await fs.writeFile(photo,new Uint8Array([0xff,0xd8,0xff,0xd9]))
+  const created=await r.business.request('/items',{method:'POST',data:{name:'封面',category:'其他',purchase_date:'2026-01-01',purchase_price:'10.00',cover_mode:'icon',cover_icon_key:'other'}})
+  assert.equal(created.cover_mode,'icon');assert.equal(created.photo_url,null)
+  const uploaded=await runtime.uploadPhoto(created.id,photo,{revision:created.revision})
+  assert.equal(uploaded.cover_mode,'photo');assert.ok(uploaded.photo_url);assert.ok(uploaded.photo_version)
+  assert.ok(await r.io.read('photos/'+uploaded.photo_version),'photo file is written before commit')
+  const icon=await r.business.request('/items/'+created.id,{method:'PUT',revision:uploaded.revision,data:{name:'封面',category:'其他',icon_type:'other',purchase_date:'2026-01-01',purchase_price:'10.00',notes:'',status:'active',cover_mode:'icon',cover_icon_key:'other'}})
+  assert.equal(icon.cover_mode,'icon');assert.equal(icon.photo_url,null)
+  const row=(await r.store.table('items')).find(i=>i.id===created.id)
+  assert.equal(row.photo_key,null);assert.equal(row.thumb_key,null)
+  assert.ok(await r.io.read('photos/'+uploaded.photo_version),'the transaction never deletes the photo file')
+ }finally{delete global.wx.getImageInfo;runtime.resetControl();delete global.wx;await removeTemp(root)}
+})

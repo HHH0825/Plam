@@ -329,7 +329,9 @@ Page(require('../../utils/member').wrap({
       }
       try {
         if (!this.current(token)) return
-        if (uploadPath) {
+        // An icon cover owns no photograph. Legacy backends without cover support
+        // keep the previous upload behaviour.
+        if (uploadPath && (!this.data.coverSupported || form.cover_mode !== 'icon')) {
           try {
             this.setData({photoProgress: 0})
             this._upload = this._photoRetry?.retry ? this._photoRetry.retry() : api.uploadPhoto(item.id, uploadPath, {revision: this._serverRevision, onProgress: value => {
